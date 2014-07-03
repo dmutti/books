@@ -274,6 +274,7 @@ RPM-GPG-KEY-cloudera
 * /etc/hosts
   * IP_DA_MAQUINA archive.cloudera.com
 
+
 * /opt/httpd24/conf/vhosts.conf
 
 ```
