@@ -90,3 +90,35 @@ agent.sinks.k1.channel=c1
 -------------------
 
 # 3. Channels
+
+* a channel is the construct used between sources and sinks.
+* It provides a holding area for your in-flight events after they are read from sources until they can be written to sinks in your data processing pipelines
+* The durable file channel flushes all changes to disk before acknowledging receipt of the event to the sender
+  * considerably slower than using the non-durable memory channel
+  * provides recoverability in the event of system or Flume agent restarts
+* the memory channel is much faster
+  * failure results in data loss
+  * has much lower storage capacity when compared with the disks backing the file channel
+* regardless of what channel you choose, if your rate of ingest from the sources into the channel is greater than the rate the sink can write data, you will exceed the capacity of the channel and you will throw a `ChannelException`
+* ** you always want your sink to be able to write faster than your source input**
+  * Otherwise, you may get into a situation where once your sink falls behind you can never catch up
+
+## Memory channel
+
+* a channel where in-flight events are stored in memory.
+* events can be ingested much more quickly resulting in reduced hardware needs
+* The downside of using this channel is that an agent failure results in loss of data
+* To use the memory channel, set the  type parameter on your named channel to memory
+  * `agent.channels.c1.type=memory`
+* The default capacity of this channel is 100 Events
+  * if you increase this value you may also have to increase your Java heap space
+* transactionCapacity is the maximum number of events that can be written, in a single transaction, when moving data from the source to the channel
+  * This is also the number of events that can be read, in a single transaction, when moving data from the channel to the sink
+  * Increase it to decrease the overhead of the transaction wrapper, which may speed things up
+  * The downside to increasing this, in the event of a failure, is that a source would have to roll back more data
+* the keep-alive parameter is the time the thread writing data into the channel will wait when the channel is full before giving up
+  * if space opens up before the timeout expires, the data will be written to the channel rather than throwing an exception back to the source
+
+![Memory Channel Configuration Parameters](memory_channel_config_parameters.png "Memory Channel Configuration Parameters")
+
+## File Channel
