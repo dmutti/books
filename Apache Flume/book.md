@@ -165,3 +165,40 @@ agent.sinks.k1.channel=c1
   * `agent.sinks.k1.channel=c1`
 
 ![Sink Configuration Parameters](sink_config_parameters.png "Sink Configuration Parameters")
+
+## Path and filename
+* Each time Flume starts a new file at `hdfs.path` in HDFS to write data into, the filename is composed of
+  * `hdfs.filePrefix`
+  * a period character
+  * the epoch timestamp the file was started
+  * (optional) a file suffix specified by the `hdfs.fileSuffix` property
+
+### Use Cases
+
+* add some kind of time element into the path to partition the files into subdirectories
+  * `agent.sinks.k1.hdfs.path=/logs/apache/access/%Y/%m/%D/%H` will create a path like `/logs/apache/access/2013/03/10/18/`
+* Another handy escape sequence mechanism is the ability to use Flume header values in your path
+  * `agent.sinks.k1.hdfs.path=/logs/apache/%{logType}/%Y/%m/%D/%H`
+  * both log types in the same directory path
+    * `agent.sinks.k1.hdfs.path=/logs/apache/%Y/%m/%D/%H`
+    * `agent.sinks.k1.hdfs.filePrefix=%{logType}`
+* rounding down event times at a hour, minute, or second granularity while still maintaining those elements in file paths
+  * Config
+    * `agent.sinks.k1.hdfs.path=/logs/apache/%Y/%m/%D/%H%M`
+    * `agent.sinks.k1.hdfs.round=true`
+    * `agent.sinks.k1.hdfs.roundValue=15`
+    * `agent.sinks.k1.hdfs.roundUnit=minute`
+  * This would result in logs between 01:15:00 and 01:29:59 on 2013-03-10 to be written to files contained in /logs/apache/2013/03/10/0115/
+  * Logs from 01:30:00 to 01:44:59 would be written in files contained in /logs/apache/2013/03/10/0130/
+* TimeZone
+  * set this property on my Flume agents to make the time zone issue just go away
+  * `-Duser.timezone=UTC`
+* **Temporary Files**
+  * while files are being written to the HDFS, a `.tmp` extension is added
+  * When the file is closed, the extension is removed
+  * Since you typically specify a directory for input in your MapReduce job (or because you are using Hive), the temporary files will often be picked up by mistake as empty or garbled input
+  * To avoid having your temporary files picked up before being closed, set the suffix to blank (rather than the default of `.tmp`) and the prefix to either a dot or an underscore character
+    * `agent.sinks.k1.hdfs.inUsePrefix=_`
+    * `agent.sinks.k1.hdfs.inUseSuffix=`
+
+### File Rotation
