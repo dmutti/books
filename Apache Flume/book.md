@@ -122,3 +122,46 @@ agent.sinks.k1.channel=c1
 ![Memory Channel Configuration Parameters](memory_channel_config_parameters.png "Memory Channel Configuration Parameters")
 
 ## File Channel
+
+* a channel that stores events to the local filesystem of the agent
+* should be used in use cases where a gap in your data flow is undesirable
+* the durability is provided by a combination of a Write Ahead Log (WAL) and one or more file storage directories
+* to use the file channel, set the  type parameter on your named channel to file
+  * `agent.channels.c1.type=file`
+* To specify the location where the agent should hold data, you set the `checkpointDir` and `dataDirs` properties
+* For production deployments and development work with multiple file channels
+  * use distinct directory paths for each file channel storage area
+  * consider placing different channels on different disks to avoid IO contention
+* Be sure you set the HADOOP_PREFIX and JAVA_HOME environment variables when using the file channel
+  * java.lang.NoClassDefFoundError: org/apache/hadoop/io/Writable
+* If the channel capacity is reached, a source will no longer be able to ingest data
+* The checkpointInterval property is the number of milliseconds between performing a checkpoint
+  * You cannot set this lower than 1000 milliseconds
+* the `minimumRequiredSpace` property is the amount of space you **do not** want to use for writing of logs
+  * The default configuration will throw an exception if you attempt to use the last 500 MB of the disk associated with the dataDir path
+  * This limit applies across all channels, so if you have three file channels configured, the upper limit is still 500 MB, not 1.5 GB
+
+![File Channel Configuration Parameters](file_channel_config_parameters.png "File Channel Configuration Parameters")
+
+-----------------
+
+# 4. Sinks and Sink Processors
+
+* The job of the HDFS sink is to continuously open a file in HDFS, stream data into it, and at some point close that file and start a new one.
+* how long between files rotations must be balanced with how quickly files are closed in HDFS, thus making the data visible for processing
+* To use the HDFS sink, set the  type parameter on your named `sink` to `hdfs`
+  * `agent.sinks.k1.type=hdfs`
+* specify the `path` in HDFS where you want to write the data
+  * `agent.sinks.k1.hdfs.path=/path/in/hdfs`
+  * this path can be specified in three different ways
+    * absolute, absolute with server name, and relative
+  * absolute: `/Users/flume/mydata`
+  * absolute with server name: `hdfs://namenode/Users/flume/mydata`
+  * relative: `mydata`
+* **don't keep persistent data in HDFS user directories; use absolute paths with some meaningful path name** (/logs/apache/access)
+* specify a name node if the target is a different Hadoop cluster entirely
+  * This allows you to move configurations you've already tested in one environment into another without unintended consequences
+* finally, set the `channel` parameter with the channel name to read from
+  * `agent.sinks.k1.channel=c1`
+
+![Sink Configuration Parameters](sink_config_parameters.png "Sink Configuration Parameters")
