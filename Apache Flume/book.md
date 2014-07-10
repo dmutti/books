@@ -221,3 +221,138 @@ agent.sinks.k1.channel=c1
     * LZO - For Text files only. Impala can query LZO-compressed Text tables, but currently cannot create them or insert data into them; perform these operations in Hive.
 
 ## Event serializers
+
+* An event serializer is the mechanism by which a Flume event is converted into another format for output
+    * It is similar in function to the Layout class in log4j.
+* Default serializer
+    * `text` serializer
+    * outputs just the Flume event body
+* `header_and_text` outputs both the headers and the body
+* `avro_event` can be used to create an Avro representation of the event
+
+### Text output
+
+* Each event has a new line character appender unless you override this default behavior by setting the `serializer.appendNewLine` property to `false`
+
+|Key|Required|Type|Default|
+|---|--------|----|-------|
+|serializer|No|String|text|
+|serializer.appendNewLine|No|boolean|true|
+
+### Text with headers
+
+* The output format consists of the headers, followed by a space, then the body payload, and finally terminated by an optionally disabled new line character
+
+```
+Example:
+
+{key1=value1, key2=value2} body text here
+```
+
+|Key|Required|Type|Default|
+|---|--------|----|-------|
+|serializer|No|String|text_with_headers|
+|serializer.appendNewLine|No|boolean|true|
+
+### Apache Avro
+
+* The format is self-describing using JSON
+    * a good long-term data storage format, as your data format may evolve over time
+* this serializer creates Avro data based on the Flume event schema
+    * It has no formatting parameters, since Avro dictates the format of the data
+    * the structure of the Flume event dictates the schema used
+* If you want to use Avro, but want to use a different schema from the Flume event schema, you will have to write your own event serializer
+* If you want your data compressed before being written to the Avro container, you should set the `serializer.compressionCodec` property to the file extension of an installed codec
+* For Avro files to work in an Avro MapReduce job
+    * files must end in .avro
+    * explicitly set the `hdfs.fileSuffix` property
+    * do not set the `hdfs.codeC` property on an Avro file
+
+|Key|Required|Type|Default|
+|---|--------|----|-------|
+|serializer|No|String|avro_event|
+|serializer.compressionCodec|No|String (gzip,bzip2,lzo, or snappy)||
+|serializer.syncIntervalBytes|No|int (bytes)|2048000 (bytes)|
+
+### File type
+
+* By default the HDFS sink writes data to HDFS as Hadoop SequenceFiles
+    * a common Hadoop wrapper that consists of a key and value field separated by binary field and record delimiters
+* if you want the payload interpreted as a String, you can override the `hdfs.writeType` property so a `org.apache.hadoop.io.Text` will be used as the value field
+
+|Key|Required|Type|Default|
+|---|--------|----|-------|
+|hdfs.fileType|No|String|SequenceFile|
+|hdfs.writeType|No|String|text|
+
+### Timeouts and workers
+
+* The `hdfs.callTimeout` is the amount of time the HDFS sink will wait for HDFS operations to return a success (or failure) before giving up
+    * if your Hadoop cluster is particularly slow you may need to set this value higher to avoid errors
+    * Keep in mind that your channel will overflow if you cannot sustain higher write throughput than input rate to your channel
+* The `hdfs.idleTimeout` property is the time Flume will wait to automatically close an idle file
+    * use `hdfs.fileRollInterval` instead
+* The first property you can set to adjust the number of workers is `hdfs.threadsPoolSize`, which defaults to 10
+    * the maximum number of files that can be written to at the same time
+    * be careful when increasing this value too much so as to not overwhelm the HDFS
+* The `hdfs.rollTimerPoolSize` property is the number of workers processing timeouts set by the `hdfs.idleTimeout` property
+    * ignore it if you don't use the `hdfs.idleTimeout`
+
+|Key|Required|Type|Default|
+|---|--------|----|-------|
+|hdfs.callTimeout|No|long (milliseconds)|0 (0 = disable)|
+|hdfs.threadsPoolSize|No|int|10|
+|hdfs.rollTimerPoolSize|No|int|1|
+
+## Sink groups
+
+* In order to remove single points of failure in your data processing pipeline, Flume has the ability to send events to different sinks using either
+    * load balancing or
+    * failover
+* A sink group is used to create a logical grouping of sinks
+    *  The behavior of this grouping is dictated by something called the sink processor, which determines how events are routed.
+* In order for Flume to know about the sink groups, there is a new top-level agent property called `sinkgroups`
+    * `agent.sinkgroups=sg1`
+* For each named sink group, you need to specify the sinks it contains using the `sinks` property consisting of a space-delimited list of sink names
+    * `agent.sinkgroups.sg1.sinks=k1,k2`
+* used to write to different Hadoop clusters, since even a well maintained cluster has periodic maintenance
+
+# 5. Sources and Channel Selectors
+
+## The problem with using tail
+
+* If you had used any of the Flume 0.9 releases, you'll notice that the TailSource is no longer part of Flume
+    * TailSource provided a mechanism to  tail any file on the system and create Flume events for each line of the file
+* When you are tailing a file, there is no way to participate properly in a transaction
+* if the rate of data written to a file exceeded the rate Flume could read the data, it is possible to lose one or more logfiles of input outright
+
+## The exec source
+
+* provides a mechanism to run a command outside of Flume and then turn the output into Flume events
+* The only other required parameter is the  command property, which tells Flume what command to pass to the operating system
+* Should you use the `tail -F` command in conjunction with the exec source, it is probable that the forked process will not shut down 100% of the time when the Flume agent shuts down or restarts
+    * This will leave orphaned tail processes that will never exit
+    * be sure to periodically scan the process tables for `tail -F` whose parent PID is 1. These are effectively dead processes and need to be killed manuall
+* Not every command keeps running, either because it fails or the command is designed to exit immediately
+    * you can use the `restart` and `restartThrottle` properties to run it periodically
+* Sometimes commands write the output you want to capture to `StdErr`
+    * If you want these lines included as well, set the `logStdErr` property to `true`
+
+```
+agent.sources=s1
+agent.sources.s1.channels=c1
+agent.sources.s1.type=exec
+agent.sources.s1.command=tail -F /var/log/app.log
+```
+
+|Key|Required|Type|Default|
+|---|--------|----|-------|
+|type|Yes|String|exec|
+|channels|Yes|String|Space-separated list of channels|
+|command|Yes|String||
+|restart|No|boolean|false|
+|restartThrottle|No|long (milliseconds)|10000 milliseconds|
+|logStdErr|No|boolean|false|
+|batchSize|No|int|20|
+
+## The spooling directory source
