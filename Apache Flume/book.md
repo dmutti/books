@@ -100,7 +100,7 @@ agent.sinks.k1.channel=c1
     * failure results in data loss
     * has much lower storage capacity when compared with the disks backing the file channel
 * regardless of what channel you choose, if your rate of ingest from the sources into the channel is greater than the rate the sink can write data, you will exceed the capacity of the channel and you will throw a `ChannelException`
-* ** you always want your sink to be able to write faster than your source input**
+* **you always want your sink to be able to write faster than your source input**
     * Otherwise, you may get into a situation where once your sink falls behind you can never catch up
 
 ## Memory channel
