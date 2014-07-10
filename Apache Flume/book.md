@@ -356,3 +356,36 @@ agent.sources.s1.command=tail -F /var/log/app.log
 |batchSize|No|int|20|
 
 ## The spooling directory source
+
+* The spooling directory source is given a directory to watch for new files to appear.
+    * It is assumed that files copied to this directory are complete; otherwise, the source might try and send a partial file.
+    * It also assumes that filenames never change;
+* you will need a separate process to clean out any old files in the spool directory after they have been marked sent by Flume or your disk will eventually fill up
+* When a file has been transmitted completely it will be renamed with a ".COMPLETED" extension unless overridden by setting the `fileSuffix` property
+* If you want the absolute file path attached to each event, set the `fileHeader` property to  true.
+* The `batchSize` property allows you to tune the number of events per transaction for writes to the channel.
+    * Increasing this may provide better throughput at the cost of larger transactions (and possibly larger rollbacks)
+* The `bufferMaxLines` property is used to set the size of the memory buffer used in reading files by multiplying it with `maxBufferLineLength`
+    * If your data is very short, you might consider increasing `bufferMaxLines` while reducing `maxBufferLineLength`
+    * if you have events longer than 5000 characters, you'll want to set `maxBufferLineLength` higher
+
+```
+agent.sources=s1
+agent.sources.channels=c1
+agent.sources.s1.type=spooldir
+agent.sources.s1.spoolDir=/path/to/files
+```
+
+|Key|Required|Type|Default|
+|---|--------|----|-------|
+|type|Yes|String|spooldir|
+|channels|Yes|String Space-separated|list of channels|
+|spoolDir|Yes|String|Path to directory to spool|
+|fileSuffix|No|String|.COMPLETED|
+|fileHeader|No|boolean|false|
+|fileHeaderKey|No|String|file|
+|batchSize|No|int|10|
+|bufferMaxLines|No|int|100|
+|maxBufferLineLength|No|int|5000|
+
+## Syslog sources
