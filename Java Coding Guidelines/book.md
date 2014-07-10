@@ -71,7 +71,20 @@ class Password {
     * grant untrusted code read-only access to mutable classes using unmodifiable wrappers
 
 ```java
-class MutableProtector {
+
+class Mutable {
+    private int[] array = new int[10];
+
+    public int[] getArray() {
+        return array;
+    }
+
+    public void setArray(int[] i) {
+        array = i;
+    }
+}
+
+class MutableProtector extends Mutable {
     @Override
     public int[] getArray() {
         return super.getArray().clone();
