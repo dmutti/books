@@ -610,8 +610,7 @@ agent.sources.s1.interceptors.e1.type=regex_extractor
 agent.sources.s1.interceptors.e1.regex=^([\\d.]+) \\S+ \\S+ \\[([\\w:/]+\\s[+\\-]\\d{4})\\] \"(.+?)\" (\\d{3}) (\\d+)
 agent.sources.s1.interceptors.e1.serializers=ip dt url sc bc
 agent.sources.s1.interceptors.e1.serializers.ip.name=ip_address
-agent.sources.s1.interceptors.e1.serializers.dt.type=org.apache.flume.
-interceptor.RegexExtractorInterceptorMillisSerializer
+agent.sources.s1.interceptors.e1.serializers.dt.type=org.apache.flume.interceptor.RegexExtractorInterceptorMillisSerializer
 agent.sources.s1.interceptors.e1.serializers.dt.pattern=yyyy/MMM/dd:HH:mm:ss Z
 agent.sources.s1.interceptors.e1.serializers.dt.name=timestamp
 agent.sources.s1.interceptors.e1.serializers.url.name=http_request
