@@ -119,7 +119,16 @@ agent.sinks.k1.channel=c1
 * the keep-alive parameter is the time the thread writing data into the channel will wait when the channel is full before giving up
     * if space opens up before the timeout expires, the data will be written to the channel rather than throwing an exception back to the source
 
-![Memory Channel Configuration Parameters](memory_channel_config_parameters.png "Memory Channel Configuration Parameters")
+* Memory Channel Configuration Parameters
+
+|Key|Required|Type|Default|
+|---|--------|----|-------|
+|type|Yes|String|memory|
+|capacity|No|int|100|
+|transactionCapacity|No|int|100|
+|byteCapacityBufferPercentage|No|int (percent)|20%|
+|byteCapacity|No|long (bytes)|80% of JVM Heap|
+|keep-alive|No|int|3 (seconds)|
 
 ## File Channel
 
@@ -141,7 +150,20 @@ agent.sinks.k1.channel=c1
     * The default configuration will throw an exception if you attempt to use the last 500 MB of the disk associated with the dataDir path
     * This limit applies across all channels, so if you have three file channels configured, the upper limit is still 500 MB, not 1.5 GB
 
-![File Channel Configuration Parameters](file_channel_config_parameters.png "File Channel Configuration Parameters")
+* File Channel Configuration Parameters
+
+|Key|Required|Type|Default|
+|---|--------|----|-------|
+|type|Yes|String|file|
+|checkpointDir|No|String|~/.flume/file-channel/checkpoint|
+|dataDirs|No|String (comma-separated list)|~/.flume/file-channel/data|
+|capacity|No|int|1000000|
+|keep-alive|No|int|3 (seconds)|
+|transactionCapacity|No|int|1000|
+|checkpointInterval|No|long|300000 (milliseconds - 5 min)|
+|write-timeout|No|int|10 (seconds)|
+|maxFileSize|No|long|2146435071 (bytes)|
+|minimumRequiredSpace|No|long|524288000 (bytes)|
 
 -----------------
 
@@ -164,7 +186,27 @@ agent.sinks.k1.channel=c1
 * finally, set the `channel` parameter with the channel name to read from
     * `agent.sinks.k1.channel=c1`
 
-![Sink Configuration Parameters](sink_config_parameters.png "Sink Configuration Parameters")
+* Sink Channel Configuration Parameters
+
+|Key|Required|Type|Default|
+|---|--------|----|-------|
+|type|Yes|String|hdfs|
+|channel|Yes|String||
+|hdfs.path|Yes|String||
+|hdfs.filePrefix|No|String|FlumeData|
+|hdfs.fileSuffix|No|String||
+|hdfs.maxOpenFiles|No|long|5000|
+|hdfs.round|No|Boolean|false|
+|hdfs.roundValue|No|int|1|
+|hdfs.roundUnit|No|String (second,minute, or hour)|second|
+|hdfs.timeZone|No|String|Local Time|
+|hdfs.inUsePrefix|No|String|(CDH4.2.0 or Flume 1.4 only)|
+|hdfs.inUseSuffix|No|String|.tmp (CDH4.2.0 or Flume 1.4 only)|
+|hdfs.rollInterval|No|long (seconds)|30 Seconds (0=disable)|
+|hdfs.rollSize|No|long (bytes)|1024 bytes (0=disable)|
+|hdfs.rollCount|No|long|10 (0=disable)|
+|hdfs.batchSize|No|long|100|
+|hdfs.codeC|No|String||
 
 ## Path and filename
 * Each time Flume starts a new file at `hdfs.path` in HDFS to write data into, the filename is composed of
