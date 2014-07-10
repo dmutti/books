@@ -389,3 +389,45 @@ agent.sources.s1.spoolDir=/path/to/files
 |maxBufferLineLength|No|int|5000|
 
 ## Syslog sources
+
+* There are some undocumented properties on the syslog sources that allow for adding additional regular expression matching patterns for messages that do not conform to the RFC standards.
+    * if you run into frequent parsing errors have a look at the source for `org.apache.flume.source.SyslogUtils` for implementation details to find the cause
+
+### The syslog UDP source
+
+* The UDP version of syslog is usually safe to use when you are receiving data from the server's local syslog process
+    * provided the data is small enough (less than around 64k)
+    * The implementation for this source has chosen 2500 bytes as the maximum payload size regardless of what your network can actually handle
+    * if your payload will be larger than this, use one of the TCP sources instead
+* More details on syslog terms (like what a facility is) and standard formats can be found in
+    * RFC 3164 (http://tools.ietf.org/html/rfc3164)
+    * RFC 5424 (http://tools.ietf.org/html/rfc5424).
+
+```
+agent.sources=s1
+agent.sources.channels=c1
+agent.sources.s1.type=syslogudp
+agent.sources.s1.host=localhost
+agent.sources.s1.port=5140
+```
+
+* summary of properties for the syslog UDP source
+
+|Key|Required|Type|Default|
+|---|--------|----|-------|
+|type|Yes|String|syslogudp|
+|channels|Yes|String|Space-separated list of channels|
+|port|Yes|int||
+|host|No|String|0.0.0.0|
+
+* Flume headers created by the syslog UDP source are summarized as follows
+
+|Header key|Description|
+|----------|-----------|
+|Facility|The syslog facility. See the syslog documentation.|
+|Priority|The syslog priority. See the syslog documentation.|
+|timestamp|The time of the syslog event translated into an epoch timestamp. Omitted if not parsed from one of the standard RFC formats.|
+|hostname|The parsed hostname in the syslog message. Omitted if not parsed.|
+|flume.syslog.status|There was a problem parsing the syslog message's headers. Set to Invalid if the payload didn't conform to the RFCs. Set to Incomplete if the message was longer than the eventSize value (for UDP this is set internally to 2500 bytes). Omitted if everything is fine|
+
+### The syslog TCP source
