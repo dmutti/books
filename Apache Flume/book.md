@@ -51,7 +51,7 @@
 
 ## Flume configuration file overview
 
-```
+```properties
 agent.sources=<list of sources>
 agent.channels=<list of channels>
 agent.sinks=<list of sinks>
@@ -66,7 +66,7 @@ agent.sinks=<list of sinks>
 
 ## Starting up with "Hello World"
 
-```
+```properties
 agent.sources=s1
 agent.channels=c1
 agent.sinks=k1
@@ -338,7 +338,7 @@ Example:
 * Sometimes commands write the output you want to capture to `StdErr`
     * If you want these lines included as well, set the `logStdErr` property to `true`
 
-```
+```properties
 agent.sources=s1
 agent.sources.s1.channels=c1
 agent.sources.s1.type=exec
@@ -369,7 +369,7 @@ agent.sources.s1.command=tail -F /var/log/app.log
     * If your data is very short, you might consider increasing `bufferMaxLines` while reducing `maxBufferLineLength`
     * if you have events longer than 5000 characters, you'll want to set `maxBufferLineLength` higher
 
-```
+```properties
 agent.sources=s1
 agent.sources.channels=c1
 agent.sources.s1.type=spooldir
@@ -403,7 +403,7 @@ agent.sources.s1.spoolDir=/path/to/files
     * RFC 3164 (http://tools.ietf.org/html/rfc3164)
     * RFC 5424 (http://tools.ietf.org/html/rfc5424).
 
-```
+```properties
 agent.sources=s1
 agent.sources.channels=c1
 agent.sources.s1.type=syslogudp
@@ -431,3 +431,5 @@ agent.sources.s1.port=5140
 |flume.syslog.status|There was a problem parsing the syslog message's headers. Set to Invalid if the payload didn't conform to the RFCs. Set to Incomplete if the message was longer than the eventSize value (for UDP this is set internally to 2500 bytes). Omitted if everything is fine|
 
 ### The syslog TCP source
+
+*
