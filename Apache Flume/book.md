@@ -432,4 +432,144 @@ agent.sources.s1.port=5140
 
 ### The syslog TCP source
 
-*
+* the syslog TCP source provides an endpoint for messages over TCP, allowing for a larger payload size and TCP retry semantics that should be used for any reliable inter-server communications
+
+```properties
+agent.sources=s1
+agent.sources.s1.type=syslogtcp
+agent.sources.s1.host=0.0.0.0
+agent.sources.s1.port=12345
+```
+
+* optional properties for the syslog TCP source
+
+|Key|Required|Type|Default|
+|---|--------|----|-------|
+|type|Yes|String|syslogtcp|
+|channels|Yes|String|Space-separated list of channels|
+|port|Yes|int||
+|host|No|String|0.0.0.0|
+|eventSize|No|int (bytes)|2500 bytes|
+
+* Flume headers created by the syslog TCP source are summarized as follows:
+    * Same as the UDP headers
+
+# 6. Interceptors, ETL, and Routing
+
+* the ability to inspect and transform events in flight can be accomplished using interceptors
+    * inserted after a source or before a sink
+* To add interceptors to a source, simply add the `interceptors` property to the named source
+    * `agent.sources.s1.interceptors=i1 i2 i3`
+    * This defines three interceptors, i1, i2, and i3, on the `s1` source for the agent named `agent`
+* Interceptors are run in the order they are listed.
+    * i2 will receive the output from i1.
+    * i3 will receive the output from i2.
+    * Finally, the channel selector receives the output from i3.
+
+```properties
+agent.sources.s1.interceptors.i1.type=TYPE1
+agent.sources.s1.interceptors.i1.additionalProperty1=VALUE
+agent.sources.s1.interceptors.i2.type=TYPE2
+agent.sources.s1.interceptors.i3.type=TYPE3
+```
+
+## Timestamp
+
+* adds a header with the timestamp key to the Flume event if one doesn't already exist
+* an existing header will be overwritten, unless you set the `preserveExisting` property to `true`
+* `agent.sinks.k1.hdfs.path=/logs/apache/%Y/%m/%D/%H`
+    * The timestamp header is what determines this path
+    * If it is missing, you can be sure Flume will not know where to create the files and you will not get the result you are looking for
+
+```properties
+# Example
+agent.sources.s1.interceptors=i1
+agent.sources.s1.interceptors.i1.type=timestamp
+agent.sources.s1.interceptors.i1.preserveExisting=true
+```
+
+* a table summarizing the properties for the timestamp interceptor
+
+|Key|Required|Type|Default|
+|---|--------|----|-------|
+|type|Yes|String|timestamp|
+|preserveExisting|No|Boolean|false|
+
+## Host
+
+* adds a header to the event containing the IP address of the current Flume agent
+* The key for this header will be `host` unless you specify something else
+* an existing header will be overwritten, unless you set the `preserveExisting` property to `true`
+* if you want a reverse DNS lookup of the hostname to be used instead of IP as a value, set the `useIP` property to `false`
+    * reverse lookups will add processing time to your data flow!
+* This interceptor might be useful if you wanted to record the path your events took though your data flow
+
+```properties
+# Example
+agent.sources.s1.interceptors=i1
+agent.sources.s1.interceptors.i1.type=host
+agent.sources.s1.interceptors.i1.hostHeader=relayHost
+agent.sources.s1.interceptors.i1.useIP=false
+```
+
+* a table summarizing the properties for the Host interceptor
+
+|Key|Required|Type|Default|
+|---|--------|----|-------|
+|type|Yes|String|host|
+|hostHeader|No|String|host|
+|preserveExisting|No|Boolean|false|
+|useIP|No|Boolean|true|
+
+## Static
+
+* The Static interceptor is used to insert any single key/value header into each Flume event processed
+    * If more than one key/value is desired, you simply add additional Static interceptors
+* the default behavior is to preserve existing headers with the same key
+* **always specify what you want and not rely on the defaults**
+
+
+```properties
+# Example
+agent.sources.s1.interceptors=pos env
+agent.sources.s1.interceptors.pos.type=static
+agent.sources.s1.interceptors.pos.key=pointOfSale
+agent.sources.s1.interceptors.pos.value=US
+agent.sources.s1.interceptors.env.type=static
+agent.sources.s1.interceptors.env.key=environment
+agent.sources.s1.interceptors.env.value=staging
+```
+
+* a table summarizing the properties for the Static interceptor
+
+|Key|Required|Type|Default|
+|---|--------|----|-------|
+|type|Yes|String|static|
+|key|No|String|key|
+|value|No|String|value|
+|preserveExisting|No|Boolean|true|
+
+## Regular expression filtering
+
+* filter events based on the contents of the body
+* either filter out the matched events or keep only the matching events
+* The pattern is specified using Java-style regular expression syntax
+    * http://docs.oracle.com/javase/6/docs/api/java/util/regex/Pattern.html
+* you need to tell the interceptor if you want to exclude matching records by setting the `excludeEvents` property to `true`
+    * **The default** (`false`) **indicates you want to only keep events matching the pattern**
+
+```properties
+# Example any events containing the string NullPointerException will be dropped
+agent.sources.s1.interceptors=npe
+agent.sources.s1.interceptors.npe.type=regex_filter
+agent.sources.s1.interceptors.npe.regex=NullPointerException
+agent.sources.s1.interceptors.npe.excludeEvents=true
+```
+
+* a table summarizing the properties for the regular expression filtering interceptor
+
+|Key|Required|Type|Default|
+|---|--------|----|-------|
+|type|Yes|String|regex_filter|
+|regex|No|String|.*|
+|excludeEvents|No|Boolean|false|
