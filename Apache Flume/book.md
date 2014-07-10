@@ -573,3 +573,59 @@ agent.sources.s1.interceptors.npe.excludeEvents=true
 |type|Yes|String|regex_filter|
 |regex|No|String|.*|
 |excludeEvents|No|Boolean|false|
+
+## Regular expression extractor
+
+* extract bits of your event body into Flume headers
+* In order to extract one or more fields, you start by specifying the `regex` property with group matching parentheses
+* once the desired pattern is found, we need to tell Flume what to do with the match
+    * **serializers** provide a pluggable mechanism for how to interpret each match
+* The body content is unaffected
+
+```properties
+# Example 1
+# Input: NullPointerException: A problem occurred. TxnID: 5X2T9E. Error: 123.
+# Output: { "error_no":"123", "txnid":"5x2T9E" }
+
+agent.sources.s1.interceptors=e1 e2
+agent.sources.s1.interceptors.e1.type=regex_extractor
+agent.sources.s1.interceptors.e1.regex=Error:\\s(\\d+)
+agent.sources.s1.interceptors.e1.serializers=ser1
+agent.sources.s1.interceptors.e1.serializers.ser1.type=default
+agent.sources.s1.interceptors.e1.serializers.ser1.name=error_no
+agent.sources.s1.interceptors.e2.type=regex_extractor
+agent.sources.s1.interceptors.e2.regex=TxnID:\\s(\\w+)
+agent.sources.s1.interceptors.e2.serializers=ser1
+agent.sources.s1.interceptors.e2.serializers.ser1.type=default
+agent.sources.s1.interceptors.e2.serializers.ser1.name=txnid
+
+#---------------
+
+# Example 2
+# Input: 192.168.1.42 - - [29/Mar/2013:15:27:09 -0600] "GET /index.html HTTP/1.1" 200 1037
+# Output: { "ip_address":"192.168.1.42", "timestamp":"1364588829", "http_request":"GET /index.html HTTP/1.1", "status_code":"200", "bytes_xfered":"1037" }
+
+agent.sources.s1.interceptors=e1
+agent.sources.s1.interceptors.e1.type=regex_extractor
+agent.sources.s1.interceptors.e1.regex=^([\\d.]+) \\S+ \\S+ \\[([\\w:/]+\\s[+\\-]\\d{4})\\] \"(.+?)\" (\\d{3}) (\\d+)
+agent.sources.s1.interceptors.e1.serializers=ip dt url sc bc
+agent.sources.s1.interceptors.e1.serializers.ip.name=ip_address
+agent.sources.s1.interceptors.e1.serializers.dt.type=org.apache.flume.
+interceptor.RegexExtractorInterceptorMillisSerializer
+agent.sources.s1.interceptors.e1.serializers.dt.pattern=yyyy/MMM/dd:HH:mm:ss Z
+agent.sources.s1.interceptors.e1.serializers.dt.name=timestamp
+agent.sources.s1.interceptors.e1.serializers.url.name=http_request
+agent.sources.s1.interceptors.e1.serializers.sc.name=status_code
+agent.sources.s1.interceptors.e1.serializers.bc.name=bytes_xfered
+```
+
+* a table summarizing the properties for the regular expression extractor interceptor
+
+|Key|Required|Type|Default|
+|---|--------|----|-------|
+|type|Yes|String|regex_extractor|
+|regex|Yes|String||
+|serializers|Yes|Space-separated list of serializer names||
+|serializers.NAME.name|Yes|String||
+|serializers.NAME.type|No|Default or FQDN of implementation|default|
+|serializers.NAME.PROP|No|Serializer-specific properties||
