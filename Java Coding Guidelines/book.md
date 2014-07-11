@@ -270,3 +270,42 @@ class ACC {
     *
 
 ## 10. Do not use the clone() method to copy untrusted method parameters
+
+* inappropriate use of the `clone()`` method can allow an attacker to exploit vulnerabilities by providing arguments that appear normal but subsequently return unexpected values
+* do not use the `clone()` method of non-final classes to make defensive copies
+* The noncompliant code example defines a validateValue() method that validates a time value
+    * The `storeDateInDB()` method accepts an untrusted date argument and attempts to make a defensive copy using its `clone()` method
+    * This allows an attacker to take control of the program by creating a malicious date class that extends Date
+
+```java
+class MaliciousDate extends java.util.Date {
+    @Override
+    public MaliciousDate clone() {
+        // malicious code goes here
+    }
+}
+
+
+class Persistence {
+    private Boolean validateValue(long time) {
+        // Perform validation
+        return true; // If the time is valid
+    }
+
+    private void storeDateInDB(java.util.Date date) throws SQLException {
+        final java.util.Date copy = (java.util.Date) date.clone();
+        if (validateValue(copy.getTime())) {
+            Connection con = DriverManager.getConnection("jdbc:microsoft:sqlserver://<HOST>:1433", "<UID>", "<PWD>");
+            PreparedStatement pstmt = con.prepareStatement("UPDATE ACCESSDB SET TIME = ?");
+            pstmt.setLong(1, copy.getTime());
+            // ...
+        }
+    }
+}
+```
+
+## 12. Do not use insecure or weak cryptographic algorithms
+
+* Security-intensive applications must avoid use of insecure or weak cryptographic primitives.
+
+## 13. Store passwords using a hash function
