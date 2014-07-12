@@ -285,7 +285,6 @@ class MaliciousDate extends java.util.Date {
     }
 }
 
-
 class Persistence {
     private Boolean validateValue(long time) {
         // Perform validation
@@ -309,3 +308,89 @@ class Persistence {
 * Security-intensive applications must avoid use of insecure or weak cryptographic primitives.
 
 ## 13. Store passwords using a hash function
+
+* An acceptable technique for limiting the exposure of passwords is the use of hash functions
+* programs to indirectly compare an input password to the original password string without storing a cleartext or decryptable version of the password
+* always append a salt to the password being hashed
+    * a unique (often sequential) or randomly generated piece of data that is stored along with the hash value
+    * The use of a salt helps prevent brute-force attacks against the hash value
+        * provided that the salt is long enough to generate sufficient entropy (shorter salt values cannot significantly slow down a brute-force attack)
+* Each password should have its own salt associated with it
+    * If a single salt were used for more than one password, two users would be able to see whether their passwords are the same.
+
+```java
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
+public final class Password {
+    private void setPassword(byte[] pass) throws Exception {
+        byte[] salt = generateSalt(12);
+        byte[] input = appendArrays(pass, salt);
+        MessageDigest msgDigest = MessageDigest.getInstance("SHA-256"); // Encode the string and salt
+        byte[] hashVal = msgDigest.digest(input); clearArray(pass);
+        clearArray(input);
+        saveBytes(salt, "salt.bin");
+        // Save the hash value to password.bin
+        saveBytes(hashVal,"password.bin");
+        clearArray(salt);
+        clearArray(hashVal);
+    }
+
+    boolean checkPassword(byte[] pass) throws Exception {
+        byte[] salt = loadBytes("salt.bin");
+        byte[] input = appendArrays(pass, salt);
+        MessageDigest msgDigest = MessageDigest.getInstance("SHA-256"); // Encode the string and salt
+        byte[] hashVal1 = msgDigest.digest(input);
+        clearArray(pass);
+        clearArray(input);
+        // Load the hash value stored in password.bin
+        byte[] hashVal2 = loadBytes("password.bin");
+        boolean arraysEqual = Arrays.equals(hashVal1, hashVal2);
+        clearArray(hashVal1);
+        clearArray(hashVal2);
+        return arraysEqual;
+    }
+
+    private byte[] generateSalt(int n) {
+        // Generate a random byte array of length n
+    }
+
+    private byte[] appendArrays(byte[] a, byte[] b) {
+        // Return a new array of a[] appended to b[]
+    }
+
+    private void clearArray(byte[] a) {
+        for (int i = 0; i < a.length; i++) {
+            a[i] = 0;
+        }
+    }
+}
+```
+
+* In both the `setPassword()` and `checkPassword()` methods, the cleartext representation of the password is erased immediately after it is converted into a hash value.
+
+## 14. Ensure that SecureRandom is properly seeded
+
+* An adversary should not be able to determine the original seed given several samples of random numbers.
+    * If this restriction is violated, all future random numbers may be successfully predicted by the adversary
+* Prefer the no-argument constructor of SecureRandom that uses the system-specified seed value
+
+##  15. Do not rely on methods that can be overridden by untrusted code
+
+* Untrusted code can misuse APIs provided by trusted code to override methods such as `Object.equals()`, `Object.hashCode()`, and `Thread.run()`
+* These are valuable targets because they are commonly used behind the scenes and may interact with components in a way that is not easily discernible
+* Compliant solution
+    * declare the class final so that its methods cannot be overridden
+
+# 2. Defensive Programming
+
+## 22. Minimize the scope of variables
+* Scope minimization
+    * helps developers avoid common programming errors
+    * improves code readability by connecting the declaration and actual use of a variable
+    * improves maintainability because unused variables are more easily detected and removed
+    * allow objects to be recovered by the garbage collector more quickly
+
+## 23. Minimize the scope of the `@SuppressWarnings` annotation
+
+* 
