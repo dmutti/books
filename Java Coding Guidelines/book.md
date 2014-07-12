@@ -393,4 +393,54 @@ public final class Password {
 
 ## 23. Minimize the scope of the `@SuppressWarnings` annotation
 
-* 
+* narrow the annotation scope so that only those warnings that occur in the narrower scope are suppressed
+* if a class is annotated
+    * all unchecked warnings within the class are suppressed
+    * which can result in a ClassCastException at runtime
+
+```java
+/* Non Compliant Code */
+    @SuppressWarnings("unchecked")
+    public <T> T[] toArray(T[] a) {
+        if (a.length < size) {
+            // Produces unchecked warning
+            return (T[]) Arrays.copyOf(elements, size, a.getClass());
+        }
+        //...
+    }
+
+
+/* Compliant Code */
+    @SuppressWarnings("unchecked")
+    T[] result = (T[]) Arrays.copyOf(elements, size, a.getClass());
+    return result;
+// ...
+```
+
+## 24. Minimize the accessibility of classes and their members
+
+* Classes and class members must be given the minimum possible access so that malicious code has the least opportunity to compromise security.
+* classes should avoid exposing methods that contain (or invoke) sensitive code through interfaces
+    * interfaces allow only publicly accessible methods, and such methods are part of the public application programming interface (API) of the class.
+* Methods that perform all necessary security checks and sanitize all inputs may be exposed through interfaces
+* Fields of nonfinal public classes should rarely be declared ￼protected
+    * untrusted code in another package can subclass the class, and access the member
+    * protected members are part of the API of the class, and consequently require continued support
+* If a class, interface, method, or field is part of a published API, such as a web service endpoint, it may be declared public
+
+## 25. Document thread-safety and use annotations where applicable
+
+* Two sets of concurrency annotations are freely available and licensed for use in any code
+    * four annotations described in Java Concurrency in Practice (http://jcip.net)
+    * a larger set of concurrency annotations is available from and supported by SureLogic (www.surelogic.com).
+* The `@ThreadSafe` annotation is applied to a class to indicate that it is thread-safe
+    * no sequences of accesses (reads and writes to public fields, calls to public methods) can leave the object in an inconsistent state, regardless of the interleaving of these accesses by the runtime or any external synchronization or coordination on the part of the caller.
+    * `@Region` and `@RegionLock` annotations document the locking policy upon which the promise of thread-safety is predicated
+* The `@Immutable annotation is applied to immutable classes
+    * inherently thread-safe
+* The `@NotThreadSafe` annotation is applied to classes that are not thread-safe
+* It is important to document all the locks that are being used to protect shared state.
+    * JCIP provides the `@GuardedBy` annotation
+    * SureLogic provides the `@RegionLock` annotation
+
+## 26. Always provide feedback about the resulting value of a method
