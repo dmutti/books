@@ -444,3 +444,13 @@ public final class Password {
     * SureLogic provides the `@RegionLock` annotation
 
 ## 26. Always provide feedback about the resulting value of a method
+
+* Methods should be designed to return a value that
+    * allows the developer to learn about the current state of the object
+    * and/or the result of an operation
+* Feedback can also be provided by throwing either standard or custom exception objects derived from the Exception class
+    * the exception should provide a detailed account of the abnormal condition at the appropriate abstraction level
+* A method must not return a value that can hold both valid return data and an error code
+    * alternatively, an object can provide a state-testing method that checks whether the object is in a consistent state
+    * the object’s state cannot be modified by external threads
+* A return value that might be null is an in-band error indicator (a value that can hold both valid return data and an error code)
