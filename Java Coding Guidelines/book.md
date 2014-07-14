@@ -432,7 +432,7 @@ public final class Password {
 
 * Two sets of concurrency annotations are freely available and licensed for use in any code
     * four annotations described in Java Concurrency in Practice (http://jcip.net)
-    * a larger set of concurrency annotations is available from and supported by SureLogic (www.surelogic.com).
+    * a larger set of concurrency annotations is available from and supported by SureLogic (http://surelogic.com/promises/).
 * The `@ThreadSafe` annotation is applied to a class to indicate that it is thread-safe
     * no sequences of accesses (reads and writes to public fields, calls to public methods) can leave the object in an inconsistent state, regardless of the interleaving of these accesses by the runtime or any external synchronization or coordination on the part of the caller.
     * `@Region` and `@RegionLock` annotations document the locking policy upon which the promise of thread-safety is predicated
@@ -454,3 +454,74 @@ public final class Password {
     * alternatively, an object can provide a state-testing method that checks whether the object is in a consistent state
     * the object’s state cannot be modified by external threads
 * A return value that might be null is an in-band error indicator (a value that can hold both valid return data and an error code)
+
+## 27. Identify files using multiple file attributes
+
+* Attackers frequently exploit file-related vulnerabilities to cause programs to access an unintended file.
+    * **Proper file identification is necessary to prevent exploitation**
+* File names provide no information regarding the nature of the file object itself
+* the binding of a file name to a file object is reevaluated each time the file name is used in an operation
+    * This reevaluation can introduce a time-of-check, time-of-use race condition into an application
+    * Objects of type java.io.File and of type java.nio.file.Path are bound to underlying file objects by the operating system only when the file is accessed
+* files can often be identified by other attributes in addition to the file name
+    * by comparing file creation times or modification times
+* Noncompliant solution
+    * the Java API lacks any guarantee that the `Files.isSameFile()` method actually checks whether the files are the same file
+    * from the API, isSameFile() may simply check that the paths to the two files are the same and cannot detect if the file at that path had been replaced by a different file between the two open operations
+
+```java
+    /**
+        Compliant Solution (POSIX fileKey Attribute)
+    */
+    public void processFile(String filename) throws IOException{
+        // Identify a file by its path
+        Path file1 = Paths.get(filename);
+        BasicFileAttributes attr1 = Files.readAttributes(file1, BasicFileAttributes.class);
+        Object key1 = attr1.fileKey();
+        // Open the file for writing
+        try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(Files.newOutputStream(file1)))) {
+            // Write to file
+        } catch (IOException e) {
+            // Handle error
+        }
+        // Reopen the file for reading
+        Path file2 = Paths.get(filename);
+        BasicFileAttributes attr2 = Files.readAttributes(file2, BasicFileAttributes.class);
+        Object key2 = attr2.fileKey();
+        if ( !key1.equals(key2) ) {
+            System.out.println("File tampered with");
+            // File was tampered with, handle error
+        }
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(Files.newInputStream(file2)))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                System.out.println(line);
+            }
+        } catch (IOException e) {
+            // Handle error
+        }
+    }
+
+    /**
+        Compliant Solution (RandomAccessFile)
+    */
+    public void processFile(String filename) throws IOException{
+        // Identify a file by its path
+        try (RandomAccessFile file = new RandomAccessFile(filename, "rw")) {
+            // Write to file...
+            // Go back to beginning and read contents
+            file.seek(0);
+            String line;
+            while ((line = file.readLine()) != null) {
+                System.out.println(line);
+            }
+        }
+    }
+```
+
+## 28. Do not attach significance to the ordinal associated with an enum
+
+* Java language enumeration types have an `ordinal()` method that returns the numerical position of each enumeration constant in its class declaration
+* attaching external significance to the `ordinal()` value of an **enum** constant is error prone and should be avoided for defensive programming
+
+## 30. Enable compile-time type checking of variable arity parameter types
