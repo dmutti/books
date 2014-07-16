@@ -525,3 +525,98 @@ public final class Password {
 * attaching external significance to the `ordinal()` value of an **enum** constant is error prone and should be avoided for defensive programming
 
 ## 30. Enable compile-time type checking of variable arity parameter types
+
+* A variable arity (aka varargs) method is a method that can take a variable number of arguments
+* compile-time type checking is ineffective when Object or generic parameter types are used
+* Enable strong compile-time type checking of variable arity methods by using the most specific type possible for the method parameter
+* Be as specific as possible when declaring parameter types; avoid Object and imprecise generic types in variable arity methods
+* Variable arity signatures using Object and imprecise generic types are acceptable when the body of the method lacks both casts and autoboxing, and it also compiles without error
+
+```java
+/** Noncompliant Code */
+<T> double sum(T... args) {
+    // ...
+}
+
+/** Compliant Code */
+<T extends Number> double sum(T... args) {
+    // ...
+}
+
+<T> Collection<T> assembleCollection(T... args) {
+    return new HashSet<T>(Arrays.asList(args));
+}
+```
+
+## 31. Do not apply public final to constants whose value might change in later releases
+
+* constants that can change over the lifetime of a program should not be declared public final
+* The JLS allows implementations to insert the value of any public final field inline in any compilation unit that reads the field
+    * compilation units that read the public final field could still see the old value until they are recompiled
+* If the read-only nature of final is required, a better choice is to declare a private static variable and a suitable accessor method to get its value.
+* Constants declared using the enum type are permitted to violate this guideline
+
+```java
+class Foo {
+    private static int version = 1;
+    public static final int getVersion() {
+        return version;
+    }
+    // ...
+}
+```
+
+##  32. Avoid cyclic dependencies between packages
+
+* dependency structure of a package must never contain cycles; that is, it must be representable as a directed acyclic graph
+* advantages
+    * **Testing and maintainability** - Cyclic dependencies magnify the repercussions of changes or patches to source code
+    * **Reusability** - Cyclic dependencies between packages require that the packages be released and upgraded in lockstep
+    * **Releases and builds** - Avoiding cycles also helps to steer the development toward an environment that fosters modularization
+    * **Deployment** - Avoiding cyclic dependencies between packages reduces coupling between packages
+* Cyclic dependencies between packages can result in fragile builds
+    * A security vulnerability in a package can easily percolate to other packages
+
+## 33. Prefer user-defined exceptions over more general exception types
+
+* Because an exception is caught by its type, it is better to define exceptions for specific purposes than to use general exception types for multiple purposes
+* Throwing general exception types
+    * makes code hard to understand and maintain
+    * defeats much of the advantage of the Java exception-handling mechanism
+
+## 34. Try to gracefully recover from system errors
+
+* Unchecked exception (java.lang.RuntimeException and java.lang.Error) classes are not subject to compile-time checking
+* even when recovery is impossible, the Java Virtual Machine (JVM) allows a graceful exit and a chance to at least log the error
+    * made possible by using `try-catch(Throwable)`
+    * when code must avoid leaking potentially sensitive information, catching Throwable is permitted
+* Where cleanup operations such as releasing system resources can be performed, code should use a `finally` block to release the resources or a try-with-resources statement
+
+```java
+public class StackOverflow {
+    public static void main(String[] args) {
+        try {
+            infiniteRun();
+        } catch (Throwable t) {
+            // Forward to handler
+
+        } finally {
+            // Free cache, release resources
+        }
+        // ...
+    }
+    private static void infiniteRun() {
+        infiniteRun();
+    }
+}
+```
+
+* Forward to handler code must operate correctly in constrained memory conditions because the stack or heap may be nearly exhausted
+* Allowing a system error to abruptly terminate a Java program may result in a denial-of-service vulnerability
+* In the event of actually running out of memory
+    * it is likely that some program data will be in an inconsistent state
+    * it might be best to restart the process
+    * If an attempt is made to carry on, reducing the number of threads may be an effective workaround
+* The methods `Thread.setUncaughtExceptionHandler()` and `ThreadGroup.uncaughtException()` can be used to help deal with an OutOfMemoryError in threads
+
+## 35. Carefully design interfaces before releasing them
