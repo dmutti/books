@@ -680,3 +680,4 @@ server.3=a1-jak3.pateta:2888:3888
 * http://blog.cloudera.com/blog/2014/01/how-to-create-a-simple-hadoop-cluster-with-virtualbox/
 * https://amplab.cs.berkeley.edu/benchmark/
 * https://martin.atlassian.net/wiki/display/lestermartin/Build+a+Virtualized+5-Node+Hadoop+2.0+Cluster#BuildaVirtualized5-NodeHadoop2.0Cluster-PreConfigureHosts
+* http://www.bidn.com/blogs/cprice1979/ssas/4608/introduction-to-hive-collections
