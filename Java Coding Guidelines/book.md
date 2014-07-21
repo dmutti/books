@@ -620,3 +620,40 @@ public class StackOverflow {
 * The methods `Thread.setUncaughtExceptionHandler()` and `ThreadGroup.uncaughtException()` can be used to help deal with an OutOfMemoryError in threads
 
 ## 35. Carefully design interfaces before releasing them
+
+* Interface changes resulting from fixes can severely impair the contracts of the implementing classes
+    * The client may be prevented from implementing the fix because the new interface may impose additional implementation burden on it.
+* If there is a security flaw in a public API, it will persist throughout the lifetime of the API, affecting the security of any application or library that uses it
+    * Even after the security flaw is mitigated, applications and libraries may continue using the insecure version until they are also updated.
+* An alternative idea is to prefer abstract classes for dealing with constant evolution
+    * that comes at the cost of flexibility that interfaces offer
+    * One notable pattern is for the provider to distribute an `abstract` skeletal class that implements the evolving interface
+    * If a new method is added to the interface, the skeletal class can provide a non-abstract default implementation that the extending class can optionally override
+    * this pattern may be insecure because a provider who is unaware of the extending class’s code may choose an implementation that introduces security weaknesses in the client API
+
+## 36. Write garbage collection–friendly code
+
+* a malicious attacker can launch a denial-of-service (DoS) attack against the GC, such as by inducing abnormal heap memory allocation or abnormally prolonged object retention
+* use short-lived immutable objects
+    * Improved garbage collection algorithms have reduced the cost of garbage collection so that **it is proportional to the number of live objects in the younger generation**, rather than to the number of objects allocated since the last garbage collection.
+    * With generational GCs, use of short-lived immutable objects is generally more efficient than use of long-lived mutable objects
+    * object pools are an appropriate design choice when the objects represent scarce resources, such as thread pools and database connections
+* avoid large objects
+    * frequent allocation of large objects of different sizes can cause fragmentation issues or compacting collect operations
+* do not explicitly invoke the garbage collector
+    * Irresponsible use of this feature can severely degrade system performance by triggering garbage collection at inopportune moments
+
+# 3. Reliability
+
+* **reliability**
+    * the ability of a system or component to perform its required functions under stated conditions for a specified period of time
+    * the capability of the software product to maintain a specified level of performance when used under specified conditions
+* Limitations in reliability are the results of faults in requirements, design, and implementation
+
+## 37. Do not shadow or obscure identifiers in subscopes
+
+* Reuse of identifier names in subscopes leads to obscuration or shadowing
+* a variable can obscure a type or a package, and a type can obscure a package name
+* Shadowing refers to one variable rendering another variable inaccessible in a containing scope. One type can also shadow another type
+
+## 38. Do not declare more than one variable per declaration
