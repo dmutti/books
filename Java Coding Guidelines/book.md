@@ -657,3 +657,44 @@ public class StackOverflow {
 * Shadowing refers to one variable rendering another variable inaccessible in a containing scope. One type can also shadow another type
 
 ## 38. Do not declare more than one variable per declaration
+
+    * Declaring multiple variables in a single declaration could cause confusion about the types of variables and their initial values
+    * do not declare any of the following in a single declaration
+        * Variables of different types
+        * A mixture of initialized and uninitialized variables
+
+## 39. Use meaningful symbolic constants to represent literal values in program logic
+
+* Java supports the use of various types of literals
+    * integers, floating-point numbers, characters, booleans, and strings
+* Extensive use of literals in a program can lead to two problems
+    * the meaning of the literal is often obscured or unclear from the context
+    * changing a frequently used literal requires searching the entire program source for that literal and distinguishing the uses that must be modified from those that should remain unmodified
+* Avoid these problems by
+    * declaring class variables with meaningfully named constants
+    * setting their values to the desired literals
+    * and referencing the constants instead of the literals throughout the program
+* Constants should be declared as `static final`
+    * However, **constants should not be declared public and final if their values might change**
+
+## 40. Properly encode relationships in constant definitions
+
+* The definitions of constant expressions should be related exactly when the values they express are also related.
+
+```java
+    /**
+        Noncompliant code
+        OUT_STR_LEN must always be exactly two greater than IN_STR_LEN
+    */
+    public static final int IN_STR_LEN = 18;
+    public static final int OUT_STR_LEN = 20;
+
+    /**
+        Compliant code
+        OUT_STR_LEN must always be exactly two greater than IN_STR_LEN
+    */
+    public static final int IN_STR_LEN = 18;
+    public static final int OUT_STR_LEN = IN_STR_LEN + 2;
+```
+
+## 41. Return an empty array or collection instead of a null value for methods that return an array or collection
