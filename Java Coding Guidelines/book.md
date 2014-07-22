@@ -271,7 +271,7 @@ class ACC {
 
 ## 10. Do not use the clone() method to copy untrusted method parameters
 
-* inappropriate use of the `clone()`` method can allow an attacker to exploit vulnerabilities by providing arguments that appear normal but subsequently return unexpected values
+* inappropriate use of the `clone()` method can allow an attacker to exploit vulnerabilities by providing arguments that appear normal but subsequently return unexpected values
 * do not use the `clone()` method of non-final classes to make defensive copies
 * The noncompliant code example defines a validateValue() method that validates a time value
     * The `storeDateInDB()` method accepts an untrusted date argument and attempts to make a defensive copy using its `clone()` method
