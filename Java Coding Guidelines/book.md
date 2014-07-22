@@ -658,10 +658,10 @@ public class StackOverflow {
 
 ## 38. Do not declare more than one variable per declaration
 
-    * Declaring multiple variables in a single declaration could cause confusion about the types of variables and their initial values
-    * do not declare any of the following in a single declaration
-        * Variables of different types
-        * A mixture of initialized and uninitialized variables
+* Declaring multiple variables in a single declaration could cause confusion about the types of variables and their initial values
+* do not declare any of the following in a single declaration
+    * Variables of different types
+    * A mixture of initialized and uninitialized variables
 
 ## 39. Use meaningful symbolic constants to represent literal values in program logic
 
@@ -698,3 +698,18 @@ public class StackOverflow {
 ```
 
 ## 41. Return an empty array or collection instead of a null value for methods that return an array or collection
+
+* Some APIs intentionally return a null reference to indicate that instances are unavailable
+* This practice can lead to denial-of-service vulnerabilities when the client code fails to explicitly handle the null return value case
+
+## 42. Use exceptions only for exceptional conditions
+
+* Exceptions should be used only to denote exceptional conditions; **they should not be used for ordinary control flow purposes**
+* Catching a generic object such as Throwable is likely to catch unexpected errors
+* <del>Using a catch clause to handle an exception that occurs in a distant known location is a poor solution; it is preferable to handle the error as soon as it occurs or to prevent it, if possible</del>
+* Relying on catching exceptions for control flow also complicates debugging
+    * exceptions indicate a jump in control flow from the throw statement to the catch clause
+* exceptions need not be highly optimized as it is assumed that they are thrown only in exceptional circumstances
+* Throwing and catching an exception fre- quently has worse performance than handling the error with some other mechanism
+
+## 43. Use a try-with-resources statement to safely handle closeable resources
