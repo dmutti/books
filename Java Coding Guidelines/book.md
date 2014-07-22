@@ -751,3 +751,11 @@ public class StackOverflow {
 * **Those cannot be implemented as assertions because they must be present in the deployed executable**
 
 ## 45. Use the same type for the second and third operands in conditional expressions
+
+* The general form of a Java conditional expression is `operand1 ? operand2 : operand3`
+* The JLS rules for determining the result type of a conditional expression are complicated
+* The complexity of the rules that determine the result type of a conditional expression can result in unintended type conversions.
+    * Consequently, the second and third operands of each conditional expression should have identical types.
+    * This recommendation also applies to boxed primitives
+
+## 46. Do not serialize direct handles to system resources
