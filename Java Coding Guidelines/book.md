@@ -710,6 +710,44 @@ public class StackOverflow {
 * Relying on catching exceptions for control flow also complicates debugging
     * exceptions indicate a jump in control flow from the throw statement to the catch clause
 * exceptions need not be highly optimized as it is assumed that they are thrown only in exceptional circumstances
-* Throwing and catching an exception fre- quently has worse performance than handling the error with some other mechanism
+* Throwing and catching an exception frequently has worse performance than handling the error with some other mechanism
 
 ## 43. Use a try-with-resources statement to safely handle closeable resources
+
+* `try-with-resources` simplifies correct use of resources that implement the `java.lang.AutoCloseable` interface, including those that implement the `java.io.Closeable` interface
+* Using the try-with-resources statement prevents problems that can arise when closing resources with an ordinary try-catch-finally block such as
+    * failing to close a resource because an exception is thrown as a result of closing another resource
+    * masking an important exception when a resource is closed
+* Failing to correctly handle all failure cases when working with closeable resources may result in some resources not being closed or in important exceptions being masked, possibly resulting in a denial of service
+
+```java
+    public void processFile(String inPath, String outPath) throws IOException{
+        try (BufferedReader br = new BufferedReader(new FileReader(inPath));
+             BufferedWriter bw = new BufferedWriter(new FileWriter(outPath));) {
+                 // Process the input and produce the output
+        } catch (IOException ex) {
+            // Print out all exceptions, including suppressed ones
+            System.err.println("thrown exception: " + ex.toString());
+            Throwable[] suppressed = ex.getSuppressed();
+            for (int i = 0; i < suppressed.length; i++) {
+                System.err.println("suppressed exception: " + suppressed[i].toString());
+            }
+        }
+    }
+```
+
+## 44. Do not use assertions to verify the absence of runtime errors
+
+* Diagnostic tests can be incorporated into programs by using the `assert` statement
+* primarily intended for use during debugging, assertions should be used to protect against incorrect programmer assumptions, and not for runtime error checking
+* Assertions should never be used to verify the absence of runtime (as opposed to logic) errors, such as
+    * Invalid user input
+    * File errors
+    * Network errors
+    * Out-of-memory conditions
+    * System resource exhaustion
+    * System call errors
+    * Invalid permissions
+* **Those cannot be implemented as assertions because they must be present in the deployed executable**
+
+## 45. Use the same type for the second and third operands in conditional expressions
