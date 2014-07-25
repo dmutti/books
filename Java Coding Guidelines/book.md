@@ -759,3 +759,88 @@ public class StackOverflow {
     * This recommendation also applies to boxed primitives
 
 ## 46. Do not serialize direct handles to system resources
+
+* Serialized objects can be altered outside of any Java program unless they are protected using mechanisms such as sealing and signing
+* example
+    * an attacker may modify a serialized file handle to refer to an arbitrary file on the system
+    * In the absence of a security manager, any operations that use the file handle will be carried out using the attacker-supplied file path and file name
+
+```java
+final class Ser implements Serializable {
+    transient File f;
+    public Ser() throws FileNotFoundException {
+        f = new File("c:\\filepath\\filename");
+    }
+}
+```
+* The file path is not serialized with the rest of the class, and is consequently not exposed to attackers
+
+## 47. Prefer using iterators over enumerations
+
+* Using Enumeration when performing remove operations on an iterable Collection may cause unexpected program behavior.
+* Iterators allow the caller to remove elements from the underlying collection during the iteration with well-defined semantics
+
+```java
+class BankOperations {
+    private static void removeAccounts(Vector v, String name) {
+        Iterator i = v.iterator();
+        while (i.hasNext()) {
+            String s = (String) i.next();
+            if (s.equals(name)) {
+                i.remove(); // Correctly removes all instances of the name Harry
+            }
+        }
+        // Display current account holders
+        System.out.println("The names are:");
+        i = v.iterator();
+        while (i.hasNext()) {
+            System.out.println(i.next());
+            // Prints Dick, Tom only
+        }
+    }
+
+    public static void main(String args[]) {
+        List list = new ArrayList(Arrays.asList(new String[] {"Dick", "Harry", "Harry", "Tom"}));
+        Vector v = new Vector(list);
+        remove(v, "Harry");
+    }
+}
+```
+
+## 48. Do not use direct buffers for short-lived, infrequently used objects
+
+* The new I/O (NIO) classes in java.nio allow the creation and use of direct buffers
+    * increase throughput for repeated I/O activities
+* **their creation and reclamation is more expensive** than the creation and reclamation of heap-based non-direct buffers
+    * because direct buffers are managed using OS-specific native code!
+* direct buffers
+    * are a poor choice for single-use or infrequently used cases
+    * outside the scope of Java’s garbage collector
+    * **can cause memory leaks**
+    * frequent allocation of large direct buffers can cause an `OutOfMemoryError`
+    * should be allocated only when their use provides a significant gain in performance
+
+```java
+    // Use rarelyUsedBuffer once
+    ByteBuffer rarelyUsedBuffer = ByteBuffer.allocate(8192);
+
+    // Use heavilyUsedBuffer many times
+    ByteBuffer heavilyUsedBuffer = ByteBuffer.allocateDirect(8192);
+```
+
+## 49. Remove short-lived objects from long-lived container objects
+
+* Leaving short-lived objects in long-lived container objects may consume memory that cannot be recovered by the garbage collector, leading to memory exhaustion and possible denial of service attacks.
+* Always remove short-lived objects from long-lived container objects when the task is over
+    * example: objects attached to a `java.nio.channels.SelectionKey` object must be removed when they are no longer needed
+    * example: the programmer assigns null to ArrayList elements that have become irrelevant
+* When using the Null Object pattern, the null object must be a singleton and must be final
+     * the state of the null object should be immutable after creation
+
+# 4. Program Understandability
+
+* the ease with which the program can be understood
+* the ability to determine what a program does and how it works by reading its source code and accompanying documentation
+* software maintainers are less likely to introduce defects into code that is clear and comprehensible
+
+## 50. Be careful using visually misleading identifiers and literals
