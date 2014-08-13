@@ -964,9 +964,6 @@ for (i = 1; i <= Integer.MAX_VALUE; i++) {
     * What should be the file’s initial attributes, such as permissions?
 
 ```java
-/**
-*
-*/
 public void createFile(String filename) throws FileNotFoundException {
     try (OutputStream out = new BufferedOutputStream(
         Files.newOutputStream(Paths.get(filename), StandardOpenOption.CREATE_NEW))) {
