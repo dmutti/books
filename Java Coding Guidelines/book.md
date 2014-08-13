@@ -952,3 +952,32 @@ for (i = 1; i <= Integer.MAX_VALUE; i++) {
 ```
 
 ## 58. Use parentheses for precedence of operation
+
+* Programmers frequently make errors regarding the precedence of operators because of the unintuitive low precedence levels of `&, |, ^, <<, and >>`
+* Avoid mistakes regarding precedence through the suitable use of parentheses, which also improves code readability
+
+## 59. Do not make assumptions about file creation
+
+* Although creating a file is usually accomplished with a single method call, this single action raises multiple security-related questions
+    * What should be done if the file can- not be created?
+    * What should be done if the file already exists?
+    * What should be the file’s initial attributes, such as permissions?
+
+```java
+/**
+*
+*/
+public void createFile(String filename) throws FileNotFoundException {
+    try (OutputStream out = new BufferedOutputStream(
+        Files.newOutputStream(Paths.get(filename), StandardOpenOption.CREATE_NEW))) {
+            // Work with out
+    } catch (IOException x) {
+            // File not writable...Handle error
+    }
+}
+// This solution uses the java.nio.file.Files.newOutputStream()
+// method to atomically create the file,
+// and throw an exception if the file already exists
+```
+
+## 60. Convert integers to floating-point for floating-point operations
