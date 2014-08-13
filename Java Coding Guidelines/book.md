@@ -844,3 +844,37 @@ class BankOperations {
 * software maintainers are less likely to introduce defects into code that is clear and comprehensible
 
 ## 50. Be careful using visually misleading identifiers and literals
+
+* Use visually distinct identifiers that are unlikely to be misread during development and review of code
+* Depending on the fonts used, certain characters are visually similar or even identical and can be misinterpreted
+* use only ASCII or Latin-1 characters in identifiers
+
+## 51. Avoid ambiguous overloading of variable arity methods
+
+* variable arity (varargs)
+    * support methods that accept a variable number of arguments
+* use [variable arity methods] sparingly, only when the benefit is truly compelling
+* do not overload a varargs method, or it will be difficult for programmers to figure out which overloading gets called
+
+```java
+/**
+*  Noncompliant Code
+*/
+class Varargs {
+    private static void displayBooleans(boolean... bool) {
+        System.out.print("Number of arguments: " + bool.length + ", Contents: ");
+        for (boolean b : bool) {
+            System.out.print("[" + b + "]");
+        }
+    }
+    private static void displayBooleans(boolean bool1, boolean bool2) {
+        System.out.println("Overloaded method invoked");
+    }
+    public static void main(String[] args) {
+        displayBooleans(true, false);
+    }
+}
+```
+* **To avoid overloading variable arity methods, use distinct method names to ensure that the intended method is invoked**
+
+## 52. Avoid in-band error indicators
