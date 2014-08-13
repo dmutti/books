@@ -878,3 +878,77 @@ class Varargs {
 * **To avoid overloading variable arity methods, use distinct method names to ensure that the intended method is invoked**
 
 ## 52. Avoid in-band error indicators
+
+* An in-band error indicator is a value returned by a method that indicates either
+    * a legitimate return value or
+    * an illegitimate value that denotes an error
+* examples
+    * A valid object or a null reference
+    * An integer indicating a positive value, or −1 to indicate that an error occurred
+    * An array of valid objects or a null reference indicating the absence of valid objects
+* In-band error indicators **require the caller to check for the error**
+    * however, this checking is often overlooked
+    * it also has the effect of propagating invalid values that may subsequently be treated as valid in later computations
+* the best way to indicate an exceptional situation is by throwing an exception rather than by returning an error code
+    * Exceptions are propagated across scopes and cannot be ignored as easily as error codes can
+* returning an object that may be null can be acceptable under some circumstances
+
+## 53. Do not perform assignments in conditional expressions
+
+* Using the assignment operator in conditional expressions frequently indicates
+    * programmer error
+    * and can result in unexpected behavior
+
+```java
+public void assignNocontrol(BufferedReader reader) throws IOException {
+    String line;
+    while ((line = reader.readLine()) != null) {
+        // ... Work with line
+    }
+}
+```
+
+## 54. Use braces for the body of an if, for, or while statement
+
+* Use opening and closing braces for if, for, and while statements even when the body contains only a single statement
+* Braces improve the uniformity and readability of code
+
+## 55. Do not place a semicolon immediately following an if, for, or while condition
+
+* Placing a semicolon immediately following an if, for, or while condition may result in unexpected behavior.
+
+```java
+/**
+* Noncompliant Code
+*/
+if (a == b); {
+    /* ... */
+}
+// The statements in the apparent body of the if statement are always evaluated,
+// regardless of the result of the condition expression
+```
+
+## 56. Finish every set of statements associated with a case label with a break statement
+
+* Statements that follow each case label must end with a break statement
+    * which is responsible for transferring the control to the end of the switch block
+* When omitted, the statements in the subsequent case label are executed
+
+## 57. Avoid inadvertent wrapping of loop counters
+
+* a while or for loop may execute forever, or until the counter wraps around and reaches its final value
+* use a numerical comparison operator (that is, `<, <=, >, or >=`) to terminate the loop
+* Incorrect termination of loops may result in infinite loops, poor performance, incorrect results, and other problems
+    * If any of the conditions used to terminate a loop can be influenced by an attacker, these errors can be exploited to cause a denial of service or other attack
+
+```java
+/**
+* Noncompliant Code
+*/
+for (i = 1; i <= Integer.MAX_VALUE; i++) {
+    // ...
+    // this loop will never terminate because i can never be greater than Integer.MAX_VALUE
+}
+```
+
+## 58. Use parentheses for precedence of operation
