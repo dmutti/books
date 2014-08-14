@@ -1051,3 +1051,23 @@ class Derived extends Base {
 ```
 
 ## 65. Avoid ambiguous or confusing uses of overloading
+
+* Method and constructor overloading allows declaration of methods or constructors with the same name but with different parameter lists
+    * The compiler inspects each call to an overloaded method or constructor and uses the declared types of the method parameters to decide which method to invoke
+* methods or constructors with the same parameter types that differ only in their declaration order are typically not flagged by Java compilers
+
+```java
+    public static Con createCon1(int i, String s) {
+        /* Initialization Sequence #1 */
+    }
+    public static Con createCon2(String s, int i) {
+        /* Initialization Sequence #2 */
+    }
+    public static Con createCon3(Integer i, String s) {
+        /* Initialization Sequence #3 */
+    }
+```
+
+# 5. Programmer Misconceptions
+
+## 66. Do not assume that declaring a reference volatile guarantees safe publication of the members of the referenced object
