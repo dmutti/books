@@ -967,9 +967,9 @@ for (i = 1; i <= Integer.MAX_VALUE; i++) {
 public void createFile(String filename) throws FileNotFoundException {
     try (OutputStream out = new BufferedOutputStream(
         Files.newOutputStream(Paths.get(filename), StandardOpenOption.CREATE_NEW))) {
-            // Work with out
+        // Work with out
     } catch (IOException x) {
-            // File not writable...Handle error
+        // File not writable...Handle error
     }
 }
 // This solution uses the java.nio.file.Files.newOutputStream()
@@ -978,3 +978,76 @@ public void createFile(String filename) throws FileNotFoundException {
 ```
 
 ## 60. Convert integers to floating-point for floating-point operations
+
+* integer arithmetic always produces integral results, discarding information about any possible fractional remainder
+* Also, there can be loss of precision when converting integers to floating-point values
+* Operations that could suffer from integer overflow or loss of a fractional remainder should be performed on floating-point values, rather than integral values
+
+## 61. Ensure that the clone() method calls super.clone()
+
+* Cloning a subclass of a nonfinal class which defines a `clone()` method that fails to call `super.clone()` will produce an object of the wrong class
+* Failing to call `super.clone()` may cause a cloned object to have the wrong type.
+
+```java
+class Base implements Cloneable {
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
+    protected void doLogic() {
+        System.out.println("Superclass doLogic");
+    }
+}
+
+class Derived extends Base {
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
+    protected void doLogic() {
+        System.out.println("Subclass doLogic");
+    }
+    public static void main(String[] args) {
+        Derived dev = new Derived();
+        try {
+            // Has type Derived, as expected
+            Base devClone = (Base)dev.clone();
+            devClone.doLogic(); // Prints "Subclass doLogic"
+                                // as expected
+        } catch (CloneNotSupportedException e) {
+            /* ... */
+        }
+    }
+}
+```
+
+## 62. Use comments consistently and in a readable fashion
+
+* Mixing the use of traditional or block comments (starting with `/*` and ending with `*/`) and end-of-line comments (from `//` to the end of the line) can lead to misleading and confusing code, which may result in errors
+
+## 63. Detect and remove superfluous code and values
+
+* Superfluous code and values may occur in the form of dead code, code that has no effect, and unused values in program logic.
+* to improve readability and ensure that logic errors are resolved, dead code should be identified, understood, and removed
+
+## 64. Strive for logical completeness
+
+* Software vulnerabilities can result when a programmer fails to consider all possible data states
+* Failing to take into account all possibilities within a logic statement can lead to a corrupted running state
+    * potentially resulting in unintentional information disclosure or abnormal program termination
+
+```java
+    if (a == b) {
+        /* ... */
+    } else if (a == c) {
+        /* ... */
+    } else {
+        /* Handle error condition */
+    }
+
+    switch (x) {
+        case 0: foo(); break;
+        case 1: bar(); break;
+        default: /* Handle error */ break;
+    }
+```
+
+## 65. Avoid ambiguous or confusing uses of overloading
