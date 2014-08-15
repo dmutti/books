@@ -1158,3 +1158,57 @@ final class ControlledStop implements Runnable {
 ```
 
 ## 68. Do not assume that the remainder operator always returns a nonnegative result for integral operands
+
+* The result of the remainder operator has the same sign as the dividend (the first operand in the expression)
+    * code that depends on the remainder operation to always return a positive result is erroneous
+    * 5 % 3 produces 2
+    * 5 % (-3) produces 2
+    * (-5) % 3 produces -2
+    * (-5) % (-3) produces -2
+
+```java
+// Method imod() gives nonnegative result
+    private int SIZE = 16;
+    public int[] hash = new int[SIZE];
+
+    private int imod(int i, int j) {
+        int temp = i % j;
+        // Unary minus will succeed without overflow
+        // because temp cannot be Integer.MIN_VALUE
+        return (temp < 0) ? -temp : temp;
+    }
+    public int lookup(int hashKey) {
+        return hash[imod(hashKey, SIZE)];
+    }
+```
+
+## 69. Do not confuse abstract object equality with reference equality
+
+* Naive programmers often confuse the intent of the `==` operation with that of the` Object.equals()` method
+* use the `Object.equals()` method to check whether two objects have equivalent contents, and use the equality operators `==` and `!=` to test whether two references specifically refer to the same object
+* Numeric boxed types (for example, Byte, Character, Short, Integer, Long, Float, and Double) should also be compared using `Object.equals()`, rather than the `==` operator
+* Numeric relational operators other than equality (<, <=, >, and >=) can be safely used to compare boxed primitive types
+
+### String.intern()
+
+* Use of String.intern() should be reserved for cases
+    * in which the tokenization of strings either yields an important performance enhancement
+    * or dramatically simplifies code
+* The JLS provides few guarantees about the implementation of `String.intern()`
+    * The cost of `String.intern()` grows as the number of intern strings grows.
+        * Performance should be no worse than `O(n log n)`, but the JLS lacks a specific performance guarantee
+    * In early Java Virtual Machine (JVM) implementations, interned strings became immortal: they were exempt from garbage collection
+        * More recent implementations can garbage-collect the storage occupied by interned strings that are no longer referenced. However, the JLS lacks any specification of this behavior
+    * In JVM implementations prior to Java 1.7, interned strings are allocated in the permgen storage region, which is typically much smaller than the rest of the heap
+        * In many Java 1.7 implementations, interned strings are allocated on the heap, relieving this restriction
+        * Once again, the details of allocation are unspecified by the JLS.
+* String interning may also be used in programs that accept repetitively occurring strings. Its use boosts the performance of comparisons and minimizes memory consumption.
+
+## 70. Understand the differences between bitwise and logical operators
+
+* The conditional AND and OR operators (&& and ||, respectively) exhibit short-circuit behavior
+    * the second operand is evaluated only when the result of the conditional operator cannot be deduced solely by evaluating the first operand
+* The bitwise AND and OR operators (& and |) lack short-circuit behavior
+    * they evaluate both operands
+
+## 71. Understand how escape characters are interpreted when strings are loaded
