@@ -1071,3 +1071,90 @@ class Derived extends Base {
 # 5. Programmer Misconceptions
 
 ## 66. Do not assume that declaring a reference volatile guarantees safe publication of the members of the referenced object
+
+* JLS >> A field may be declared volatile, in which case the Java Memory Model ensures that all threads see a consistent value for the variable
+* Use of the `volatile` keyword can only guarantee safe publication of primitive fields, object references, or fields of immutable object referents
+
+```java
+/**
+* Noncompliant code
+*
+* the volatile keyword guarantees safe publication only for the array reference;
+* it makes no guarantee regarding the actual data contained within the array
+*/
+final class Foo {
+    private volatile int[] arr = new int[20]; //Solution AtomicIntegerArray
+
+    public int getFirst() { return arr[0]; }
+    public void setFirst(int n) { arr[0] = n; }
+}
+```
+
+* AtomicIntegerArray guarantees a happens-before relationship between a thread that calls `atomicArray.set()` and a thread that subsequently calls `atomicArray.get()`
+* a field is declared final to prevent publication of its reference when the referent is in a partially initialized state
+
+## 67. Do not assume that the sleep(), yield(), or getState() methods provide synchronization semantics
+
+* Code that bases its concurrency safety on thread suspension or yields to processes that
+    * Flush cached registers
+    * Reload any values
+    * Or provide any happens-before relationships when execution resumes.
+* **is incorrect and is consequently disallowed**
+* Programs must ensure that communication between threads has proper synchronization, happens-before, and safe publication semantics.
+
+```java
+/** ============= Noncompliant solution ============= */
+
+//The compiler, in this case, is free to read the field
+//this.done once and to reuse the cached value in each execution of the loop
+final class ControlledStop implements Runnable {
+    private boolean done = false;
+
+    @Override
+    public void run() {
+        while (!done) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                // Reset interrupted status
+                Thread.currentThread().interrupt();
+            }
+        }
+    }
+    public void shutdown() {
+        this.done = true;
+    }
+}
+
+/** ============= Compliant solution (Volatile Flag) ============= */
+//declare the flag field volatile to ensure that updates
+//to its value are made visible across multiple threads
+final class ControlledStop implements Runnable {
+    private volatile boolean done = false;
+    @Override public void run() {
+        //...
+    }
+    // ...
+}
+
+/** ============= Compliant solution (Thread.interrupt()) ============= */
+final class ControlledStop implements Runnable {
+    @Override
+    public void run() {
+        // Record current thread so others can interrupt it
+        myThread = currentThread();
+        while (!Thread.interrupted()) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }
+    }
+    public void shutdown(Thread th) {
+        th.interrupt();
+    }
+}
+```
+
+## 68. Do not assume that the remainder operator always returns a nonnegative result for integral operands
