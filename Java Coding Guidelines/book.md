@@ -1212,3 +1212,42 @@ final class ControlledStop implements Runnable {
     * they evaluate both operands
 
 ## 71. Understand how escape characters are interpreted when strings are loaded
+
+* Correct use of escape sequences in string literals requires understanding how the escape sequences are interpreted by the Java compiler
+    * as well as how they are interpreted by any subsequent processor, such as an SQL engine
+    * When representing SQL statements in Java string literals, each escape sequence must be preceded by an extra backslash for correct interpretation
+
+## 72.Do not use overloaded methods to differentiate between runtime types
+
+* methods within a class can have the same name if they have different parameter lists
+* In method overloading, the method to be invoked at runtime is determined at compile time
+    * **the overloaded method associated with the static type of the object is invoked even when the runtime type differs for each invocation**
+* Ambiguous uses of overloading can lead to unexpected results.
+
+```java
+public class Overloader {
+    private static String display(List<?> list) {
+        return (
+        list instanceof ArrayList ? "Arraylist" :
+        (list instanceof LinkedList ? "LinkedList" :
+        "List is not recognized")
+        );
+    }
+    public static void main(String[] args) {
+        // Single ArrayList
+        System.out.println(display(new ArrayList<Integer>()));
+        List<?>[] invokeAll = new List<?>[] {
+            new ArrayList<Integer>(),
+            new LinkedList<String>(),
+            new Vector<Integer>()
+        };
+        for (List<?> list : invokeAll) {
+            System.out.println(display(list));
+        }
+    }
+}
+```
+
+## 73.Never confuse the immutability of a reference with that of the referenced object
+
+* 
