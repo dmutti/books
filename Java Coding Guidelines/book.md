@@ -1250,4 +1250,11 @@ public class Overloader {
 
 ## 73.Never confuse the immutability of a reference with that of the referenced object
 
-* 
+* Programmers often incorrectly assume that declaring a field or variable `final` makes the referenced object immutable
+* Declaring variables that have a primitive type to be `final` does prevent changes to their values after initialization (by normal Java processing)
+* **when the variable has a reference type, the presence of a final clause in the declaration only makes the reference itself immutable**
+    * the fields of the referenced object may be mutable
+
+## 75.Do not attempt to help the garbage collector by setting local reference variables to null
+
+* it adds clutter to the code and can make maintenance difficult
