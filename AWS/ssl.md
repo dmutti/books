@@ -1,6 +1,6 @@
 # SSL
 
-* do yum install mod24_ssl
+* sudo yum install mod24_ssl
 * sudo mkdir -p /etc/ssl/localcerts
 * sudo openssl req -new -x509 -days 10000 -nodes -out /etc/ssl/localcerts/apache.pem -keyout /etc/ssl/localcerts/apache.key
 
