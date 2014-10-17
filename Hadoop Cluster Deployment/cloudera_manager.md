@@ -11,13 +11,13 @@
 # Sem Proxy
 
 ## Repo
-* wget --no-parent --recursive --domains archive.cloudera.com http://archive.cloudera.com/cm5/redhat/6/x86_64/cm/5/
+* wget --no-parent --recursive --domains archive.cloudera.com --reject "*.html*" http://archive.cloudera.com/cm5/redhat/6/x86_64/cm/5/
 * wget http://archive.cloudera.com/cm5/redhat/6/x86_64/cm/cloudera-manager.repo
 * wget http://archive.cloudera.com/cm5/redhat/6/x86_64/cm/RPM-GPG-KEY-cloudera
 
 -----------
 
-* wget --no-parent --recursive --domains archive.cloudera.com http://archive.cloudera.com/cdh5/redhat/6/x86_64/cdh/5/
+* wget --no-parent --recursive --domains archive.cloudera.com --reject "*.html*" http://archive.cloudera.com/cdh5/redhat/6/x86_64/cdh/5/
 * wget http://archive.cloudera.com/cdh5/redhat/6/x86_64/cdh/cloudera-cdh5.repo
 * wget http://archive.cloudera.com/cdh5/redhat/6/x86_64/cdh/RPM-GPG-KEY-cloudera
 
@@ -40,27 +40,23 @@
 
 ## Parcels
 * wget http://archive-primary.cloudera.com/cdh5/parcels/latest/CDH-5.0.2-1.cdh5.0.2.p0.13-el6.parcel
-* wget http://archive-primary.cloudera.com/impala/parcels/latest/IMPALA-1.3.1-1.impala1.3.1.p0.1172-el6.parcel
-* wget http://archive-primary.cloudera.com/search/parcels/latest/SOLR-1.3.0-1.cdh4.5.0.p0.9-el6.parcel
 
 ## Estrutura de Diretórios
 
 ### /export/repo/cdh5/parcels/latest
+
 ```
 CDH-5.0.2-1.cdh5.0.2.p0.13-el6.parcel
 CDH-5.0.2-1.cdh5.0.2.p0.13-el6.parcel.sha
-IMPALA-1.3.1-1.impala1.3.1.p0.1172-el6.parcel
-IMPALA-1.3.1-1.impala1.3.1.p0.1172-el6.parcel.sha
 manifest.json
-SOLR-1.3.0-1.cdh4.5.0.p0.9-el6.parcel
-SOLR-1.3.0-1.cdh4.5.0.p0.9-el6.parcel.sha
 ```
 
 * Para gerar o arquivo .sha
   * Junto com o arquivo parcel, existe um arquivo manifest.json
   * No arquivo, para cada versão existe uma linha de hash; ex: `"hash": "4ed1e7aebc67f442c7a25cd56c50523ff90ffd1a"`
   * Copiar o valor do hash com aspas e executar `echo "${hashDoArquivo}" > nomeDoArquivo.parcel.sha`
-
+* O arquivo `manifest.json` deve ter apenas os trechos de interesse. Copiar do arquivo da Cloudera apenas o bloco referente ao parcel que se pretende utilizar.
+* Para atualização do parcel, copiar o novo arquivo, adicionar os dados no manifest e reiniciar o cloudera-scm-server.
 
 ### /export/repo/cdh5/redhat/6/x86_64/cdh
 ```
