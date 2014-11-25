@@ -68,3 +68,46 @@ install.git() #git provides version control for your code
 ### Assigning Variables
 
 * We can assign a (local) variable using either `<-` or `=`, though for historical reasons, `<-` is preferred
+* Variable names can contain letters, numbers, dots, and underscores, but they can’t start with a number, or a dot followed by a number
+* In some locales, non-ASCII letters are allowed, but for code portability it is better to stick to “a” to “z” (and “A” to “Z”).
+* The help page `?make.names` gives precise details about what is and isn’t allowed.
+* We can also do global assignment using `<<-`
+* There is one more method of variable assignment, via the `assign` function
+    * assign("my_local_variable", 9 ^ 3 + 10 ^ 3)
+    * assign("my_global_variable", 1 ^ 3 + 12 ^ 3, globalenv())
+    * the `assign` function doesn’t check its first argument to see if it is a valid variable name
+
+* If you want to assign a value and print it all in one line, you have two possibilities
+    * you can put multiple statements on one line by separating them with a semicolon, `;`
+    * z <- rnorm(5); z
+    * you can wrap the assignment in parentheses, `()`
+    * (zz <- rlnorm(5))
+
+### Special Numbers
+
+* `Inf`, `-Inf`, `NaN`, and `NA`
+* `is.finite(x)`, `is.infinite(x)`, `is.nan(x)`, `is.na(x)`
+
+### Logical Vectors
+
+* other useful functions for dealing with logical vectors are `any` and `all`, which return TRUE if the input vector contains at least one TRUE value or only TRUE values
+
+```r
+none_true <- c(FALSE, FALSE, FALSE)
+some_true <- c(FALSE, TRUE, FALSE)
+all_true <- c(TRUE, TRUE, TRUE)
+
+any(none_true) # FALSE
+any(some_true) # TRUE
+any(all_true)  # TRUE
+all(none_true) # FALSE
+all(some_true) # FALSE
+all(all_true)  # TRUE
+```
+
+# Inspecting Variables and Your Workspace
+
+### Classes
+
+* ou can find out what the class of a variable is using `class(my_variable)`
+* all variables also have an internal storage type (accessed via `typeof`), a mode (see `mode`), and a storage mode (`storage.mode`).
