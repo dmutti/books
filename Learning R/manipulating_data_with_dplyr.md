@@ -13,7 +13,9 @@ cran <- tbl_df(mydf)
 ```r
 Source: local data frame [225,468 x 11]
 
-X       date     time    size r_version r_arch      r_os      package version country ip_id
+Source: local data frame [225,468 x 11]
+
+    X       date     time    size r_version r_arch      r_os      package version country ip_id
 1   1 2014-07-08 00:54:41   80589     3.1.0 x86_64   mingw32    htmltools   0.2.4      US     1
 2   2 2014-07-08 00:59:53  321767     3.1.0 x86_64   mingw32      tseries 0.10-32      US     2
 3   3 2014-07-08 00:47:13  748063     3.1.0 x86_64 linux-gnu        party  1.0-15      US     3
@@ -25,6 +27,7 @@ X       date     time    size r_version r_arch      r_os      package version co
 9   9 2014-07-08 00:54:58    5928        NA     NA        NA         Rcpp  0.10.4      CN     6
 10 10 2014-07-08 00:15:35 2206029     3.0.2 x86_64 linux-gnu     hflights     0.1      US     7
 .. ..        ...      ...     ...       ...    ...       ...          ...     ...     ...   ...
+
 ```
 
 dplyr supplies five 'verbs' that cover all fundamental data manipulation tasks: select(), filter(), arrange(), mutate(), and summarize().
