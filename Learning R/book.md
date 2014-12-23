@@ -3,11 +3,11 @@
 ### How to Get Help in R
 
 ```r
-?mean #help("mean") opens the help page for the mean function
-?"+" #help("+") opens the help page for addition
-?"if" #help("if") opens the help page for if, used for branching code
-??plotting #help.search("plotting") searches for topics containing words like "plotting"
-??"regression model" #help.search("regression model") searches for topics containing phrases like this
+> ?mean #help("mean") opens the help page for the mean function
+> ?"+" #help("+") opens the help page for addition
+> ?"if" #help("if") opens the help page for if, used for branching code
+> ??plotting #help.search("plotting") searches for topics containing words like "plotting"
+> ??"regression model" #help.search("regression model") searches for topics containing phrases like this
 ```
 
 * The `apropos` function finds variables (including functions) that match its input
@@ -17,9 +17,9 @@
     * Use the `example` function to run these
 
 ```r
-example(plot)
-demo() #list all demonstrations
-demo(Japanese)
+> example(plot)
+> demo() #list all demonstrations
+> demo(Japanese)
 ```
 
 * R is modular and is split into packages, some of which contain vignettes
@@ -33,11 +33,11 @@ demo(Japanese)
 ### Installing Extra Related Software
 
 ```r
-install.packages("installr") #download and install the package named installr
-library(installr) #load the installr package
-install.RStudio() #download and install the RStudio IDE
-install.Rtools() #Rtools is needed for building your own packages
-install.git() #git provides version control for your code
+> install.packages("installr") #download and install the package named installr
+> library(installr) #load the installr package
+> install.RStudio() #download and install the RStudio IDE
+> install.Rtools() #Rtools is needed for building your own packages
+> install.git() #git provides version control for your code
 ```
 
 # A Scientific Calculator
@@ -93,21 +93,68 @@ install.git() #git provides version control for your code
 * other useful functions for dealing with logical vectors are `any` and `all`, which return TRUE if the input vector contains at least one TRUE value or only TRUE values
 
 ```r
-none_true <- c(FALSE, FALSE, FALSE)
-some_true <- c(FALSE, TRUE, FALSE)
-all_true <- c(TRUE, TRUE, TRUE)
+> none_true <- c(FALSE, FALSE, FALSE)
+> some_true <- c(FALSE, TRUE, FALSE)
+> all_true <- c(TRUE, TRUE, TRUE)
 
-any(none_true) # FALSE
-any(some_true) # TRUE
-any(all_true)  # TRUE
-all(none_true) # FALSE
-all(some_true) # FALSE
-all(all_true)  # TRUE
+> any(none_true) # FALSE
+> any(some_true) # TRUE
+> any(all_true)  # TRUE
+> all(none_true) # FALSE
+> all(some_true) # FALSE
+> all(all_true)  # TRUE
 ```
 
 # Inspecting Variables and Your Workspace
 
-### Classes
+## Classes
 
 * ou can find out what the class of a variable is using `class(my_variable)`
 * all variables also have an internal storage type (accessed via `typeof`), a mode (see `mode`), and a storage mode (`storage.mode`).
+    * Types, modes, and storage modes mostly exist for legacy purposes
+* R contains three different classes of numeric variable:  numeric for floating point values;  integer for integers; and  complex for complex numbers.
+
+```r
+> class(sqrt(1:10))
+## [1] "numeric"
+
+> class(3 + 1i)
+## [1] "complex"
+
+> class(1)
+## [1] "numeric"
+
+> class(1L)
+## [1] "integer"
+```
+
+* In addition to the three numeric classes and the logical class that we’ve seen already, there are three more classes of vectors
+    * `character` for storing text
+    * `factor`s for storing categorical data. factors are integers with labels
+    * and `raw` for storing binary data.
+* Arrays contain multidimensional data, and matrices (via the  matrix class) are the special case of two-dimensional arrays.
+
+### Factors
+
+```r
+> (gender <- factor(c("male", "female", "female", "male", "female")))
+## [1] male female female male female
+## Levels: female male
+
+> levels(gender)
+## [1] "female" "male"
+
+> nlevels(gender)
+## [1] 2
+```
+
+* The contents of the factor look much like their character equivalent -- you get readable labels for each value. Those labels are confined to specific values (in this case "female" and "male") known as the `levels` of the factor
+* By default, factor levels are assigned alphabetically
+* Underneath the hood, the factor values are stored as integers rather than characters. You can see this more clearly by calling `as.integer`
+
+```r
+> as.integer(gender)
+## [1] 2 1 1 2 1
+```
+
+## Checking and Changing Classes
