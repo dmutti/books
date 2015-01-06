@@ -27,15 +27,68 @@
     void accept(T t);
   }
 
-  public class TranslateByOne implements Consumer<Point> {
-    @Override
-    public void accept(Point t) {
-      t.translate(1, 1);
-    }
-  }
-
   public static void main(String[] args) {
     List<Point> pointList = Arrays.asList(new Point(1,2), new Point(3,4));
-    pointList.forEach(new TranslateByOne());
+    pointList.forEach(new Consumer<Point>() {
+      public void accept(Point t) {
+        t.translate(1, 1);
+      }
+    });
   }
 ```
+
+### Lambda Expressions
+
+```java
+public static void main(String[] args) {
+  List<Point> pointList = Arrays.asList(new Point(1,2), new Point(3,4));
+  pointList.forEach(p -> p.translate(1, 1));
+}
+```
+
+* If you are unused to reading lambda expressions, you may find it helpful for the moment to continue to think of them as an abbreviation for a method declaration
+  * mentally mapping the parameter list of the lambda to that of the imaginary method
+  * and its body (often preceded by an added return) to the method body
+
+## From Collections to Streams
+
+* In real-life programs, it’s common to process collections in a number of stages
+  * a collection is iteratively processed to produce a new collection, which in turn is iteratively processed, and so on.
+
+```java
+  /* Apply a transformation to each one of a collection of Integer instances to produce a Point,
+     then find the greatest distance of any of these Points from the origin. */
+  List<Integer> intList = Arrays.asList(1, 2, 3, 4, 5);
+  List<Point> pointList = new ArrayList<>();
+  for (Integer i : intList) {
+    pointList.add(new Point(i % 3, i / 1));
+  }
+  double maxDistance = Double.MIN_VALUE;
+  for (Point p : pointList) {
+    maxDistance = Math.max(p.distance(0, 0), maxDistance);
+  }
+```
+
+* Streams differ from collections in that
+  * they provide an (optionally) ordered sequence of values without providing any storage for those values;
+  * they are "data in motion", **a means for expressing bulk data operations**.
+* In the Java 8 collections API, streams are represented by interfaces -- `Stream` for reference values, and `IntStream`, `LongStream`, and `DoubleStream` for streams of primitive values -- in the package `java.util.stream`.
+* an intermediate operation, called `map` transforms each stream element using a systematic rule
+  * an intermediate operation is one that is not only defined on a stream, but that also returns a stream as its output
+* Terminal operations consume a stream, optionally returning a single value, or -- if the stream is empty -- nothing, represented by an empty `Optional` or one of its specializations.
+* The values flowing into streams can be supplied by a variety of sources -- collections, arrays, or generating functions.
+  * In practice, a common use case will be feeding the contents of a collection into a stream
+
+```java
+  java.util.List<Integer> intList = java.util.Arrays.asList(1, 2, 3, 4, 5);
+  java.util.OptionalDouble maxDistance = intList.stream()
+    .map(i -> new java.awt.Point(i % 3, i / 1))
+    .mapToDouble(p -> p.distance(0, 0))
+    .max();
+```
+
+* The performance overhead of creating and managing intermediate collections has disappeared;
+  * executed sequentially, the stream code is more than twice as fast as the loop version
+  * executed in parallel, virtually perfect speedup is achieved on large data sets
+
+## From Sequential to Parallel
