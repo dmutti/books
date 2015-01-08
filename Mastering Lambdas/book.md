@@ -109,3 +109,6 @@ OptionalDouble maxDistance = intList.parallelStream()
 * **The process for deciding what is "small enough" takes into account the number of cores available and, sometimes, characteristics of the list**
 
 ## Composing Behaviors
+
+* Lambda expressions look like functions, so it’s natural to ask whether we can make them behave like functions
+    * That change of perspective will encourage us to think about working with behaviors rather than objects
