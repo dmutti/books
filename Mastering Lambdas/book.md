@@ -112,3 +112,19 @@ OptionalDouble maxDistance = intList.parallelStream()
 
 * Lambda expressions look like functions, so it’s natural to ask whether we can make them behave like functions
     * That change of perspective will encourage us to think about working with behaviors rather than objects
+* Suppose, for example, that we want to sort a list of Point instances in order of their x coordinate
+
+
+```java
+//The standard Java idiom for a "custom" sort 4 is to create a Comparator
+Comparator<Point> byX = new Comparator<Point>() {
+    public int compare(Point o1, Point o2) {
+        return Double.compare(o1.getX(), o2.getX());
+    }
+};
+
+//Substituting a lambda expression for the anonymous inner class declaration, improves the readability of the code
+Comparator<Point> byX = (p1, p2) -> Double.compare(p1.getX(), p2.getX());
+```
+
+* Comparator is actually carrying out two functions -- extracting sort keys from its arguments and then comparing those keys
