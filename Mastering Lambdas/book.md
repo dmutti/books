@@ -146,7 +146,22 @@ Comparator<Point> compareByX = (p1, p2) ->
 
 * noticing the importance of this special case, the platform library designers added a static method comparing to the interface Comparator:
     * given a key extractor, it creates the corresponding Comparator using natural ordering on the keys
+    * `Comparator<Point> compareByX = Comparator.comparing(p -> p.getX());`
 
 ```java
-Comparator<Point> compareByX = Comparator.comparing(p -> p.getX());
+import static java.util.Comparator.comparing;
+import java.awt.Point;
+import java.util.Arrays;
+import java.util.List;
+
+public class ComparatorExample1 {
+
+    public static void main(String[] args) {
+        List<Integer> intList = Arrays.asList(1, 2, 3, 4, 5);
+        intList.stream()
+        .map(i -> new Point(i % 3, i / 1))
+        .sorted(comparing(p -> p.distance(0,0)))
+        .forEach(p -> System.out.printf("(%f, %f)", p.getX(), p.getY()));
+    }
+}
 ```
