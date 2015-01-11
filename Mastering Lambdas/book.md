@@ -176,13 +176,6 @@ public class ComparatorExample1 {
     * Lambda expressions now provide a closer approach to the idea of freestanding functions
 * A lambda expression in Java consists of a parameter list separated from a body by a function arrow: `->`
 * Except for lambdas that have a single parameter, parameter lists must be surrounded by parentheses
-
-```java
-p -> p.translate(1,1);
-(x,y) -> x + y;
-() -> 23;
-```
-
 * If you supply any types explicitly, you must supply all of them, and the parameter list must be enclosed in parentheses
     * `Comparator<Point> byX = comparing((Point p) -> p.distance(0,0));`
     * explicitly typed parameters can be modified in the same way as method parameters;  they can be declared final and annotated
