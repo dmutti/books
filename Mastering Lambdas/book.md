@@ -128,3 +128,25 @@ Comparator<Point> byX = (p1, p2) -> Double.compare(p1.getX(), p2.getX());
 ```
 
 * Comparator is actually carrying out two functions -- extracting sort keys from its arguments and then comparing those keys
+
+```java
+Function<Point, Double> keyExtractor = p -> p.getX();
+Comparator<Double> keyComparer = (d1, d2) -> Double.compare(d1, d2);
+
+Comparator<Point> compareByX = (p1, p2) ->
+    keyComparer.compare(keyExtractor.apply(p1), keyExtractor.apply(p2));
+```
+
+* in the special but very common case where keyComparer expresses the natural ordering on the extracted keys; it then can be rewritten as
+
+```java
+Comparator<Point> compareByX = (p1, p2) ->
+    keyExtractor.apply(p1).compareTo(keyExtractor.apply(p2));
+```
+
+* noticing the importance of this special case, the platform library designers added a static method comparing to the interface Comparator:
+    * given a key extractor, it creates the corresponding Comparator using natural ordering on the keys
+
+```java
+Comparator<Point> compareByX = Comparator.comparing(p -> p.getX());
+```
