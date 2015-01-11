@@ -165,3 +165,30 @@ public class ComparatorExample1 {
     }
 }
 ```
+
+# The Basics of Java Lambda Expressions
+
+## What Is a Lambda Expression?
+
+* a lambda expression is a function: for some or all combinations of input values it specifies an output value
+* Until now, there has been no way to write a freestanding function in Java
+    * Methods have often been used to stand in for functions, but always as part of an object or a class
+    * Lambda expressions now provide a closer approach to the idea of freestanding functions
+* A lambda expression in Java consists of a parameter list separated from a body by a function arrow: `->`
+* Except for lambdas that have a single parameter, parameter lists must be surrounded by parentheses
+
+```java
+p -> p.translate(1,1);
+(x,y) -> x + y;
+() -> 23;
+```
+
+* If you supply any types explicitly, you must supply all of them, and the parameter list must be enclosed in parentheses
+    * `Comparator<Point> byX = comparing((Point p) -> p.distance(0,0));`
+    * explicitly typed parameters can be modified in the same way as method parameters;  they can be declared final and annotated
+* The rules for using or omitting `return` in a lambda block body are the same as those for an ordinary method body
+    * `return` is required whenever an expression within the body is to return a value, or can instead be used without an argument to terminate execution of the body immediately
+    * If the lambda returns void, then `return` may be omitted or used without an argument;
+* **Lambda expressions are neither required nor allowed to use a throws clause to declare the exceptions they might throw**
+
+## Lambdas vs. Anonymous Inner Classes
