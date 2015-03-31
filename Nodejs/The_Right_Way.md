@@ -89,3 +89,38 @@ console.log("Now watching " + filename + " for changes...");
     * the `pipe()` method sends the standard output from the child process directly to our own standard output stream.
 
 ### Capturing Data from an EventEmitter
+
+* [EventEmitter]("http://nodejs.org/api/events.html") provides a channel for events to be dispatched and listeners notified.
+    * Many objects -- like Streams -- inherit from EventEmitter
+* let's modify our previous program to capture the child process's output by listening for events on the stream
+
+```js
+"use strict"
+const
+    fs = require('fs'),
+    spawn = require('child_process').spawn,
+    filename = process.argv[2];
+
+if (!filename) {
+    throw Error('A file to watch must be specified')
+}
+
+fs.watch(filename, function() {
+    let
+        ls = spawn('ls', ['-lh', filename]),
+        output = '';
+        ls.stdout.on('data', function(chunk) {
+            console.log("another chunk of information " + chunk.toString());
+            output += chunk.toString();
+        });
+
+        ls.on('close', function() {
+            let parts = output.split(/\s+/);
+            console.dir([parts[0], parts[4], parts[8]]);
+        })
+});
+console.log("Now watching " + filename + " for changes...");
+```
+
+* The `on()` method adds a listener for the specified event type.
+    * **We listen for data events because we're interested in data coming out of the stream.**
