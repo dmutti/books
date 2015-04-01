@@ -13,7 +13,7 @@ fs.watch(filename, function() {
         ls = spawn('ls', ['-lh', filename]),
         output = '';
         ls.stdout.on('data', function(chunk) {
-            output = chunk.toString();
+            output += chunk.toString();
         });
 
         ls.on('close', function() {

@@ -110,7 +110,6 @@ fs.watch(filename, function() {
         ls = spawn('ls', ['-lh', filename]),
         output = '';
         ls.stdout.on('data', function(chunk) {
-            console.log("another chunk of information " + chunk.toString());
             output += chunk.toString();
         });
 
@@ -124,3 +123,28 @@ console.log("Now watching " + filename + " for changes...");
 
 * The `on()` method adds a listener for the specified event type.
     * **We listen for data events because we're interested in data coming out of the stream.**
+    * Events can send along extra information, which arrives in the form of parameters to the callbacks.
+    * Data events in particular pass along a [buffer]("http://nodejs.org/api/buffer.html") object.
+
+### Reading and Writing Files Asynchronously
+
+* two common error-handling patterns in Node
+    * error events on EventEmitters
+    * and err callback arguments
+
+**file-system/read-simple.js**
+`$ node --harmony read-simple.js`
+
+```js
+//whole-file-at-once approach
+const fs = require('fs');
+fs.readFile('./target.txt', function(err, data) {
+    if (err) {
+        throw err;
+    }
+    console.log(data.toString());
+});
+```
+
+* If `readFile()` is successful, then err will be false
+    * Otherwise the err parameter will contain an Error object
