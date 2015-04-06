@@ -148,3 +148,32 @@ fs.readFile('./target.txt', function(err, data) {
 
 * If `readFile()` is successful, then err will be false
     * Otherwise the err parameter will contain an Error object
+    * This is a common error-reporting pattern in Node, especially for built-in modules
+
+**file-system/write-simple.js**
+`$ node --harmony write-simple.js`
+
+```js
+const fs = require('fs');
+fs.writeFile('./target.txt', 'blah', function(err) {
+    if (err) {
+        throw err;
+    }
+    console.log("File saved!");
+});
+```
+
+### Creating Read and Write Streams
+
+* You create
+    * a read stream by using `fs.createReadStream()`
+    * a write stream by using `fs.createWriteStream()`
+
+**file-system/cat.js**
+
+```js
+#!/usr/bin/env node --harmony
+require('fs').createReadStream(process.argv[2]).pipe(process.stdout);
+```
+
+* The `require()` function returns a module object, so we can call methods on it directly
