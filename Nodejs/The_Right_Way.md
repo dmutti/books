@@ -15,8 +15,6 @@
 
 # Wrangling the File System
 
-## Programming for the Node.js Event Loop
-
 ### Watching a File for Changes
 
 **file-system/watcher.js**
@@ -56,7 +54,7 @@ fs.watch(filename, function() {
 console.log("Now watching [" + filename + "] for changes...");
 ```
 
-### Spawning a Child Process
+## Spawning a Child Process
 
 ```js
 "use strict"
@@ -88,7 +86,7 @@ console.log("Now watching " + filename + " for changes...");
     * The object returned by `spawn()` is a [ChildProcess]("http://nodejs.org/api/child_process.html"). Its stdin, stdout, and stderr properties are Streams that can be used to read or write data.
     * the `pipe()` method sends the standard output from the child process directly to our own standard output stream.
 
-### Capturing Data from an EventEmitter
+## Capturing Data from an EventEmitter
 
 * [EventEmitter]("http://nodejs.org/api/events.html") provides a channel for events to be dispatched and listeners notified.
     * Many objects -- like Streams -- inherit from EventEmitter
@@ -126,7 +124,7 @@ console.log("Now watching " + filename + " for changes...");
     * Events can send along extra information, which arrives in the form of parameters to the callbacks.
     * Data events in particular pass along a [buffer]("http://nodejs.org/api/buffer.html") object.
 
-### Reading and Writing Files Asynchronously
+## Reading and Writing Files Asynchronously
 
 * two common error-handling patterns in Node
     * error events on EventEmitters
@@ -177,3 +175,50 @@ require('fs').createReadStream(process.argv[2]).pipe(process.stdout);
 ```
 
 * The `require()` function returns a module object, so we can call methods on it directly
+* You can also listen for data events from the file stream instead of calling `pipe()`.
+
+**file-system/read-stream.js**
+
+```js
+const fs = require('fs');
+stream = fs.createReadStream(process.argv[2]);
+stream.on('data', function(chunk) {
+    process.stdout.writeln(chunk);
+});
+stream.on('err', function(err) {
+    process.stderr.writeln("ERROR: " + err.message);
+});
+```
+
+* When working with an EventEmitter, the way to handle errors is to listen for error events.
+* If you don’t listen for error events, but one happens anyway, Node will throw an exception.
+    * And as we saw before, an uncaught exception will cause the process to terminate.
+
+### Blocking the Event Loop with Synchronous File Access
+
+* The file-access methods we've discussed in this chapter so far are asynchronous
+    * They perform their I/O duties - waiting as necessary - completely in the background, only to invoke callbacks later.
+    * This is by far the preferred way to do I/O in Node
+* many of the methods in the `fs` module have synchronous versions as well.
+    * These end in `*Sync`, like `readFileSync()`
+* When you use the `*Sync` methods, the Node.js process **will block until the I/O finishes**
+    * Node won’t execute any other code, won’t trigger any callbacks, won’t process any events, won’t accept any connections
+    * It'll just sit there indefinitely waiting for the operation to complete.
+    * synchronous methods are simpler to use since they lack the callback step. They either return successfully or throw an exception, without the need for a callback function.
+
+```js
+const
+    fs = require('fs'),
+    data = fs.readFileSync('target.txt');
+process.stdout.write(data.toString());
+```
+
+### Performing Other File-System Operations
+
+* The `fs` module has many other methods that map nicely onto POSIX conventions.
+* To name a few examples
+    * you can `copy()` files and `unlink()` (delete) them.
+    * You can use `chmod()` to change permissions and `mkdir()` to create directories.
+* They’re all asynchronous by default, but many come with equivalent `*Sync` versions.
+
+## The Two Phases of a Node Program
