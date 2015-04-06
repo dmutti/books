@@ -222,3 +222,9 @@ process.stdout.write(data.toString());
 * They’re all asynchronous by default, but many come with equivalent `*Sync` versions.
 
 ## The Two Phases of a Node Program
+
+* To understand when it's OK to use synchronous file-access methods, you can think of Node programs as having two phases.
+* In the initialization phase, the program is getting set up, bringing in libraries, reading configuration parameters, and doing other mission-critical tasks. If something goes wrong at this early stage, not much can be done, and it’s best to fail fast.
+    * **The only time you should consider synchronous file access is during the initialization phase of your program.**
+
+# Networking with Sockets
