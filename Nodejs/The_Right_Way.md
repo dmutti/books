@@ -250,3 +250,51 @@ const
 
 * Node invokes the callback function whenever another endpoint connects
 * The connection parameter is a Socket object that you can use to send or receive data.
+
+### Writing Data to a Socket
+
+**networking/net-watcher.js**
+
+```js
+'use strict';
+const
+    fs = require('fs'),
+    net = require('net'),
+
+    filename = process.argv[2],
+
+    server = net.createServer(function(connection) {
+        console.log('Subscriber connected.');
+        connection.write("Now watching [" + filename + "] for changes...\n");
+
+        let watcher = fs.watch(filename, function() {
+            connection.write("File [" + filename + "] changed: " + new Date().toLocaleString() + "\n");
+        });
+
+        connection.on('close', function() {
+            console.log('Subscriber disconnected.');
+            watcher.close();
+        });
+    });
+
+if (!filename) {
+    throw Error('No target filename was specified!');
+}
+
+server.listen(5432, function() {
+    console.log('Listening for subscribers...');
+});
+```
+
+### Listening on Unix Sockets
+
+```js
+//client: nc -U /tmp/watcher.sock
+server.listen('/tmp/watcher.sock', function() {
+    console.log('Listening for subscribers...');
+});
+```
+
+* Unix sockets can be faster than TCP sockets because they don’t require invoking network hardware. However, they’re local to the machine.
+
+## Implementing a Messaging Protocol
