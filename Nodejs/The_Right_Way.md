@@ -298,3 +298,25 @@ server.listen('/tmp/watcher.sock', function() {
 * Unix sockets can be faster than TCP sockets because they don’t require invoking network hardware. However, they’re local to the machine.
 
 ## Implementing a Messaging Protocol
+
+### Switching to JSON Messages
+
+* use `JSON.stringify()` to encode message objects and send them out through `connection.write()`
+
+
+```js
+//...
+connection.write(JSON.stringify({
+    type: 'watching',
+    file: filename
+}) + '\n');
+//...
+connection.write(JSON.stringify({
+    type: 'changed',
+    file: filename,
+    timestamp: Date.now()
+}) + '\n');
+//...
+```
+
+### Creating Socket Client Connections
