@@ -228,3 +228,25 @@ process.stdout.write(data.toString());
     * **The only time you should consider synchronous file access is during the initialization phase of your program.**
 
 # Networking with Sockets
+
+## Listening for Socket Connections
+
+* Networked services exist to do two things: connect endpoints and transmit information between them
+* No matter what kind of information is transmitted, a connection must first be made.
+
+### Binding a Server to a TCP Port
+
+* In Node.js, the bind and connect operations are provided by the net module.
+
+```js
+"use strict"
+const
+    net = require('net'),
+    server = net.createServer(function(connection) {
+        //use connection object for data transfer
+    });
+    server.listen(5432);
+```
+
+* Node invokes the callback function whenever another endpoint connects
+* The connection parameter is a Socket object that you can use to send or receive data.
