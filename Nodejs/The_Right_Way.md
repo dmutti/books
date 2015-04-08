@@ -320,3 +320,81 @@ connection.write(JSON.stringify({
 ```
 
 ### Creating Socket Client Connections
+
+* a client program in Node to receive JSON messages from our `net-watcher-json-service` program
+
+**networking/net-watcher-json-client.js**
+
+```js
+"use strict";
+const
+    net = require('net'),
+    client = net.connect({port : 5432});
+client.on('data', function(data){
+    let message = JSON.parse(data);
+    if (message.type === 'watching') {
+        console.log("Now watching [" + message.file + "]");
+    } else if (message.type === 'changed') {
+        let date = new Date(message.timestamp);
+        console.log("File [" + message.file + "] changed at [" + date + "]");
+    } else {
+        throw Error("Unrecognized message type [" + message.type + "]");
+    }
+});
+```
+
+## Testing Network Application Functionality
+
+### Understanding the Message-Boundary Problem
+
+* When you develop networked programs in Node, they'll often communicate by passing messages.
+* In the best case, a message will arrive all at once
+    * sometimes messages will arrive in pieces, split into distinct data events.
+    * To develop networked applications, you'll need to deal with these splits when they happen.
+* In the previous example, each line of output corresponds to a single data event in the connected client, i.e, the data event boundaries exactly match up with the message boundaries.
+* Consider what would happen if a message were split down the middle, and arrived as two separate data events
+    * Such a split could easily happen in the wild, especially for large messages.
+
+### Implementing a Test Service
+
+* Writing robust Node applications means gracefully handling network problems like split inputs, broken connections, and bad data.
+
+**networking/net-watcher-json-test-service.js**
+
+```js
+"use strict";
+
+const
+    net = require('net'),
+    server = net.createServer(function(connection) {
+        console.log('Subscriber connected');
+
+        // send the first chunk immediately
+        connection.write('{"type":"changed","file":"targ');
+
+        // after a one second delay, send the other chunk
+        let timer = setTimeout(function() {
+            connection.write('et.txt","timestamp":"234567891011"}' + "\n");
+        }, 1000);
+
+        // clear timer when the connection ends
+        connection.on('end', new function() {
+            clearInterval(timer);
+            console.log('Subscriber disconnected');
+        });
+    });
+server.listen(5432, function () {
+    console.log('Test server listening for subscribers...');
+});
+```
+
+* The JavaScript function `setTimeout()` takes two parameters: a function to invoke and an amount of time in milliseconds. After the specified amount of time, the function will be called.
+* Finally, whenever the connection ends, we use `clearTimeout()` to unschedule the callback.
+    * Unscheduling the callback is necessary since it would fail if it were to execute.
+    * After the connection has closed, any calls to `connection.write()` will trigger error events.
+
+* what happens when we connect with the client program?
+    * **Unexpected end of input**
+    * The error tells us that the message was not complete and valid JSON.
+
+## Extending Core Classes in Custom Modules

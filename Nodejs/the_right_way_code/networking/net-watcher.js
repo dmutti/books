@@ -10,7 +10,7 @@ const
         connection.write("Now watching [" + filename + "] for changes...\n");
 
         let watcher = fs.watch(filename, function() {
-            connection.write("File [" + filename + "] changed: " + new Date().toLocaleString() + "\n");
+            connection.write("File [" + filename + "] changed: " + Date.now() + "\n");
         });
 
         connection.on('close', function() {
