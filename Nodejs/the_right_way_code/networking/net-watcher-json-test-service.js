@@ -11,11 +11,12 @@ const
         // after a one second delay, send the other chunk
         let timer = setTimeout(function() {
             connection.write('et.txt","timestamp":"234567891011"}' + "\n");
+            connection.end();
         }, 1000);
 
         // clear timer when the connection ends
         connection.on('end', new function() {
-            clearInterval(timer);
+            clearTimeout(timer);
             console.log('Subscriber disconnected');
         });
     });
