@@ -398,3 +398,53 @@ server.listen(5432, function () {
     * The error tells us that the message was not complete and valid JSON.
 
 ## Extending Core Classes in Custom Modules
+
+* The client program has two jobs to do
+    * One is to buffer incoming data into messages
+    * The other is to handle each message when it arrives.
+* Rather than cramming both of these jobs into one Node program, the right thing to do is to turn at least one of them into a Node module.
+    * **create a module that handles the input-buffering piece so that the main program can reliably get full messages.**
+
+### Extending EventEmitter
+
+#### Inheritance in Node
+
+**networking/ldj.js**
+
+```js
+//The following code sets up LDJClient to inherit from EventEmitter
+const
+    events = require('events'),
+    util = require('util'),
+    //client constructor
+    LDJClient = function (stream) {
+        events.EventEmitter.call(this);
+    };
+util.inherits(LDJClient, events.EventEmitter);
+```
+
+* LDJClient is a constructor function, which means other code should call new `LDJClient(stream)` to get an instance.
+* The stream parameter is an object that emits data events, such as a Socket connection.
+* Inside the constructor function, we call the EventEmitter constructor on `this`.
+    * That line of code is roughly equivalent to calling `super()` in languages with classical inheritance.
+* we call `util.inherits()` to make LDJClient's prototypal parent object the EventEmitter prototype.
+    * equivalent of **"class LDJClient inherits from EventEmitter"**
+* There are other ways to do inheritance in JavaScript, but this is how Node.js's own modules are structured.
+* Code to use LDJClient might look like this:
+
+```js
+const client = new LDJClient(networkStream);
+client.on('message', function(message) {
+  // take action for this message
+});
+```
+
+* Even though the client object doesn't have an `on()` method directly, its prototypal grandparent, EventEmitter, does.
+
+#### Buffering Data Events
+
+* The goal is to take the incoming raw data from the stream and convert it into `message` events containing the parsed message objects.
+
+#### Exporting Functionality in a Module
+
+### Importing a Custom Node Module
