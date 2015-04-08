@@ -15,7 +15,7 @@ const
         }, 1000);
 
         // clear timer when the connection ends
-        connection.on('end', new function() {
+        connection.on('end', function() {
             clearTimeout(timer);
             console.log('Subscriber disconnected');
         });
