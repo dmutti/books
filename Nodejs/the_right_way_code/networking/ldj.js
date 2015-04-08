@@ -23,6 +23,6 @@ util.inherits(LDJClient, events.EventEmitter);
 
 // expose module methods
 exports.LDJClient = LDJClient;
-exports.connect = function(stream){
+exports.connect = function(stream) {
     return new LDJClient(stream);
 };
