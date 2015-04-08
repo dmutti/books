@@ -444,7 +444,80 @@ client.on('message', function(message) {
 #### Buffering Data Events
 
 * The goal is to take the incoming raw data from the stream and convert it into `message` events containing the parsed message objects.
+* The updated constructor function appends incoming data chunks to a running buffer string and scans for line endings (which should be JSON message boundaries).
+
+```js
+LDJClient = function (stream) {
+    events.EventEmitter.call(this);
+    let self = this,
+        buffer = '';
+    stream.on('data', function(data) {
+        buffer += data;
+        let boundary = buffer.indexOf('\n');
+        while (boundary !== -1) {
+            let input = buffer.substr(0, boundary);
+            buffer = buffer.substr(boundary + 1);
+            self.emit('message', JSON.parse(input));
+            boundary = buffer.indexOf('\n');
+        }
+    });
+};
+```
+
+* In JavaScript, the value of `this` is assigned inside each function when it is invoked, at runtime.
+    * The value of `this` is not tightly bound to any particular object like in classical languages. It’s more like a special variable.
+* Setting a separate variable (`self`) to the same value guarantees that we're referring to the correct object inside our data event handler.
+* Inside the data event handler, we append raw data to the end of the buffer and then pull completed messages off the front.
 
 #### Exporting Functionality in a Module
 
-### Importing a Custom Node Module
+**networking/ldj.js**
+
+```js
+//The following code sets up LDJClient to inherit from EventEmitter
+"use strict";
+const
+    events = require('events'),
+    util = require('util'),
+    //client constructor
+    LDJClient = function (stream) {
+        events.EventEmitter.call(this);
+        let self = this,
+            buffer = '';
+        stream.on('data', function(data) {
+            buffer += data;
+            let boundary = buffer.indexOf('\n');
+            while (boundary !== -1) {
+                let input = buffer.substr(0, boundary);
+                buffer = buffer.substr(boundary + 1);
+                self.emit('message', JSON.parse(input));
+                boundary = buffer.indexOf('\n');
+            }
+        });
+    };
+util.inherits(LDJClient, events.EventEmitter);
+
+// expose module methods
+exports.LDJClient = LDJClient;
+exports.connect = function(stream){
+    return new LDJClient(stream);
+};
+```
+
+* In a Node module, the `exports` object is the bridge between the module code and the outside world.
+    * Any properties you set on `exports` will be available to code that pulls in the module.
+* we export the LDJClient constructor function and a convenience method called `connect()`. This method makes it a little easier for upstream code to create an LDJClient instance.
+* Code to use the LDJ module will look something like the following.
+* When a path is provided to `require()`, it will attempt to resolve the path relative to the current file.
+
+```js
+const
+    ldj = require('./ldj.js'),
+    client = ldj.connect(networkStream);
+
+client.on('message', function(message) {
+    // take action for this message
+});
+```
+
+#### Importing a Custom Node Module
