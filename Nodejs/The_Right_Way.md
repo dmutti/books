@@ -589,7 +589,6 @@ node --harmony -p -e 'require("zmq")'
 
 ```js
 "use strict";
-
 const
     fs = require('fs'),
     zmq = require('zmq'),
@@ -622,3 +621,36 @@ publisher.bind('tcp://*:5432', function(err) {
 `node --harmony zmq-watcher-pub.js target.txt`
 
 ### Subscribing to a Publisher
+
+**messaging/zmq-watcher-sub.js**
+
+```js
+"use strict";
+const
+    zmq = require('zmq'),
+
+    // create subscriber endpoint
+    subscriber = zmq.socket('sub');
+
+// subscribe to all messages
+subscriber.subscribe("");
+
+// handle messages from publisher
+subscriber.on('message', function(data) {
+    let message = JSON.parse(data),
+        date = new Date(message.timestamp);
+    console.log("File [" + message.file + "] changed at [" + date + "]");
+});
+
+// connect to publisher
+subscriber.connect("tcp://localhost:5432");
+```
+
+* Calling `subscriber.subscribe("")` tells ZMQ that we want to receive all messages.
+    * If you only want certain messages, you can provide a string that acts as a prefix filter.
+    * You must call `subscribe()` at some point in your code - you won't receive any messages until you do.
+* The subscriber object inherits from `EventEmitter`.
+    * It emits a message event whenever it receives one from a publisher, so we use `subscriber.on()` to listen for them.
+    * Lastly, we use `subscriber.connect()` to establish the client end of the connection.
+
+### Automatically Reconnecting Endpoints
