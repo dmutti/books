@@ -522,4 +522,33 @@ client.on('message', function(message) {
 
 #### Importing a Custom Node Module
 
+* instead of sending data buffers directly to `JSON.parse()`, this program relies on the ldj module to produce `message` events.
+
 **networking/net-watcher-ldj-client.js**
+
+```js
+"use strict";
+
+const
+    net = require('net'),
+    ldj = require('./ldj.js'),
+    netClient = net.connect({port : 5432}),
+    ldjClient = ldj.connect(netClient);
+
+ldjClient.on('message', function (message) {
+    if (message.type === 'watching') {
+        console.log("Now watching [" + message.file + "]");
+    } else if (message.type === 'changed') {
+        console.log("File [" + message.file + "] changed at [" + new Date(new Number(message.timestamp)) + "]");
+    } else {
+        throw Error("Unrecognized message type [" + message.type + "]");
+    }
+});
+```
+
+## Wrapping up
+
+* The LDJClient takes care of two separable concerns: splitting incoming data into lines, and parsing lines as JSON.
+    * How would you further separate LDJClient into two modules, one for each of these concerns?
+
+# Robust Messaging Services
