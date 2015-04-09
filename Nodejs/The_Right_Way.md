@@ -580,3 +580,45 @@ npm install zmq
 #testing it
 node --harmony -p -e 'require("zmq")'
 ```
+
+## Message-Publishing and Subscribing
+
+### Publishing Messages over TCP
+
+**messaging/zmq-watcher-pub.js**
+
+```js
+"use strict";
+
+const
+    fs = require('fs'),
+    zmq = require('zmq'),
+
+    //create publisher endpoint
+    publisher = zmq.socket('pub'),
+
+    filename = process.argv[2];
+
+fs.watch(filename, function() {
+    //send message to any subscribers
+    publisher.send(JSON.stringify({
+            type: 'changed',
+            file: filename,
+            timestamp: Date.now()
+        }
+    ));
+});
+
+// listen on TCP port 5432
+publisher.bind('tcp://*:5432', function(err) {
+    console.log('Listening for zmq subscribers...');
+});
+```
+
+* instead of requiring the `net` module, now we’re requiring `zmq`. We use it to create a publisher endpoint by calling `zmq.socket('pub')`
+* we have only one call to `fs.watch()`
+    * we have just one file-system watcher, which invokes the publisher's `send()` method
+
+`node --harmony zmq-watcher-pub.js target.txt`
+
+### Subscribing to a Publisher
