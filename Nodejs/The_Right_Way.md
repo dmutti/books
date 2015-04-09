@@ -552,3 +552,31 @@ ldjClient.on('message', function (message) {
     * How would you further separate LDJClient into two modules, one for each of these concerns?
 
 # Robust Messaging Services
+
+## Importing External Modules with npm
+
+* Modules managed by npm can be pure JavaScript or a combination of JavaScript and native addon code.
+    * Addons are dynamically linked shared objects - they provide the glue for working with native libraries written in C or C++.
+
+### Installing the ZMQ Base Library
+
+[Install ZMQ guide](https://github.com/jaeheum/qzmq/blob/master/how-to-install-zeromq-czmq.md)
+
+* http://brew.sh/
+
+```sh
+ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+brew install zmq
+```
+
+### Installing the zmq Node Module
+
+```sh
+mkdir ~/Devel/nodejs/messaging
+cd ~/Devel/nodejs/messaging
+brew install pkg-config
+npm install zmq
+
+#testing it
+node --harmony -p -e 'require("zmq")'
+```
