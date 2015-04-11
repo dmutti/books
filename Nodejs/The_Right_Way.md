@@ -523,3 +523,14 @@ cluster.on('exit', function(worker, code, signal) {
 ```
 
 ### Building a Cluster
+
+* We'll build a program that distributes requests to a pool of worker processes.
+* Our master Node process will create ROUTER and DEALER sockets and spin up the workers. Each worker will create a REP socket that connects back to the DEALER.
+* The cluster's worker processes and clients of the service all connect to endpoints bound by the master process.
+    * **the flow of messages is decided by the socket types, not which socket happens to bind or connect.**
+
+![Cluster](The_Right_Way_fig_8.png "Cluster")
+
+
+* the DEALER socket binds an interprocess connection (IPC) endpoint. This is backed by a Unix socket like [net-watcher-unix-sockets.js](the_right_way_code/networking/net-watcher-unix-sockets.js)
+    * By convention, ZMQ IPC files should end in the file extension .ipc. In this case, the `filer-dealer.ipc` file will be created in the current working directory that the cluster was launched from
