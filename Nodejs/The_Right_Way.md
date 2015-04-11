@@ -480,3 +480,46 @@ dealer.on('message', function() {
 ![Router Dealer ZMQ](The_Right_Way_fig_7.png "Router Dealer ZMQ")
 
 ## Clustering Node.js Processes
+
+* Node.js uses a single-threaded event loop, so **to take advantage of multiple cores or multiple processors on the same computer, you have to spin up more Node processes.**
+    * This is called clustering and it’s what Node's built-in `cluster` module does.
+* Clustering is a useful technique for scaling up your Node application when there's unused CPU capacity available.
+* Scaling a Node application is a big topic with lots of choices based on your particular scenario, but no matter how you end up doing it, you'll probably start with clustering.
+* we'll end up with a short and powerful program that combines cluster-based, multiprocess work distribution and load-balanced message-passing to boot.
+
+### Forking Worker Processes in a Cluster
+
+* `child_process` module's `spawn()` works great for executing non-Node processes from your Node program.
+    * **For spinning up copies of the same Node program, forking is a better option.**
+* Each time you call the `cluster` module's `fork()` method, it creates a worker process running the same script as the original.
+
+```js
+const cluster = require('cluster');
+if (cluster.isMaster) {
+    // fork some worker processes
+    for (let i = 0; i < 10; i++) {
+        cluster.fork();
+    }
+} else {
+    // this is a worker process, do some work
+}
+```
+
+* The forked processes are called workers. They can intercommunicate with the master process through various events.
+* For example, the master can listen for workers coming online with code like this:
+
+```js
+cluster.on('online', function(worker) {
+    console.log('Worker ' + worker.process.pid + ' is online.');
+});
+```
+
+* Similarly, the master can listen for processes exiting:
+
+```js
+cluster.on('exit', function(worker, code, signal) {
+    console.log('Worker ' + worker.process.pid + ' exited with code ' + code);
+});
+```
+
+### Building a Cluster
