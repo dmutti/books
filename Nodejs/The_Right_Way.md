@@ -156,47 +156,13 @@ const
 
 ### Writing Data to a Socket
 
-**networking/net-watcher.js**
-
-```js
-'use strict';
-const
-    fs = require('fs'),
-    net = require('net'),
-
-    filename = process.argv[2],
-
-    server = net.createServer(function(connection) {
-        console.log('Subscriber connected.');
-        connection.write("Now watching [" + filename + "] for changes...\n");
-
-        let watcher = fs.watch(filename, function() {
-            connection.write("File [" + filename + "] changed: " + new Date().toLocaleString() + "\n");
-        });
-
-        connection.on('close', function() {
-            console.log('Subscriber disconnected.');
-            watcher.close();
-        });
-    });
-
-if (!filename) {
-    throw Error('No target filename was specified!');
-}
-
-server.listen(5432, function() {
-    console.log('Listening for subscribers...');
-});
-```
+[networking/net-watcher.js](the_right_way_code/networking/net-watcher.js)
 
 ### Listening on Unix Sockets
 
-```js
-//client: nc -U /tmp/watcher.sock
-server.listen('/tmp/watcher.sock', function() {
-    console.log('Listening for subscribers...');
-});
-```
+`client: nc -U /tmp/watcher.sock`
+
+[networking/net-watcher-unix-sockets.js](the_right_way_code/networking/net-watcher-unix-sockets.js)
 
 * Unix sockets can be faster than TCP sockets because they don’t require invoking network hardware. However, they’re local to the machine.
 
@@ -226,25 +192,7 @@ connection.write(JSON.stringify({
 
 * a client program in Node to receive JSON messages from our `net-watcher-json-service` program
 
-**networking/net-watcher-json-client.js**
-
-```js
-"use strict";
-const
-    net = require('net'),
-    client = net.connect({port : 5432});
-client.on('data', function(data){
-    let message = JSON.parse(data);
-    if (message.type === 'watching') {
-        console.log("Now watching [" + message.file + "]");
-    } else if (message.type === 'changed') {
-        let date = new Date(message.timestamp);
-        console.log("File [" + message.file + "] changed at [" + date + "]");
-    } else {
-        throw Error("Unrecognized message type [" + message.type + "]");
-    }
-});
-```
+[networking/net-watcher-json-client.js](the_right_way_code/networking/net-watcher-json-client.js)
 
 ## Testing Network Application Functionality
 
@@ -262,34 +210,7 @@ client.on('data', function(data){
 
 * Writing robust Node applications means gracefully handling network problems like split inputs, broken connections, and bad data.
 
-**networking/net-watcher-json-test-service.js**
-
-```js
-"use strict";
-
-const
-    net = require('net'),
-    server = net.createServer(function(connection) {
-        console.log('Subscriber connected');
-
-        // send the first chunk immediately
-        connection.write('{"type":"changed","file":"targ');
-
-        // after a one second delay, send the other chunk
-        let timer = setTimeout(function() {
-            connection.write('et.txt","timestamp":"234567891011"}' + "\n");
-        }, 1000);
-
-        // clear timer when the connection ends
-        connection.on('end', new function() {
-            clearInterval(timer);
-            console.log('Subscriber disconnected');
-        });
-    });
-server.listen(5432, function () {
-    console.log('Test server listening for subscribers...');
-});
-```
+[networking/net-watcher-json-test-service.js](the_right_way_code/networking/net-watcher-json-test-service.js)
 
 * The JavaScript function `setTimeout()` takes two parameters: a function to invoke and an amount of time in milliseconds. After the specified amount of time, the function will be called.
 * Finally, whenever the connection ends, we use `clearTimeout()` to unschedule the callback.
@@ -374,38 +295,7 @@ LDJClient = function (stream) {
 
 #### Exporting Functionality in a Module
 
-**networking/ldj.js**
-
-```js
-//The following code sets up LDJClient to inherit from EventEmitter
-"use strict";
-const
-    events = require('events'),
-    util = require('util'),
-    //client constructor
-    LDJClient = function (stream) {
-        events.EventEmitter.call(this);
-        let self = this,
-            buffer = '';
-        stream.on('data', function(data) {
-            buffer += data;
-            let boundary = buffer.indexOf('\n');
-            while (boundary !== -1) {
-                let input = buffer.substr(0, boundary);
-                buffer = buffer.substr(boundary + 1);
-                self.emit('message', JSON.parse(input));
-                boundary = buffer.indexOf('\n');
-            }
-        });
-    };
-util.inherits(LDJClient, events.EventEmitter);
-
-// expose module methods
-exports.LDJClient = LDJClient;
-exports.connect = function(stream){
-    return new LDJClient(stream);
-};
-```
+[networking/ldj.js](the_right_way_code/networking/ldj.js)
 
 * In a Node module, the `exports` object is the bridge between the module code and the outside world.
     * Any properties you set on `exports` will be available to code that pulls in the module.
@@ -427,27 +317,7 @@ client.on('message', function(message) {
 
 * instead of sending data buffers directly to `JSON.parse()`, this program relies on the ldj module to produce `message` events.
 
-**networking/net-watcher-ldj-client.js**
-
-```js
-"use strict";
-
-const
-    net = require('net'),
-    ldj = require('./ldj.js'),
-    netClient = net.connect({port : 5432}),
-    ldjClient = ldj.connect(netClient);
-
-ldjClient.on('message', function (message) {
-    if (message.type === 'watching') {
-        console.log("Now watching [" + message.file + "]");
-    } else if (message.type === 'changed') {
-        console.log("File [" + message.file + "] changed at [" + new Date(new Number(message.timestamp)) + "]");
-    } else {
-        throw Error("Unrecognized message type [" + message.type + "]");
-    }
-});
-```
+[networking/net-watcher-ldj-client.js](the_right_way_code/networking/net-watcher-ldj-client.js)
 
 ## Wrapping up
 
@@ -488,34 +358,7 @@ node --harmony -p -e 'require("zmq")'
 
 ### Publishing Messages over TCP
 
-**messaging/zmq-watcher-pub.js**
-
-```js
-"use strict";
-const
-    fs = require('fs'),
-    zmq = require('zmq'),
-
-    //create publisher endpoint
-    publisher = zmq.socket('pub'),
-
-    filename = process.argv[2];
-
-fs.watch(filename, function() {
-    //send message to any subscribers
-    publisher.send(JSON.stringify({
-            type: 'changed',
-            file: filename,
-            timestamp: Date.now()
-        }
-    ));
-});
-
-// listen on TCP port 5432
-publisher.bind('tcp://*:5432', function(err) {
-    console.log('Listening for zmq subscribers...');
-});
-```
+[messaging/zmq-watcher-pub.js](the_right_way_code/messaging/zmq-watcher-pub.js)
 
 * instead of requiring the `net` module, now we’re requiring `zmq`. We use it to create a publisher endpoint by calling `zmq.socket('pub')`
 * we have only one call to `fs.watch()`
@@ -525,29 +368,7 @@ publisher.bind('tcp://*:5432', function(err) {
 
 ### Subscribing to a Publisher
 
-**messaging/zmq-watcher-sub.js**
-
-```js
-"use strict";
-const
-    zmq = require('zmq'),
-
-    // create subscriber endpoint
-    subscriber = zmq.socket('sub');
-
-// subscribe to all messages
-subscriber.subscribe("");
-
-// handle messages from publisher
-subscriber.on('message', function(data) {
-    let message = JSON.parse(data),
-        date = new Date(message.timestamp);
-    console.log("File [" + message.file + "] changed at [" + date + "]");
-});
-
-// connect to publisher
-subscriber.connect("tcp://localhost:5432");
-```
+[messaging/zmq-watcher-sub.js](the_right_way_code/messaging/zmq-watcher-sub.js)
 
 * Calling `subscriber.subscribe("")` tells ZMQ that we want to receive all messages.
     * If you only want certain messages, you can provide a string that acts as a prefix filter.
@@ -573,46 +394,7 @@ subscriber.connect("tcp://localhost:5432");
 
 * a responder waits for a request for file data, then serves up the content when asked. We’ll start with the responder -- the REP (reply) part of the REQ/REP pair.
 
-**messaging/zmq-filer-rep.js**
-
-```js
-"use strict";
-
-const
-    fs = require('fs'),
-    zmq = require('zmq'),
-    // socket to reply to client requests
-    responder = zmq.socket('rep');
-
-// handle incoming requests
-responder.on('message', function(data){
-
-    // parse incoming message
-    let request = JSON.parse(data);
-    console.log('Received request to get [' + request.path + "]");
-
-    // read file and reply with content
-    fs.readFile(request.path, function(err, content) {
-        console.log('Sending response content');
-        responder.send(JSON.stringify(
-            {
-                content : content.toString(),
-                timestamp : Date.now(),
-                pid : process.pid
-            }
-        ))
-    });
-});
-
-responder.bind('tcp://127.0.0.1:5433', function(err) {
-    console.log('Listening for zmq requesters...');
-});
-
-process.on('SIGINT', function() {
-    console.log('Shutting down...');
-    responder.close();
-});
-```
+[messaging/zmq-filer-rep.js](the_right_way_code/messaging/zmq-filer-rep.js)
 
 * When a message event happens
     * We parse out the request from the raw data
@@ -623,67 +405,14 @@ process.on('SIGINT', function() {
 
 ### Issuing Requests
 
-**messaging/zmq-filer-req.js**
-
-```js
-"use strict";
-const
-    zmq = require('zmq'),
-    filename = process.argv[2],
-    // create request endpoint
-    requester = zmq.createSocket('req');
-
-// handle replies from responder
-requester.on('message', function(data) {
-    let response = JSON.parse(data);
-    console.log('Received response:', response);
-    requester.close();
-});
-
-requester.connect('tcp://localhost:5433');
-
-//send request for content
-console.log('Sending request for [' + filename + ']');
-requester.send(JSON.stringify(
-    {
-        path : filename
-    }
-));
-```
+[messaging/zmq-filer-req.js](the_right_way_code/messaging/zmq-filer-req.js)
 
 ### Trading Synchronicity for Scale
 
 * There is a catch to using ZMQ REP/REQ socket pairs with Node.
     * **Each endpoint of the application operates on only one request or one response at a time. There is no parallelism.**
 
-**messaging/zmq-filer-req-loop.js**
-
-```js
-"use strict";
-const
-    zmq = require('zmq'),
-    filename = process.argv[2],
-    // create request endpoint
-    requester = zmq.createSocket('req');
-
-// handle replies from responder
-requester.on('message', function(data) {
-    let response = JSON.parse(data);
-    console.log('Received response:', response);
-});
-
-requester.connect('tcp://localhost:5433');
-
-//send request for content
-for (let i = 1; i <= 3; i++) {
-    console.log('Sending request [' + i + '] for [' + filename + ']');
-    requester.send(JSON.stringify(
-        {
-            path : filename
-        }
-    ));
-}
-```
+[messaging/zmq-filer-rep-loop.js](the_right_way_code/messaging/zmq-filer-rep-loop.js)
 
 * We see that the loop queued three requests, and then we received three responses.
 * The responder program sent a response to each request before even becoming aware of the next queued request.
