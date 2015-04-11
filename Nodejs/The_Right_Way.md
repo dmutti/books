@@ -577,3 +577,20 @@ const
 ```
 
 ### Avoiding Common Pitfalls
+
+#### The First-Joiner Problem
+
+* Since it takes time to establish a connection, the first puller to successfully connect will pull many or all of the available messages before the second joiner even has a chance to get into the rotation.
+    * To fix this problem, the pusher needs to wait until all of the pullers are ready to receive messages before pushing any.
+* Before the master can start pushing, the workers need a way to signal back to the master that they're ready to start pulling jobs. They also need a way to communicate the results of the jobs that they'll eventually complete.
+* Since all of the processes are local to the same machine, it makes sense to use IPC for the transport.
+
+#### The Limited-Resource Problem
+
+* Node.js is at the mercy of the operating system with respect to the number of resources it can access at the same time. In Unix-speak, these are called **file descriptors**.
+* Whenever your Node program opens a file or a TCP connection, it uses one of its available file descriptors. When there are none left, Node will start failing to connect to resources when asked.
+* Strictly speaking, this problem isn’t limited to the PUSH/PULL scenario, but it's very likely to happen there
+* Since Node.js is asynchronous, the puller process can start working on many jobs simultaneously.
+    * Every time a `message` event comes in, the Node process invokes the handler and starts working on the job.
+    * If these jobs require accessing system resources you're liable to exhaust the pool of available file descriptors.
+    * Then jobs will quickly start failing.
