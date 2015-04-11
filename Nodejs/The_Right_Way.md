@@ -420,3 +420,33 @@ node --harmony -p -e 'require("zmq")'
     * For this reason, a simple REQ/REP pair is probably not going to suit your high-performance Node.js needs.
 
 ## Routing and Dealing Messages
+
+* The REQ/REP socket pair makes request/reply logic easy to code by operating sequentially
+    * A given requester or responder will only ever be aware of one message at a time
+* **For parallel message processing, ZMQ includes the more advanced socket types ROUTER and DEALER.**
+
+### Routing Messages
+
+* You can think of a `ROUTER` socket as a **parallel REP socket**
+    * Rather than replying to only one message at a time, a ROUTER socket can handle many requests simultaneously
+    * It remembers which connection each request came from and will route reply messages accordingly
+* ZMQ uses the ZeroMQ Message Transport Protocol for exchanging messages
+    * This protocol uses a sequence of low-overhead frames to compose messages
+    * A ROUTER socket uses these frames to route each reply message back to the connection that issued the request.
+* Most of the time your Node programs can ignore the underlying details of ZMQ frames because the simpler socket types only need one frame per message
+    * **But the ROUTER socket type uses multiple frames.**
+
+```js
+const
+    zmq = require('zmq'),
+    router = zmq.socket('router');
+
+router.on('message', function() {
+    let frames = Array.prototype.slice.call(null, arguments);
+    // ...
+});
+```
+
+* The arguments object inside a function is an array-like object that contains all the arguments that were passed in. Using `Array.prototype.slice.call(null, arguments)` returns a real JavaScript Array instance with the same contents.
+
+### Dealing Messages
