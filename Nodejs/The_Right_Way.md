@@ -733,7 +733,7 @@ const
 // handle replies from responder
 requester.on('message', function(data) {
     let response = JSON.parse(data);
-    console.log('Received response [' + response.content + "]");
+    console.log('Received response:', response);
     requester.close();
 });
 
@@ -747,3 +747,44 @@ requester.send(JSON.stringify(
     }
 ));
 ```
+
+### Trading Synchronicity for Scale
+
+* There is a catch to using ZMQ REP/REQ socket pairs with Node.
+    * **Each endpoint of the application operates on only one request or one response at a time. There is no parallelism.**
+
+**messaging/zmq-filer-req-loop.js**
+
+```js
+"use strict";
+const
+    zmq = require('zmq'),
+    filename = process.argv[2],
+// create request endpoint
+    requester = zmq.createSocket('req');
+
+// handle replies from responder
+requester.on('message', function(data) {
+    let response = JSON.parse(data);
+    console.log('Received response:', response);
+});
+
+requester.connect('tcp://localhost:5433');
+
+//send request for content
+for (let i = 1; i <= 3; i++) {
+    console.log('Sending request [' + i + '] for [' + filename + ']');
+    requester.send(JSON.stringify(
+        {
+            path : filename
+        }
+    ));
+}
+```
+
+* We see that the loop queued three requests, and then we received three responses.
+* The responder program sent a response to each request before even becoming aware of the next queued request.
+    * **This means Node's event loop was left spinning while the `fs.readFile()` for each request was being processed.**
+    * For this reason, a simple REQ/REP pair is probably not going to suit your high-performance Node.js needs.
+
+## Routing and Dealing Messages
