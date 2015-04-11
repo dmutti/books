@@ -534,3 +534,46 @@ cluster.on('exit', function(worker, code, signal) {
 
 * the DEALER socket binds an interprocess connection (IPC) endpoint. This is backed by a Unix socket like [net-watcher-unix-sockets.js](the_right_way_code/networking/net-watcher-unix-sockets.js)
     * By convention, ZMQ IPC files should end in the file extension .ipc. In this case, the `filer-dealer.ipc` file will be created in the current working directory that the cluster was launched from
+* The reported process ID (pid) is different for each response received. This shows that the master process is indeed load-balancing the requests to different workers.
+
+## Pushing and Pulling Messages
+
+* Besides publish/subscribe and request/reply, there's one more pattern offered by ZMQ that's sometimes good to use with Node.js - **PUSH/PULL**.
+
+### Pushing Jobs to Workers
+
+* The PUSH and PULL socket types are useful when you have a queue of jobs that you want to fairly assign among a pool of available workers.
+* with a PUB/SUB pair, each subscriber will receive all messages sent by the publisher. In a PUSH/PULL setup, only one puller will receive each message sent by the pusher.
+* PUSH will round-robin-distribute messages to connected sockets, just like the DEALER. But unlike the DEALER/ROUTER flow, there is no backchannel.
+    * **A message traveling from a PUSH socket to a PULL socket is one-way; the puller can't send a response back through the same socket.**
+
+#### PUSH
+
+```js
+const
+    zmq = require('zmq'),
+    pusher = zmq.socket('push');
+
+    // wait until pullers are connected and ready, then send 100 jobs ...
+    for (let i = 0; i < 100; i++) {
+        pusher.send(JSON.stringify({
+        details: "details about this job."
+    });
+}
+```
+
+#### PULL
+
+```js
+const
+    zmq = require('zmq'),
+    puller = zmq.socket('pull');
+
+    // connect to the pusher, announce readiness to work, then wait for work ...
+    puller.on('message', function(data) {
+        let job = JSON.parse(data.toString());
+        // do the work described in the job
+    });
+```
+
+### Avoiding Common Pitfalls
