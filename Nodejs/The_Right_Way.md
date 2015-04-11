@@ -19,16 +19,7 @@
 
 **file-system/watcher.js**
 
-```js
-//sets up a variable with a constant value.
-//The require() function pulls in a Node module and returns it.
-const fs = require('fs');
-
-fs.watch('./target.txt', function() {
-    console.log("File 'target.txt' just changed!")
-});
-console.log("Now watching target.txt for changes...");
-```
+[file-system/watcher.js](the_right_way_code/file-system/watcher.js)
 
 * Launch the watcher program using node, like so: `$ node --harmony watcher.js`
 
@@ -760,7 +751,7 @@ requester.send(JSON.stringify(
 const
     zmq = require('zmq'),
     filename = process.argv[2],
-// create request endpoint
+    // create request endpoint
     requester = zmq.createSocket('req');
 
 // handle replies from responder
