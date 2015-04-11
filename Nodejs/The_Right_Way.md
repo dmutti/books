@@ -654,3 +654,96 @@ subscriber.connect("tcp://localhost:5432");
     * Lastly, we use `subscriber.connect()` to establish the client end of the connection.
 
 ### Automatically Reconnecting Endpoints
+
+* Our code had the publisher bind a TCP socket (as the server) and the subscriber connect (as the client), but ZMQ doesn’t force you to do it this way. We could have flipped it around and had the subscriber bind a socket to which the publisher connects.
+* When you design a networked application, you’ll typically have the stable parts of your architecture bind and have the transient parts connect to them.
+    * With ZMQ, you get to decide which parts of your system will be stable, and you get to decide which messaging pattern best suits your needs.
+
+## Responding to Requests
+
+* In ZMQ, a REQ/REP pair communicates in lockstep
+    * A request comes in, then a reply goes out
+    * Additional incoming requests are queued and later dispatched by ZMQ
+    * Your application, however, is only aware of one request at a time.
+
+### Implementing a Responder
+
+* a responder waits for a request for file data, then serves up the content when asked. We’ll start with the responder -- the REP (reply) part of the REQ/REP pair.
+
+**messaging/zmq-filer-rep.js**
+
+```js
+"use strict";
+
+const
+    fs = require('fs'),
+    zmq = require('zmq'),
+    // socket to reply to client requests
+    responder = zmq.socket('rep');
+
+// handle incoming requests
+responder.on('message', function(data){
+
+    // parse incoming message
+    let request = JSON.parse(data);
+    console.log('Received request to get [' + request.path + "]");
+
+    // read file and reply with content
+    fs.readFile(request.path, function(err, content) {
+        console.log('Sending response content');
+        responder.send(JSON.stringify(
+            {
+                content : content.toString(),
+                timestamp : Date.now(),
+                pid : process.pid
+            }
+        ))
+    });
+});
+
+responder.bind('tcp://127.0.0.1:5433', function(err) {
+    console.log('Listening for zmq requesters...');
+});
+
+process.on('SIGINT', function() {
+    console.log('Shutting down...');
+    responder.close();
+});
+```
+
+* When a message event happens
+    * We parse out the request from the raw data
+    * Next we call `fs.readFile()` to asynchronously retrieve the requested file's content
+    * When it arrives, we use the responder's `send()` method to reply with a JSON serialized response, including the file content and a timestamp
+    * We also include the process ID (pid) of the Node process in the response
+* The responder binds to TCP port 5433 of the loopback interface (IP 127.0.0.1) to wait for connections. This makes the responder the stable endpoint of the REP/REQ pair.
+
+### Issuing Requests
+
+**messaging/zmq-filer-req.js**
+
+```js
+"use strict";
+const
+    zmq = require('zmq'),
+    filename = process.argv[2],
+    // create request endpoint
+    requester = zmq.createSocket('req');
+
+// handle replies from responder
+requester.on('message', function(data) {
+    let response = JSON.parse(data);
+    console.log('Received response [' + response.content + "]");
+    requester.close();
+});
+
+requester.connect('tcp://localhost:5433');
+
+//send request for content
+console.log('Sending request for [' + filename + ']');
+requester.send(JSON.stringify(
+    {
+        path : filename
+    }
+));
+```
