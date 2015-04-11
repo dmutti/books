@@ -30,40 +30,11 @@
 The third element (that is, at index 2) is target.txt, the name of our target file.
 * Any unhandled exception thrown in Node will halt the process. The exception output shows the offending file, and the line number and position of the exception.
 
-```js
-const
-    fs = require('fs'),
-    filename = process.argv[2];
-
-if (!filename) {
-    throw Error("A file to watch must be specified!")
-}
-
-fs.watch(filename, function() {
-    console.log("File [" + filename + "] just changed!")
-});
-console.log("Now watching [" + filename + "] for changes...");
-```
+[file-system/watcher-argv.js](the_right_way_code/file-system/watcher-argv.js)
 
 ## Spawning a Child Process
 
-```js
-"use strict"
-const
-    fs = require('fs'),
-    spawn = require('child_process').spawn,
-    filename = process.argv[2];
-
-if (!filename) {
-    throw Error('A file to watch must be specified')
-}
-
-fs.watch(filename, function() {
-    let ls = spawn('ls', ['-lh', filename]);
-    ls.stdout.pipe(process.stdout);
-});
-console.log("Now watching " + filename + " for changes...");
-```
+[file-system/watcher-spawn.js](the_right_way_code/file-system/watcher-spawn.js)
 
 * Strict mode was introduced in ECMAScript version 5
     * it disables certain problematic JavaScript language features and makes others throw exceptions.
@@ -83,32 +54,7 @@ console.log("Now watching " + filename + " for changes...");
     * Many objects -- like Streams -- inherit from EventEmitter
 * let's modify our previous program to capture the child process's output by listening for events on the stream
 
-```js
-"use strict"
-const
-    fs = require('fs'),
-    spawn = require('child_process').spawn,
-    filename = process.argv[2];
-
-if (!filename) {
-    throw Error('A file to watch must be specified')
-}
-
-fs.watch(filename, function() {
-    let
-        ls = spawn('ls', ['-lh', filename]),
-        output = '';
-        ls.stdout.on('data', function(chunk) {
-            output += chunk.toString();
-        });
-
-        ls.on('close', function() {
-            let parts = output.split(/\s+/);
-            console.dir([parts[0], parts[4], parts[8]]);
-        })
-});
-console.log("Now watching " + filename + " for changes...");
-```
+[file-system/watcher-spawn-parse.js](the_right_way_code/file-system/watcher-spawn-parse.js)
 
 * The `on()` method adds a listener for the specified event type.
     * **We listen for data events because we're interested in data coming out of the stream.**
@@ -121,36 +67,17 @@ console.log("Now watching " + filename + " for changes...");
     * error events on EventEmitters
     * and err callback arguments
 
-**file-system/read-simple.js**
-`$ node --harmony read-simple.js`
+[file-system/read-simple.js](the_right_way_code/file-system/read-simple.js)
 
-```js
-//whole-file-at-once approach
-const fs = require('fs');
-fs.readFile('./target.txt', function(err, data) {
-    if (err) {
-        throw err;
-    }
-    console.log(data.toString());
-});
-```
+`$ node --harmony read-simple.js`
 
 * If `readFile()` is successful, then err will be false
     * Otherwise the err parameter will contain an Error object
     * This is a common error-reporting pattern in Node, especially for built-in modules
 
-**file-system/write-simple.js**
-`$ node --harmony write-simple.js`
+[file-system/write-simple.js](the_right_way_code/file-system/write-simple.js)
 
-```js
-const fs = require('fs');
-fs.writeFile('./target.txt', 'blah', function(err) {
-    if (err) {
-        throw err;
-    }
-    console.log("File saved!");
-});
-```
+`$ node --harmony write-simple.js`
 
 ### Creating Read and Write Streams
 
@@ -158,28 +85,13 @@ fs.writeFile('./target.txt', 'blah', function(err) {
     * a read stream by using `fs.createReadStream()`
     * a write stream by using `fs.createWriteStream()`
 
-**file-system/cat.js**
+[file-system/cat.js](the_right_way_code/file-system/cat.js)
 
-```js
-#!/usr/bin/env node --harmony
-require('fs').createReadStream(process.argv[2]).pipe(process.stdout);
-```
 
 * The `require()` function returns a module object, so we can call methods on it directly
 * You can also listen for data events from the file stream instead of calling `pipe()`.
 
-**file-system/read-stream.js**
-
-```js
-const fs = require('fs');
-stream = fs.createReadStream(process.argv[2]);
-stream.on('data', function(chunk) {
-    process.stdout.writeln(chunk);
-});
-stream.on('err', function(err) {
-    process.stderr.writeln("ERROR: " + err.message);
-});
-```
+[file-system/read-stream.js](the_right_way_code/file-system/read-stream.js)
 
 * When working with an EventEmitter, the way to handle errors is to listen for error events.
 * If you don’t listen for error events, but one happens anyway, Node will throw an exception.
