@@ -450,3 +450,33 @@ router.on('message', function() {
 * The arguments object inside a function is an array-like object that contains all the arguments that were passed in. Using `Array.prototype.slice.call(null, arguments)` returns a real JavaScript Array instance with the same contents.
 
 ### Dealing Messages
+
+* A `DEALER` socket can send multiple requests in parallel.
+* Next, a dealer and router working together in Node.
+
+```js
+const
+    zmq = require('zmq'),
+    router = zmq.socket('router'),
+    dealer = zmq.socket('dealer');
+
+router.on('message', function() {
+    let frames = Array.prototype.slice.call(null, arguments);
+    dealer.send(frames);
+});
+
+dealer.on('message', function() {
+    let frames = Array.prototype.slice.call(null, arguments);
+    router.send(frames);
+});
+```
+
+* Here we create both a ROUTER socket and a DEALER socket. Whenever either receives a message, it strips out the frames and sends them to the other socket.
+    * incoming requests to the router will be passed off to the dealer to send out to its connections.
+    * incoming replies to the dealer will be forwarded back to the router, which directs each reply back to the connection that requested it.
+* When the REP connection produces a reply, it follows the reverse route. The DEALER receives the reply and bounces it back to the ROUTER. The ROUTER looks at the message's frames to determine its origin and sends the reply back to the connected REQ that sent the initial request.
+* From the perspective of the REQ and REP sockets, nothing has changed. Each still operates in lockstep, handling one message at a time from the application's perspective. Meanwhile, the ROUTER/DEALER pair can load-balance among the REQ and REP sockets connected on both ends.
+
+![Router Dealer ZMQ](The_Right_Way_fig_7.png "Router Dealer ZMQ")
+
+## Clustering Node.js Processes
