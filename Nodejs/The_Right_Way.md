@@ -412,7 +412,7 @@ node --harmony -p -e 'require("zmq")'
 * There is a catch to using ZMQ REP/REQ socket pairs with Node.
     * **Each endpoint of the application operates on only one request or one response at a time. There is no parallelism.**
 
-[messaging/zmq-filer-rep-loop.js](the_right_way_code/messaging/zmq-filer-rep-loop.js)
+[messaging/zmq-filer-req-loop.js](the_right_way_code/messaging/zmq-filer-req-loop.js)
 
 * We see that the loop queued three requests, and then we received three responses.
 * The responder program sent a response to each request before even becoming aware of the next queued request.
