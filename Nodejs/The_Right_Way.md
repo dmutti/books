@@ -638,3 +638,49 @@ npm install --save request
 * Unlike the modules we've seen so far (which were JavaScript Objects) the request module object is actually a function. The main way you use the module it is by calling it.
 
 ### Using the CLI for CouchDB REST
+
+* A database in CouchDB is basically a big collection of documents. Each database lives at a URL path one level down from the root.
+
+```bash
+chmod +x dbcli.js
+./dbcli.js GET books #404
+./dbcli.js PUT books #201
+./dbcli.js GET books #200
+```
+
+## Importing Real Data
+
+### Downloading Project Gutenberg Data
+
+```bash
+curl -O http://www.gutenberg.org/cache/epub/feeds/rdf-files.tar.bz2
+tar -xvjf rdf-files.tar.bz2
+```
+
+* The important pieces of information that we’d like to extract are as follows:
+    * The Gutenberg ID
+    * The book’s title
+    * The list of authors (agents)
+    * The list of subjects
+
+### Parsing XML Data with Node
+
+* To parse the XML files, we’ll use cheerio, a jQuery-like library for working with XML documents in Node.
+
+```bash
+npm install --save cheerio
+```
+
+* RDF parsing utility as a module
+
+[databases/lib/rdf-parser.js](the_right_way_code/databases/lib/rdf-parser.js)
+
+* Users of the module will call this function, passing in a path to a file and a callback to invoke with the extracted data.
+* The main module function reads the specified file asynchronously, then loads the data into cheerio. Cheerio gives back an object we assign to the `$` variable.
+    * This object works much like the jQuery global function `$` - it provides methods for querying and modifying elements.
+
+```bash
+node --harmony -e 'require("./lib/rdf-parser.js")("cache/epub/132/pg132.rdf", console.log)'
+```
+
+## Unit Testing with Nodeunit

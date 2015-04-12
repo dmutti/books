@@ -4,6 +4,7 @@
   "description": "Tools for creating an ebook database.",
   "author": "Danilo Mutti (https://github.com/dmutti)",
   "dependencies": {
+    "cheerio": "^0.19.0",
     "request": "^2.55.0"
   }
 }
