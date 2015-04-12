@@ -615,3 +615,26 @@ brew install couchdb
 
 * In a Node.js project, the `package.json` file describes many aspects of the project and its dependencies.
     * For your own projects, use `npm init`
+* When you install a module through `npm`, you have the choice of saving it as a dependency in the `package.json`. You do this with the `--save` flag.
+
+```bash
+npm install --save request
+```
+
+* This will install the `request` module and record it as a dependency in your `package.json`.
+* When you describe your dependencies in a `package.json` file, `npm` can install them all for you.
+    * most useful when distributing your module, or when collaborators work on the same code base.
+    * to install all of the dependencies for the current project, just run `npm install` with no additional arguments.
+
+## Making RESTful Requests
+
+### REST from the Command Line
+
+* Node's built-in `http` module has functions for making HTTP requests, but the `request` module makes it much easier
+* we'll first put together a command-line interface (CLI) tool for working with CouchDB
+
+[databases/dbcli.js](the_right_way_code/databases/dbcli.js)
+
+* Unlike the modules we've seen so far (which were JavaScript Objects) the request module object is actually a function. The main way you use the module it is by calling it.
+
+### Using the CLI for CouchDB REST
