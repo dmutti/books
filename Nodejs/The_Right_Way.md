@@ -594,3 +594,24 @@ const
     * Every time a `message` event comes in, the Node process invokes the handler and starts working on the job.
     * If these jobs require accessing system resources you're liable to exhaust the pool of available file descriptors.
     * Then jobs will quickly start failing.
+
+# Accessing Databases
+
+* We'll use CouchDB for exploring databases with Node.
+* CouchDB uses REST for everything, from creating databases to reporting the system status to executing mapreduce queries.
+
+## Advantages of CouchDB
+
+* install CouchDB
+
+```bash
+sudo chown -R $USER:admin /usr/local/share
+brew install couchdb
+```
+
+## Creating a Package
+
+[databases/package.json](the_right_way_code/databases/package.json)
+
+* In a Node.js project, the `package.json` file describes many aspects of the project and its dependencies.
+    * For your own projects, use `npm init`
