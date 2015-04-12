@@ -684,3 +684,29 @@ node --harmony -e 'require("./lib/rdf-parser.js")("cache/epub/132/pg132.rdf", co
 ```
 
 ## Unit Testing with Nodeunit
+
+* There are many unit-testing frameworks available through npm. A few of the most popular ones are [mocha](http://visionmedia.github.io/mocha/), [vows](http://vowsjs.org/), and [nodeunit](https://npmjs.org/package/nodeunit).
+* Many Node modules are meant to be used as a library, but some modules, like nodeunit, are intended to run as stand-alone programs on the command line, too
+    * To install such a module globally, use npm's -g flag
+
+```bash
+npm install -g nodeunit
+which nodeunit
+mkdir test
+cp cache/epub/132/pg132.rdf test/
+```
+
+* Create the file [databases/test/pg132.json](the_right_way_code/databases/test/pg132.json)
+* Now we can write a unit test that uses these fixtures.
+
+[databases/test/test-rdf-parser.js](the_right_way_code/databases/test/test-rdf-parser.js)
+
+* we're using `require()` to read the contents of a JSON file, as opposed to a Node module. For your convenience, when you require a file that ends in .json, Node will parse it and return the object as though it were assigned to exports.
+* `__dirname` always points to the directory containing the module file being executed.
+    * Without this, the path would be calculated relative to the current working directory -- where the nodeunit command was called from.
+
+```bash
+node --harmony $(which nodeunit) test/
+```
+
+## Throttling Node.js
