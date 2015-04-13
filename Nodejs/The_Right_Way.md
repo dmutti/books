@@ -783,6 +783,8 @@ npm install --save file
 * This program uses the `async` module's `waterfall()` method to execute a sequence of asynchronous functions. Using the waterfall method cleans up code that would otherwise have to be highly indented due to nested callbacks.
 * `waterfall()` takes two arguments: an array of functions to execute sequentially and a summary function to call when everything is finished.
     * Each function in the array takes some number of arguments and finally a `next` callback to pass results forward into the next function.
+
+
 1. Our first function kicks off a request for the design document called `_design/books`, using the `next` function as its callback.
 2. The second function checks to see whether we got a 404 Not Found or a 200 OK. For a 200 OK, we just want to parse out the JSON returned in the response body and pass that forward. For a 404 Not Found, we have to create a skeleton design document to pass to the next function.
 3. The third function copies the views we put in the `views.js` module onto the design document. Then it issues a PUT request to the database to save the newly created or updated document.
