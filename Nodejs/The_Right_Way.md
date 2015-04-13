@@ -710,3 +710,43 @@ node --harmony $(which nodeunit) test/
 ```
 
 ## Throttling Node.js
+
+* to crawl the cache directory, we'll use a module called `file`, which is available through `npm`
+* The `file` module has a convenient method called `walk()` that traverses a directory
+tree and calls a callback for each file it finds.
+
+```bash
+npm install --save file
+```
+
+### Naive File Parsing at Scale
+
+[databases/list-books.js](the_right_way_code/databases/list-books.js)
+
+* The problem here is masked by the innocuous-looking Error: EMFILE. This kind of error occurs when you’ve exhausted the number of file descriptors available on the system (typically just over 10,000).
+* One way to fix it is to increase the maximum number of file descriptors in the operating system. However, that’s only a temporary fix, until you run into even bigger file sets
+* Another way would be to modify the rdf-parser module to retry when it receives an EMFILE error. A third-party module called [graceful-fs](https://npmjs.org/package/graceful-fs) does this
+* you can't always count on your dependency modules to be graceful with file handling, so we'll use another approach: **work queuing**.
+    * Rather than immediately sending each file path into the RDF parser, we'll queue them as work to be done and let the queue throttle the number of concurrently running tasks.
+
+### Queuing to Limit Work in Progress
+
+* For this we’ll use the async module
+* Async offers low-overhead mechanisms for managing asynchronous code.
+    * it has methods for executing a sequence of asynchronous tasks sequentially or in parallel, with a callback to invoke when they're all done
+    * We need the ability to run a whole bunch of tasks, but limit the number that are running at any time. For this we need `async.queue()`.
+
+```bash
+npm install --save file
+```
+
+[databases/list-books-queued.js](the_right_way_code/databases/list-books-queued.js)
+
+* The worker function we used to create the queue takes two arguments: `path` and `done`.
+    * The `path` argument is the path to an RDF file discovered by walking the directory tree.
+    * `done` is a callback that our worker function has to call to signal to the work queue that it's free to dequeue the next path.
+* In Node.js, it's common for the last argument to a callback to be a `done` or `next` function
+    * naming it `done` or `next` signals that this is a callback function that takes **no arguments** and **should be called exactly once when you're finished doing whatever it is that you're doing**
+    * By contrast, `callback` functions named callback often take one or more arguments, starting with an `err` argument.
+
+### Putting It All Together
