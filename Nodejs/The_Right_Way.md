@@ -774,3 +774,34 @@ npm install --save file
 * Both views' map functions have to be encoded as strings so we can put them into CouchDB, since it allows only JSON documents
 
 ### Callback Chaining with async.waterfall
+
+* CouchDB stores views in special documents called design documents
+    * You use regular REST commands to add and remove design documents, just like you would any other document
+
+[databases/make-views.js](the_right_way_code/databases/make-views.js)
+
+* This program uses the `async` module's `waterfall()` method to execute a sequence of asynchronous functions. Using the waterfall method cleans up code that would otherwise have to be highly indented due to nested callbacks.
+* `waterfall()` takes two arguments: an array of functions to execute sequentially and a summary function to call when everything is finished.
+    * Each function in the array takes some number of arguments and finally a `next` callback to pass results forward into the next function.
+1. Our first function kicks off a request for the design document called `_design/books`, using the `next` function as its callback.
+2. The second function checks to see whether we got a 404 Not Found or a 200 OK. For a 200 OK, we just want to parse out the JSON returned in the response body and pass that forward. For a 404 Not Found, we have to create a skeleton design document to pass to the next function.
+3. The third function copies the views we put in the `views.js` module onto the design document. Then it issues a PUT request to the database to save the newly created or updated document.
+4. Finally, the summary function reports the returned status code and response body from the last request.
+
+
+```bash
+chmod +x make-views.js
+./make-views.js
+```
+
+* To get a list of all authors and the number of books to their name
+
+```bash
+./dbcli.js GET books/_design/books/_view/by_author?group=true
+```
+
+* To process the map function, CouchDB sends every document in the database through it to produce the view. As new documents are added, CouchDB will incrementally update the generated views
+* The `group=true` parameter tells CouchDB that we want the result of running the reduce function as well
+    * Since our reduce function is a basic count, the value field of each row is the number of books attributed to that author.
+
+# Scalable Web Services
