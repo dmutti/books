@@ -750,3 +750,27 @@ npm install --save file
     * By contrast, `callback` functions named callback often take one or more arguments, starting with an `err` argument.
 
 ### Putting It All Together
+
+[databases/import-books.js](the_right_way_code/databases/import-books.js)
+
+* The error ECONNRESET means that the TCP connection to the database died abruptly.
+* The easiest thing we can do is dial back the concurrency for the work queue. Rather than allowing 1,000 concurrent jobs, change it to only 10.
+
+## Querying Data with Mapreduce Views
+
+* With CouchDB, you write mapreduce functions, which produce views. A view is a kind of index that maps values back to documents. With a view, you can query for documents with particular attributes or fields -- like finding a book by its author.
+* We'll create two views for our Gutenberg data set: one for finding books by author, and one for finding books on a given subject.
+
+### Cross-Environment Scripting with Node
+
+* cross-environment scripting: writing JavaScript in one environment but executing it in another.
+    * In our case, we'll be writing functions in Node that we intend to run in CouchDB.
+
+[databases/lib/views.js](the_right_way_code/databases/lib/views.js)
+
+* The first view is the **by_author** view -- this will let us find books by a particular author.  
+    * Its `map()` function emits a key for each author of each document that has an authors array (that is, each book we've imported).
+* The second view is **by_subject**. For each subject in the subjects array, we emit the whole subject as well as each part (separated by two dashes). For example, say a book has the subject "Assassins - Drama". The **by_subject** mapper would emit "Assassins - Drama", "Assassins", and "Drama". This lets us find books by full or partial subject.
+* Both views' map functions have to be encoded as strings so we can put them into CouchDB, since it allows only JSON documents
+
+### Callback Chaining with async.waterfall
