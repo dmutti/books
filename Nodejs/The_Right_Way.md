@@ -822,3 +822,40 @@ Express is a web application framework for Node modeled after the Ruby project [
 * The Express framework helps with these and myriad other tasks.
 
 ## Serving APIs with Express
+
+```bash
+npm install --save express
+```
+
+[web-services/hello/server.js](the_right_way_code/web-services/hello/server.js)
+
+* this program brings in the express module and creates an app -- the express module is itself a function
+    * When you call this function, Express creates an application context for you
+    * By convention, we name this variable app.
+* Express functionality is provided through something called **middleware**, which are asynchronous functions that manipulate the request and response objects.
+    * To specify middleware for your app, you call `app.use()`, passing in the middleware you want.
+    * we're using the logger middleware set to `dev` mode, which will log to the console all requests coming in
+* we use `app.get()` to tell Express how we want to handle HTTP GET requests to the `/api/:name` path. The `:name` chunk in the path is called a named route parameter
+    * When the API is hit, Express will grab that part of the URL and make it available in `req.params`.
+    * In addition to `get()`, Express has `put()`, `post()`, and `del()`
+
+### Running a Server with npm
+
+```bash
+npm start
+```
+
+* Instead of starting the server with node directly, this time we’ll use npm
+* npm knows how to run this server because of the scripts hash in the [package.json](the_right_way_code/web-services/hello/package.json) file.
+* You can add more scripts to the scripts hash
+    * it's common to add a `test` item so that you can run npm test to execute your project's unit tests.
+
+### Testing REST Endpoints with curl
+
+```bash
+curl -i http://localhost:3000/api/jimbo
+```
+
+* curl is a useful command-line tool for issuing HTTP requests to a given server. Adding the `-i` flag tells curl that it should output the HTTP headers in addition to the JSON body.
+
+## Writing Modular Express Services
