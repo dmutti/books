@@ -859,3 +859,17 @@ curl -i http://localhost:3000/api/jimbo
 * curl is a useful command-line tool for issuing HTTP requests to a given server. Adding the `-i` flag tells curl that it should output the HTTP headers in addition to the JSON body.
 
 ## Writing Modular Express Services
+
+* We're going to build a RESTful web service with Express for creating and managing book bundles.
+    * These are basically named reading lists
+    * Our app will be called Better Book Bundle Builder (or b4 for short).
+* Our application will work roughly as follows:
+    * It will communicate with two databases: the books database and the b4 database.
+    * To the b4 application, the books database is read-only (we will not add, delete, or overwrite any documents in it).
+    * The b4 database will store user data, including the book bundles that users make.
+
+```bash
+curl -X PUT http://localhost:5984/b4
+```
+
+### Separating Server Code into Modules

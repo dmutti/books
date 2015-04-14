@@ -1,0 +1,17 @@
+{
+  "name": "b4",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "node --harmony ./server.js"
+  },
+  "author": "Danilo Mutti",
+  "license": "Apache v2",
+  "dependencies": {
+    "express": "^3.3.8",
+    "connect-redis": "^2.2.0",
+    "request": "^2.55.0",
+    "passport": "^0.2.1",
+    "passport-google": "^0.3.0",
+    "q": "^1.2.0"
+  }
+}
