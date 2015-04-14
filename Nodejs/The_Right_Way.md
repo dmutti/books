@@ -807,3 +807,18 @@ chmod +x make-views.js
     * Since our reduce function is a basic count, the value field of each row is the number of books attributed to that author.
 
 # Scalable Web Services
+
+## Advantages of Express
+
+Express is a web application framework for Node modeled after the Ruby project [Sinatra](http://www.sinatrarb.com/).
+
+[web-services/server.js](the_right_way_code/web-services/server.js)
+
+* What's remarkable about this example isn't what it does, but rather what it doesn't do. There are lots of little jobs a typical web server would take care of that this code doesn't touch. Here are some examples:
+    * Routing based on URL paths
+    * Managing sessions via cookies
+    * Parsing incoming requests (like form data or JSON)
+    * Rejecting malformed requests
+* The Express framework helps with these and myriad other tasks.
+
+## Serving APIs with Express
