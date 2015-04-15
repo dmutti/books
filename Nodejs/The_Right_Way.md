@@ -905,3 +905,12 @@ require('./lib/bundle.js')(config, app);
 * we set `module.exports` to a function
     * This is how we create a module that is itself a function (like request and express)
     * **When you write modules that do just one thing, this is a handy pattern.**
+* Next up, we call `app.get()` to register a route with the Express app
+* Once the route callback function starts, it immediately makes a request to CouchDB
+* To build out the request URL, we use the value in `req.params.view`, which Express extracted from the URL
+    * when someone requests `/api/search/subject`, this will trigger a request to the CouchDB view `_design/books/_view/by_subject`
+    * When receiving a request for a view, CouchDB uses the startkey and endkey parameters to bind the results.
+        * Using `req.query.q` + "\ufff0" for the endkey guarantees that we'll get all the keys that start with our query param
+    * setting `group` to `true` for this view tells CouchDB that we want unique keys only (no duplicates).
+
+## RESTful APIs with Promises
