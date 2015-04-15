@@ -873,3 +873,35 @@ curl -X PUT http://localhost:5984/b4
 ```
 
 ### Separating Server Code into Modules
+
+[web-services/b4/server.js](the_right_way_code/web-services/b4/server.js)
+
+```bash
+nodemon --harmony server.js
+```
+
+* the main entry point for the b4 service is the `server.js` file
+    * instead of assigning a handler with `app.get()` directly, now we specify some configuration parameters and pull in the API modules
+    * Each of the three API modules is a function that takes two arguments: our config hash and the Express app to add routes to.
+
+```js
+const config = {
+    bookdb: 'http://localhost:5984/books/',
+    b4db: 'http://localhost:5984/b4/'
+};
+require('./lib/book-search.js')(config, app);
+require('./lib/field-search.js')(config, app);
+require('./lib/bundle.js')(config, app);
+```
+
+### Implementing Search APIs
+
+[web-services/b4/lib/field-search.js](web-services/b4/lib/field-search.js)
+
+* To build a book bundle, a user has to be able to discover books to add to it. Our modular web service will have two search APIs
+    * **field search (for discovering authors and subjects)**
+    * and book search (for finding books by a given author or subject).
+* The field search API helps users to find authors or subjects based on a starting string.
+* we set `module.exports` to a function
+    * This is how we create a module that is itself a function (like request and express)
+    * **When you write modules that do just one thing, this is a handy pattern.**
