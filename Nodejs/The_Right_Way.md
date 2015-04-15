@@ -914,3 +914,49 @@ require('./lib/bundle.js')(config, app);
     * setting `group` to `true` for this view tells CouchDB that we want unique keys only (no duplicates).
 
 ## RESTful APIs with Promises
+
+* we'll talk about promises -- another approach to managing asynchronous code.
+
+### Creating a Resource through POST with a Promise
+
+* first thing we'll need for our bundle API is a way to create them.
+    * we'll create an Express route that handles POST requests. Inside the handler, we'll use a promise to keep track of the request.
+* Whenever a regular JavaScript function starts executing, it will finish in one of two ways: either it will run to completion, or it will throw an exception. For synchronous code, this is good enough; but for asynchronous code we need a bit more.
+    * A `promise` is an object that encapsulates these two results for an asynchronous operation.
+    * Once the operation is completed, the `promise` will either be resolved (success case) or rejected (error case)
+* we’ll use kriskowal’s [Q module](https://npmjs.org/package/q).
+
+[web-services/b4/lib/bundle-v0.js](web-services/b4/lib/bundle-v0.js)
+
+```js
+//create a new bundle with the specified name
+//curl -X POST http://localhost:3000/api/bundle?name=<name>
+app.post('/api/bundle', function(req, res) {
+    let deferred = Q.defer();
+    request.post({
+        url: config.b4db,
+        json: { type: 'bundle', name: req.query.name, books: {} }
+    }, function(err, couchRes, body) {
+        if (err) {
+            deferred.reject(err);
+        } else {
+            deferred.resolve([couchRes, body]);
+        }
+    });
+    deferred.promise.then(function(args) {
+        let couchRes = args[0], body = args[1];
+        res.json(couchRes.statusCode, body);
+    }, function(err) {
+        res.json(502, { error: "bad_gateway", reason: err.code });
+    });
+});
+```
+* we create a `Deferred` object. This class is something specific to the Q module -- it provides methods for working with the promise.
+    * When the request eventually finishes, we’ll either reject the promise, passing forward the error, or we'll resolve the promise, passing along the CouchDB response and body
+    * Next, we call the promise's `then()` method, passing in two functions
+        * The first function will be called when the promise is resolved (success)
+        * The second function will be called if the promise happens to be rejected.
+* Although there's nothing to stop you from creating `Deferred` objects in this way, you usually don't have to
+    * Instead, Q offers shortcut methods that produce promises for you when you're working with familiar patterns like Node callbacks.
+
+### Retrieving a Resource through GET and nfcall()
