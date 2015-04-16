@@ -1029,3 +1029,21 @@ app.put('/api/bundle/:id/name/:name', function(req, res) {
 * The catch handler will be called if any of the promises up the chain are rejected (either explicitly or by a function throwing an exception).
 
 ## Yielding Control with Generators
+
+* ECMAScript Harmony introduces a new concept called a generator. **A generator is like a function except that you can suspend its execution and resume later.**
+    * Once a regular JavaScript function starts executing, it can finish in one of two ways. Either it finishes normally by getting to the end or hitting a return statement, or it finishes abnormally, throwing an exception. In both cases, the function will run to conclusion.
+    * **Generators are different. With a generator, you can yield a value without actually finishing execution, and then pick up where you left off.**
+
+### Counting Down with a Generator
+
+[web-services/countdown.js](the_right_way_code/web-services/countdown.js)
+
+* The asterisk `(*)` in `function*()` is what tells the JavaScript engine to treat this function differently.
+* When you call countdown with a starting value, what you get back is a generator. In our case, we call countdown with 5 and store the generator to a variable called counter.
+* The code inside the generator function starts executing the first time you call the generator’s `next()` method. It runs until it hits a `yield`, then sends back that value.
+* Our example calls `counter.next()` inside of a function called `callback`. This callback function saves the object returned by `counter.next()` into a variable called item. This object has two properties of note:
+    * `done` -- either true or false; indicates whether the generator function has run to completion.
+    * `value` -- the last value yielded or returned.
+* The callback function checks whether the generator still has more to do, and if so, logs the yielded value and sets a timeout to check again in one second.
+
+### Generators and Asynchronous Code
