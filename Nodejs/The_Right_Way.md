@@ -1070,10 +1070,17 @@ let data = yield "./my-text-file.txt";
 ### Using the PUT book API
 
 ```bash
-curl -X POST http://localhost:3000/api/bundle?name=War%20Books #create a bundle called 'War Books'
-curl http://localhost:3000/api/bundle/d476de5d13555f2e8dd0eaac7c000984 #Request the bundle with GET to see what's in it so far
-curl -X PUT http://localhost:3000/api/bundle/d476de5d13555f2e8dd0eaac7c000984/book/132 #let's add Sunzi's The Art of War (Project Gutenberg ID 132):
-curl http://localhost:3000/api/bundle/d476de5d13555f2e8dd0eaac7c000984 #let's see what was added to the bundle
+#create a bundle called 'War Books'
+curl -X POST http://localhost:3000/api/bundle?name=War%20Books
+
+#Request the bundle with GET to see what's in it so far
+curl http://localhost:3000/api/bundle/{bundle_id}
+
+#let's add Sunzi's The Art of War (Project Gutenberg ID 132)
+curl -X PUT http://localhost:3000/api/bundle/{bundle_id}/book/132
+
+#let's see what was added to the bundle
+curl http://localhost:3000/api/bundle/{bundle_id}
 ```
 
 ### Yielding Promises with Q.async
