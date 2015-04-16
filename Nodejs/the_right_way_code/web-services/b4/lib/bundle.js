@@ -32,12 +32,35 @@ module.exports = function(config, app) {
     //curl -X GET http://localhost:3000/api/bundle/<id>
     app.get('/api/bundle/:id', function(req, res) {
         Q.nfcall(request.get, config.b4db + '/' + req.params.id)
-            .then(function(args) {
-                let couchRes = args[0], bundle = JSON.parse(args[1]);
-                res.json(couchRes.statusCode, bundle);
-            }, function(err) {
-                res.json(502, { error: "bad_gateway", reason: err.code });
-            })
-            .done();
+        .then(function(args) {
+            let couchRes = args[0], bundle = JSON.parse(args[1]);
+            res.json(couchRes.statusCode, bundle);
+        }, function(err) {
+            res.json(502, { error: "bad_gateway", reason: err.code });
+        })
+        .done();
+    });
+
+    //set the specified bundle's name with the specified name
+    //curl -X PUT http://localhost:3000/api/bundle/<id>/name/<name>
+    app.put('/api/bundle/:id/name/:name', function(req, res) {
+        Q.nfcall(request.get, config.b4db + '/' + req.params.id)
+        .then(function(args) {
+            let couchRes = args[0], bundle = JSON.parse(args[1]);
+            if (couchRes.statusCode !== 200) {
+                return [couchRes, bundle];
+            }
+            bundle.name = req.params.name;
+            return Q.nfcall(request.put, {
+                url: config.b4db + '/' + req.params.id,
+                json: bundle
+            });
+        }).then(function(args) {
+            let couchRes = args[0], body = args[1];
+            res.json(couchRes.statusCode, body);
+        }).catch(function(err) {
+            res.json(502, { error: "bad_gateway", reason: err.code });
+        })
+        .done();
     });
 };

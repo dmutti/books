@@ -926,7 +926,7 @@ require('./lib/bundle.js')(config, app);
     * Once the operation is completed, the `promise` will either be resolved (success case) or rejected (error case)
 * we’ll use kriskowal’s [Q module](https://npmjs.org/package/q).
 
-[web-services/b4/lib/bundle-v0.js](web-services/b4/lib/bundle-v0.js)
+[web-services/b4/lib/bundle.js](web-services/b4/lib/bundle.js)
 
 ```js
 //create a new bundle with the specified name
@@ -988,3 +988,44 @@ app.get('/api/bundle/:id', function(req, res) {
 
 
 ### Updating a Resource through PUT with Chained Promises
+
+```js
+//set the specified bundle's name with the specified name
+//curl -X PUT http://localhost:3000/api/bundle/<id>/name/<name>
+app.put('/api/bundle/:id/name/:name', function(req, res) {
+    Q.nfcall(request.get, config.b4db + '/' + req.params.id)
+    .then(function(args) {
+        let couchRes = args[0], bundle = JSON.parse(args[1]);
+        if (couchRes.statusCode !== 200) {
+            return [couchRes, bundle];
+        }
+        bundle.name = req.params.name;
+        return Q.nfcall(request.put, {
+            url: config.b4db + '/' + req.params.id,
+            json: bundle
+        });
+    }).then(function(args) {
+        let couchRes = args[0], body = args[1];
+        res.json(couchRes.statusCode, body);
+    }).catch(function(err) {
+        res.json(502, { error: "bad_gateway", reason: err.code });
+    })
+    .done();
+});
+```
+
+* An important thing to understand about `then()` is that it returns a new promise that will be fulfilled or rejected depending on what happens in then's success and failure callbacks.
+    * **when you call `then()` on a promise, you set up a promise chain**
+    * **each promise depends on the one that came before**
+* The second `then`'s handlers will be called depending on how the first one goes.
+* Let's take a look at the first `then`'s callback.
+    * Once we extract the `couchRes` and `bundle` from the `args` array, we check to see if we got the 200 OK status code we were hoping for.
+        * If not, we return an array with the `couchRes` and `bundle`.
+        * Q interprets this return statement as a successful resolution of the promise and calls the second `then`'s handler function.
+    * If we get the 200 OK status we're after, then the function continues to overwrite the bundle's name field.
+        * We do another `Q.nfcall()` to PUT the bundle document back into CouchDB, and return the promise that this produces.
+        * Q waits for this subpromise to finish, then uses its value to resolve the original promise, at which point the second `then`’s handler gets invoked.
+        * in either case -- whether we return a value directly or another promise -- Q knows what to do.
+* The catch handler will be called if any of the promises up the chain are rejected (either explicitly or by a function throwing an exception).
+
+## Yielding Control with Generators
