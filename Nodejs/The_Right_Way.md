@@ -1066,3 +1066,14 @@ let data = yield "./my-text-file.txt";
     * If the calling code knows to treat the string as a filename, it could do something like `fs.readFile()` and then pass the data back to the generator with `generator.next(data)`.
 
 ## Using Generators with Promises
+
+### Using the PUT book API
+
+```bash
+curl -X POST http://localhost:3000/api/bundle?name=War%20Books #create a bundle called 'War Books'
+curl http://localhost:3000/api/bundle/d476de5d13555f2e8dd0eaac7c000984 #Request the bundle with GET to see what's in it so far
+curl -X PUT http://localhost:3000/api/bundle/d476de5d13555f2e8dd0eaac7c000984/book/132 #let's add Sunzi's The Art of War (Project Gutenberg ID 132):
+curl http://localhost:3000/api/bundle/d476de5d13555f2e8dd0eaac7c000984 #let's see what was added to the bundle
+```
+
+### Yielding Promises with Q.async
