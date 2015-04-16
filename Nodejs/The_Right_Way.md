@@ -960,3 +960,31 @@ app.post('/api/bundle', function(req, res) {
     * Instead, Q offers shortcut methods that produce promises for you when you're working with familiar patterns like Node callbacks.
 
 ### Retrieving a Resource through GET and nfcall()
+
+* this implementation uses a promise for the request to CouchDB, but it doesn't explicitly create a Deferred object.
+* You can call this API with `curl` by passing in the ID of a previously created bundle.
+
+```js
+//get a given bundle
+//curl -X GET http://localhost:3000/api/bundle/<id>
+app.get('/api/bundle/:id', function(req, res) {
+    Q.nfcall(request.get, config.b4db + '/' + req.params.id)
+        .then(function(args) {
+            let couchRes = args[0], bundle = JSON.parse(args[1]);
+            res.json(couchRes.statusCode, bundle);
+        }, function(err) {
+            res.json(502, { error: "bad_gateway", reason: err.code });
+        })
+        .done();
+});
+```
+
+* Q's `nfcall()` method is short for "Node Function Call".
+    * It takes a function that expects a regular Node.js callback as its last parameter (like `request()`), invokes the function, and returns a promise.
+    * In effect, it does automatically what our POST handler did explicitly by creating a `Deferred`.
+    * we call the promise's `then()` method with success and failure handlers just as before.
+    * And lastly we call `done()` on the promise chain to force any unhandled rejected promises to throw.
+* In Node.js, **promises have a habit of swallowing errors**. Calling `done()` on a promise chain is Q's Golden Rule -- **whenever you make a promise, you should either return it so someone else can deal with it, or call done**.
+
+
+### Updating a Resource through PUT with Chained Promises
