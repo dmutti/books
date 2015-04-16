@@ -1047,3 +1047,22 @@ app.put('/api/bundle/:id/name/:name', function(req, res) {
 * The callback function checks whether the generator still has more to do, and if so, logs the yielded value and sets a timeout to check again in one second.
 
 ### Generators and Asynchronous Code
+
+* Because generators can pause their execution indefinitely, they offer a clever way to deal with asynchronous code. The countdown example doesn't show it, but inside your generator function, you can grab the value coming in through `yield`.
+* For example, say your generator function contains the following line:
+
+```js
+let x = yield;
+```
+
+* In this case, the value of x would be whatever was passed into `generator.next()` while it was suspended on the yield. So if you called `generator.next(8)`, then `x` would be 8
+* When the generator function and the calling code cooperate, you can do some really neat things. Consider this line from a hypothetical generator function:
+
+```js
+let data = yield "./my-text-file.txt";
+```
+
+* This line suspends execution after yielding the string "./my-text-file.txt" and expects to continue when it receives the data from that file.
+    * If the calling code knows to treat the string as a filename, it could do something like `fs.readFile()` and then pass the data back to the generator with `generator.next(data)`.
+
+## Using Generators with Promises
