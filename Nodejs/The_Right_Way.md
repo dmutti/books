@@ -896,7 +896,7 @@ require('./lib/bundle.js')(config, app);
 
 ### Implementing Search APIs
 
-[web-services/b4/lib/field-search.js](web-services/b4/lib/field-search.js)
+[web-services/b4/lib/field-search.js](the_right_way_code/web-services/b4/lib/field-search.js)
 
 * To build a book bundle, a user has to be able to discover books to add to it. Our modular web service will have two search APIs
     * **field search (for discovering authors and subjects)**
@@ -926,7 +926,7 @@ require('./lib/bundle.js')(config, app);
     * Once the operation is completed, the `promise` will either be resolved (success case) or rejected (error case)
 * we’ll use kriskowal’s [Q module](https://npmjs.org/package/q).
 
-[web-services/b4/lib/bundle.js](web-services/b4/lib/bundle.js)
+[web-services/b4/lib/bundle.js](the_right_way_code/web-services/b4/lib/bundle.js)
 
 ```js
 //create a new bundle with the specified name
