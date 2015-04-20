@@ -1227,6 +1227,48 @@ nodemon --harmony server.js
 
 ## Storing Express Sessions in Redis
 
+* By default, Express will keep session data in memory, but this doesn't readily scale. Once you have more than one Node.js process, the session data should really be stored to be in a shared place
+
+### Enabling Sessions in Express
+
+* To enable sessions, add the cookieParser and session middleware to your app
+
+```js
+app.use(express.cookieParser());
+app.use(express.session({ secret: 'unguessable' }));
+```
+
+* The `cookieParser` middleware is responsible for parsing incoming cookies from the client
+* the `session` middleware stores the session data attached to the cookie
+    * The secret parameter is necessary to prevent cookie tampering and spoofing
+    * set it to something unique to your application. Express session cookies are signed with this secret string.
+
+### Using Redis to Store Session Data
+
+* Its speed makes Redis an ideal database for storing session data. If the server tips over, then the sessions might be lost, but at worst this means that your users will have to log in again.
+
+```bash
+brew install redis
+redis-server
+npm install express@3.3.8 --save
+npm install connect-redis@1.4.7 --save
+npm install --save redis
+```
+
+```js
+const
+    //...
+    redisClient = require('redis').createClient(),
+    RedisStore = require('connect-redis')(express);
+```
+
+* The first line constructs a client for the Redis database. This will immediately open a TCP socket to your Redis server.
+* The second line produces a class you can use to instantiate a Redis-based backing store for sessions.
+
+[web-app/hello/server.js](the_right_way_code/web-app/hello/server.js)
+[web-app/hello-express4/server.js](the_right_way_code/web-app/hello-express4/server.js)
+
+
 ## Creating a Single-Page Web Application
 
 ## Authenticating with Passport

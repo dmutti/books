@@ -1,0 +1,15 @@
+{
+  "name": "hello-express3",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "start": "node --harmony ./server.js"
+  },
+  "author": "Danilo Mutti (https://github.com/dmutti)",
+  "license": "Apache v2",
+  "dependencies": {
+    "connect-redis": "^1.4.7",
+    "express": "^3.3.8",
+    "redis": "^0.12.1"
+  }
+}
