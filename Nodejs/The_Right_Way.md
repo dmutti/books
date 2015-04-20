@@ -1084,3 +1084,78 @@ curl http://localhost:3000/api/bundle/{bundle_id}
 ```
 
 ### Yielding Promises with Q.async
+
+```js
+//put a book into a bundle by its id
+//curl -X PUT http://localhost:3000/api/bundle/<id>/book/<pgid>
+app.put('/api/bundle/:id/book/:pgid', function(req, res) {
+    let
+        get = Q.denodeify(request.get),
+        put = Q.denodeify(request.put);
+    Q.async(function*() {
+        let args, couchRes, bundle, book;
+
+        //grab the bundle from the b4 db
+        args = yield get(config.b4db + req.params.id);
+        couchRes = args[0];
+        bundle = JSON.parse(args[1]);
+
+        //fail fast if we couldn't retrieve the bundle
+        if (couchRes.statusCode !== 200) {
+            res.json(couchRes.statusCode, bundle);
+            return;
+        }
+
+        //look up the book by its Project Gutenberg ID
+        args = yield get(config.b4db + req.params.pgid);
+        couchRes = args[0];
+        book = JSON.parse(args[1]);
+
+        //fail fast if we couldn't retrieve the book
+        if (couchRes.statusCode !== 200) {
+            res.json(couchRes.statusCode, book);
+            return;
+        }
+
+        //add the book to the bundle and put it back in CouchDB
+        bundle.books[book._id] = book.title;
+        args = yield put({ url: config.b4db + bundle._id, json: bundle });
+        res.json(args[0].statusCode, args[1]);
+    })().catch(function(err) {
+        res.json(502, { error: "bad_gateway", reason: err.code });
+    });
+});
+```
+
+
+* The `denodeify()` method takes a Node.js-style function (**one that expects a callback**) and returns a new promise-producing function from it.
+    * Using denodeify is a convenient way to avoid calling `Q.nfcall()` all over the place.
+    * Instead, you just denodeify the functions you plan to use, and call them later knowing they'll produce promises.
+* Q's async method returns a new promise-producing function that will start running the generator when you invoke it.
+    * Inside the generator, any time we `yield` a promise, Q will wait for the promise to resolve, then resume execution with the resolved value.
+    * We `yield` a promise for a `get` call to CouchDB. When the request finishes, the promise is resolved and Q gives us back the value, which we assign to args.
+        * This is much like the calls to `then(function(args){...})` we saw earlier, but written in a more linear style.
+* This API makes three asynchronous requests, but does it in only one function thanks to Q.async and generator functions. On the plus side, writing code in this way has the potential to make it look like synchronous, linear code.
+
+### Executing it
+
+* `curl -X POST http://localhost:3000/api/bundle/`
+
+```json
+{
+  "ok": true,
+  "id": "3242e592796e858b580d13731c0006ec",
+  "rev": "1-7ef008d5d399c6ba0b1602e09434406f"
+}
+```
+
+* `curl http://localhost:3000/api/bundle/3242e592796e858b580d13731c0006ecc`
+
+```json
+{
+  "_id": "3242e592796e858b580d13731c0006ec",
+  "_rev": "1-7ef008d5d399c6ba0b1602e09434406f",
+  "type": "bundle",
+  "books": {}
+}
+```
