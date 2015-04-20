@@ -20,8 +20,8 @@ module.exports = function(config, app) {
                 deferred.resolve([couchRes, body]);
             }
         });
-        deferred.promise.then(function(args) {
-            let couchRes = args[0], body = args[1];
+        //deferred.promise.then(function(args) { let couchRes = args[0], body = args[1];
+        deferred.promise.spread(function(couchRes, body) {
             res.json(couchRes.statusCode, body);
         }, function(err) {
             res.json(502, { error: "bad_gateway", reason: err.code });
@@ -32,8 +32,9 @@ module.exports = function(config, app) {
     //curl -X GET http://localhost:3000/api/bundle/<id>
     app.get('/api/bundle/:id', function(req, res) {
         Q.nfcall(request.get, config.b4db + '/' + req.params.id)
-        .then(function(args) {
-            let couchRes = args[0], bundle = JSON.parse(args[1]);
+        //.then(function(args) { let couchRes = args[0], bundle = JSON.parse(args[1]);
+        .spread(function(couchRes, body) {
+            let bundle = JSON.parse(body);
             res.json(couchRes.statusCode, bundle);
         }, function(err) {
             res.json(502, { error: "bad_gateway", reason: err.code });
@@ -55,8 +56,8 @@ module.exports = function(config, app) {
                 url: config.b4db + '/' + req.params.id,
                 json: bundle
             });
-        }).then(function(args) {
-            let couchRes = args[0], body = args[1];
+        //}).then(function(args) { let couchRes = args[0], body = args[1];
+        }).spread(function(couchRes, body) {
             res.json(couchRes.statusCode, body);
         }).catch(function(err) {
             res.json(502, { error: "bad_gateway", reason: err.code });
