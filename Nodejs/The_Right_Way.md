@@ -1143,6 +1143,13 @@ app.put('/api/bundle/:id/book/:pgid', function(req, res) {
 nodemon --harmony server.js
 ```
 
+* search for books by a given field (author or subject)
+    * `curl http://localhost:3000/api/search/book/by_author?q=Giles,%20Lionel`
+    * `curl http://localhost:3000/api/search/book/by_subject?q=War`
+* author and subject search
+    * `curl http://localhost:3000/api/search/author?q=Giles`
+    * `curl http://localhost:3000/api/search/subject?q=Croc`
+
 * `curl -X POST http://localhost:3000/api/bundle/`
 
 ```json

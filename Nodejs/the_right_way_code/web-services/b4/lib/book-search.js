@@ -1,19 +1,19 @@
-//author and subject search
-//curl http://localhost:3000/api/search/author?q=Giles
-//curl http://localhost:3000/api/search/subject?q=Croc
+//search for books by a given field (author or subject)
+//curl http://localhost:3000/api/search/book/by_author?q=Giles,%20Lionel
+//curl http://localhost:3000/api/search/book/by_subject?q=War
 "use strict";
 const request = require('request');
 module.exports = function(config, app) {
 
-    app.get('/api/search/:view', function(req, res) {
+    app.get('/api/search/book/by_:view', function(req, res) {
 
         request({
             method: 'GET',
             url: config.bookdb + '_design/books/_view/by_' + req.params.view,
             qs: {
-                startkey: JSON.stringify(req.query.q),
-                endkey: JSON.stringify(req.query.q + '\ufff0'),
-                group: true
+                key: JSON.stringify(req.query.q),
+                reduce: false,
+                include_docs: true
             }
         }, function(err, couchRes, body) {
             //couldnt connect to couchdb
@@ -29,9 +29,11 @@ module.exports = function(config, app) {
             }
 
             //send back just the keys returned from couchdb
-            res.json(JSON.parse(body).rows.map(function(elem) {
-                return elem.key;
-            }));
+            let books = {};
+            JSON.parse(body).rows.forEach(function(elem) {
+                books[elem.doc._id] = elem.doc.title;
+            });
+            res.json(books);
         });
     });
 };
