@@ -1266,10 +1266,33 @@ const
 * The second line produces a class you can use to instantiate a Redis-based backing store for sessions.
 
 [web-app/hello/server.js](the_right_way_code/web-app/hello/server.js)
+
 [web-app/hello-express4/server.js](the_right_way_code/web-app/hello-express4/server.js)
 
+```bash
+curl -i -X HEAD http://localhost:3000/api/test
+redis-cli KEYS 'sess:*'
+```
 
 ## Creating a Single-Page Web Application
+
+### Serving Static Content with Express
+
+* Express comes with a convenient way to serve static files. All you have to do is use the `express.static` middleware and provide a directory.
+
+```js
+app.use(express.static(__dirname + '/static'));
+app.use(express.static(__dirname + '/bower_components'));
+```
+
+* These two lines tell Express to serve static content out of the `static/` and `bower_components/` directories of the project. This means that if Express can’t find a particular route, it’ll fall back to serving the static content, checking these directories one at a time.
+
+### Installing Bower Components
+
+```bash
+npm install -g bower
+bower install
+```
 
 ## Authenticating with Passport
 
