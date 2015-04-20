@@ -1289,12 +1289,21 @@ app.use(express.static(__dirname + '/bower_components'));
 
 ### Installing Bower Components
 
+[web-app/b4/bower.json](the_right_way_code/web-app/b4/bower.json)
+
 ```bash
 npm install -g bower
 bower install
 ```
 
 ## Authenticating with Passport
+
+* Passport is an Express plug-in that provides middleware for a variety of third-party logins.
+* We're going to use passport to support authentication with Google credentials.
+
+```bash
+npm install --save passport passport-google
+```
 
 ## Authorizing APIs with Custom Middleware
 
