@@ -1216,3 +1216,25 @@ nodemon --harmony server.js
   }
 }
 ```
+
+## Wrapping Up
+
+* Q implements the Promises/A specification.
+* Although this specification only requires a `then()` method, Q promises have more
+* For example, `then()` handlers always get one parameter, but Q's `spread()` method can handle multiple parameters.
+
+# Web Apps
+
+## Storing Express Sessions in Redis
+
+## Creating a Single-Page Web Application
+
+## Authenticating with Passport
+
+## Authorizing APIs with Custom Middleware
+
+## Creating Authenticated APIs
+
+## Client-Side MVC
+
+## Wrapping Up
