@@ -1305,6 +1305,60 @@ bower install
 npm install --save passport passport-google
 ```
 
+* To add passport, first add this to your const declarations at the top of your server.js file
+
+```js
+passport = require('passport'),
+GoogleStrategy = require('passport-google').Strategy;
+```
+
+* Then you need to initialize the passport middleware. Add this right after `app.use(express.session...)`:
+
+```js
+app.use(passport.initialize());
+app.use(passport.session());
+```
+
+* Passport's different authentication mechanisms are called strategies.
+    * The second line in the previous code brings in the Google authentication strategy.
+
+### Configuring Passport Strategies
+
+* Passport itself and the strategies you use both require a bit of configuration to be useful. Here's a short example of how to configure passport with the Google strategy.
+
+```js
+passport.serializeUser(function(user, done) {
+    done(null, user.identifier);
+});
+passport.deserializeUser(function(id, done) {
+  done(null, { identifier: id });
+});
+```
+
+* Use the `serializeUser()` method to specify what information about the user should actually be stored in the session
+    * You can still keep other data elsewhere, but this is the data that gets associated with the session cookie.
+* The `deserializeUser()` method is where you take the stored session data and turn it back into a rich object for use by your application
+    * This operation must be light and fast since it will happen on virtually every request to your server
+
+* Next we tell passport to use() the Google strategy we brought in earlier
+
+```js
+passport.use(new GoogleStrategy({
+        returnURL: 'http://localhost:3000/auth/google/return',
+        realm: 'http://localhost:3000/'
+    }, function(identifier, profile, done) {
+        profile.identifier = identifier;
+        return done(null, profile);
+    }
+));
+```
+
+* The callback function is invoked once the authentication succeeds. This is your opportunity to grab any additional information tied to this user's account from your own database.
+* The `returnURL` parameter is the full URL you want Google to send users to after they've authenticated
+    * Localhost is correct for our development application, but you’ll need to set this to the real public URL of your own services.
+
+### Routing Authentication Requests
+
 ## Authorizing APIs with Custom Middleware
 
 ## Creating Authenticated APIs
