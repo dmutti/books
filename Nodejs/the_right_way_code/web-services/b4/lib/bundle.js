@@ -85,7 +85,7 @@ module.exports = function(config, app) {
             }
 
             //look up the book by its Project Gutenberg ID
-            args = yield get(config.b4db + req.params.pgid);
+            args = yield get(config.bookdb + req.params.pgid);
             couchRes = args[0];
             book = JSON.parse(args[1]);
 

@@ -1139,6 +1139,10 @@ app.put('/api/bundle/:id/book/:pgid', function(req, res) {
 
 ### Executing it
 
+```bash
+nodemon --harmony server.js
+```
+
 * `curl -X POST http://localhost:3000/api/bundle/`
 
 ```json
@@ -1157,5 +1161,51 @@ app.put('/api/bundle/:id/book/:pgid', function(req, res) {
   "_rev": "1-7ef008d5d399c6ba0b1602e09434406f",
   "type": "bundle",
   "books": {}
+}
+```
+
+* `curl -X POST http://localhost:3000/api/bundle?name=War%20Books`
+
+```json
+{
+  "ok": true,
+  "id": "3242e592796e858b580d13731c000ff9",
+  "rev": "1-d90a9d2a08880d9f29e6fa4515702d50"
+}
+```
+
+* `curl http://localhost:3000/api/bundle/3242e592796e858b580d13731c000ff9`
+
+```json
+{
+  "_id": "3242e592796e858b580d13731c000ff9",
+  "_rev": "1-d90a9d2a08880d9f29e6fa4515702d50",
+  "type": "bundle",
+  "name": "War Books",
+  "books": {}
+}
+```
+
+* `curl -X PUT http://localhost:3000/api/bundle/3242e592796e858b580d13731c000ff9/book/132`
+
+```json
+{
+  "ok": true,
+  "id": "3242e592796e858b580d13731c000ff9",
+  "rev": "2-58aad9ea25605877e3f4dc562a368fce"
+}
+```
+
+* `curl http://localhost:3000/api/bundle/3242e592796e858b580d13731c000ff92`
+
+```json
+{
+  "_id": "3242e592796e858b580d13731c000ff9",
+  "_rev": "2-58aad9ea25605877e3f4dc562a368fce",
+  "type": "bundle",
+  "name": "War Books",
+  "books": {
+    "132": "The Art of War"
+  }
 }
 ```
