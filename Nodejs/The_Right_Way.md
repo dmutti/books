@@ -1276,6 +1276,8 @@ redis-cli KEYS 'sess:*'
 
 ## Creating a Single-Page Web Application
 
+[web-app/b4/server.js](the_right_way_code/web-app/b4/server.js)
+
 ### Serving Static Content with Express
 
 * Express comes with a convenient way to serve static files. All you have to do is use the `express.static` middleware and provide a directory.
@@ -1297,6 +1299,8 @@ bower install
 ```
 
 ## Authenticating with Passport
+
+[web-app/b4/server.js](the_right_way_code/web-app/b4/server.js)
 
 * Passport is an Express plug-in that provides middleware for a variety of third-party logins.
 * We're going to use passport to support authentication with Google credentials.
@@ -1359,9 +1363,74 @@ passport.use(new GoogleStrategy({
 
 ### Routing Authentication Requests
 
+* We need to handle three kinds of requests in total: one for initiating the authentication, one for the `returnURL` where users come back after authenticating, and one for logging out
+* the `/auth/logout` route provides a way for users to clear out their session cookies and the associated session data.
+
+```js
+app.get('/auth/google/:return?',
+    passport.authenticate('google', { successRedirect: '/' })
+);
+app.get('/auth/logout', function(req, res) {
+    req.logout();
+    res.redirect('/');
+});
+```
+
 ## Authorizing APIs with Custom Middleware
 
+[web-app/b4/server.js](the_right_way_code/web-app/b4/server.js)
+
+* Here are the endpoints we'll create, and the HTTP verbs they’ll support. They all return JavaScript Object Notation (JSON):
+    1. `/api/user` (GET) -- Basic information about the user (like the user's identifier)
+    2. `/api/user/bundles` (GET) -- Object that maps bundle IDs to bundle names
+    3. `/api/user/bundles` (PUT) -- Overwrites the bundle mapping object with the provided JSON body
+
+### Tolerating Redis Errors
+
+* the `connect-redis` session plug-in is tolerant of Redis errors
+    * **Whenever Redis is unreachable, the plug-in will silently ignore it -- in effect rendering your application sessionless, but otherwise unaffected.**
+* Let’s add some logging for key events to our `redisClient`:
+
+```js
+redisClient
+    .on('ready', function() { log.info('REDIS', 'ready'); })
+    .on('error', function(err) { log.error('REDIS', err.message); });
+```
+
+* Handling the error event prevents Node from throwing an exception
+* The `redisClient` object includes a Boolean property `ready`, which we can check in our middleware
+
+### Implementing Custom Middleware
+
+* **The difference between middleware and route handlers is that middleware is meant to be a link in the chain, while route handlers are meant to be at the very end of the chain.**
+* A middleware function takes three parameters: a request object (`req`), a response object (`res`), and a function (`next`) to call when the middleware is done.
+
+```js
+const authed = function(req, res, next) {
+    if (req.isAuthenticated()) {
+        return next();
+    }
+    if (redisClient.ready) {
+        res.json(403, {
+            error: "forbidden",
+            reason: "not_authenticated"
+        });
+    }
+    res.json(503, {
+        error: "service_unavailable",
+        reason: "authentication_unavailable"
+    });
+};
+```
+
+* First, we check `req.isAuthenticated()`. This is a method added by passport that returns true only if the incoming session cookie matches a known session. If the user is authenticated, we immediately call `next()` to move down the middleware chain.
+* Otherwise, find out if `redisClient.ready` is true. If it is, then the user truly isn't authenticated (not a system error) and the correct code is 403 Forbidden.
+    * We can't use 401 Unauthorized because that requires a `WWW-Authenticate` header, which tells the browser what authentication mechanisms are available (and there’s no provision for cookie-based sessions).
+* if `redisClient.ready` is false, then there’s no way the user could have authenticated. The appropriate response is 503 Service Unavailable, since any authenticated APIs can't meaningfully operate until Redis comes back online.
+
 ## Creating Authenticated APIs
+
+[web-app/b4/server.js](the_right_way_code/web-app/b4/server.js)
 
 ## Client-Side MVC
 
