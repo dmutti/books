@@ -13,8 +13,7 @@ const
     redisClient = require('redis').createClient(),
     RedisStore = require('connect-redis')(express),
 
-    GoogleStrategy = require('passport-google-oauth2').Strategy;
-
+    GoogleStrategy = require('passport-google').Strategy;
 
 redisClient
     .on('ready', function() {
@@ -25,21 +24,18 @@ redisClient
     });
 
 passport.serializeUser(function(user, done) {
-    done(null, user.id);
+    done(null, user.identifier);
 });
 passport.deserializeUser(function(id, done) {
     done(null, { identifier: id });
 });
 passport.use(new GoogleStrategy({
-        clientID: "HASH@developer.gserviceaccount.com",
-        clientSecret: "CLIENT_SECRET",
-        callbackURL: "http://localhost:3000/auth/google/callback",
-        passReqToCallback : true
+        returnURL: 'http://localhost:3000/auth/google/return',
+        realm: 'http://localhost:3000/'
     },
-    function(request, accessToken, refreshToken, profile, done) {
-        process.nextTick(function () {
-            return done(null, profile);
-        });
+    function(identifier, profile, done) {
+        profile.identifier = identifier;
+        return(done, profile);
     }
 ));
 
@@ -66,15 +62,10 @@ require('./lib/book-search.js')(config, app);
 require('./lib/field-search.js')(config, app);
 require('./lib/bundle.js')(config, app);
 
-app.get('/auth/google', passport.authenticate('google', { scope: [
-    'https://www.googleapis.com/auth/plus.profile.emails.read']
-}));
-app.get( '/auth/google/callback',
-    passport.authenticate( 'google', {
-        successRedirect: '/',
-        failureRedirect: '/login'
-    }));
-app.get('/logout', function(req, res){
+app.get('/auth/google/:return?',
+    passport.authenticate('google', { successRedirect: '/' })
+);
+app.get('/auth/logout', function(req, res) {
     req.logout();
     res.redirect('/');
 });

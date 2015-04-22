@@ -11,7 +11,7 @@
     "express": "^3.3.8",
     "npmlog": "^1.2.0",
     "passport": "^0.2.1",
-    "passport-google": "^0.3.0",
+    "passport-google-oauth2": "^0.1.6",
     "q": "^1.2.0",
     "redis": "^0.12.1",
     "request": "^2.55.0"

@@ -1278,6 +1278,16 @@ redis-cli KEYS 'sess:*'
 
 [web-app/b4/server.js](the_right_way_code/web-app/b4/server.js)
 
+[web-app/b4/package.json](the_right_way_code/web-app/b4/package.json)
+
+1. Go to [Google Developers Console](https://console.developers.google.com)
+2. Create a new application
+3. Under `APIs and Authentication > APIs`, enable `Google+ API`
+4. Under `APIs and Authentication > Credentials`, create a new ClientID
+    1. Web Application
+    2. Authorized JavaScript: `http://localhost:3000`
+    3. Redirection URI: `http://localhost:3000/auth/google/callback`
+
 ### Serving Static Content with Express
 
 * Express comes with a convenient way to serve static files. All you have to do is use the `express.static` middleware and provide a directory.
@@ -1306,14 +1316,14 @@ bower install
 * We're going to use passport to support authentication with Google credentials.
 
 ```bash
-npm install --save passport passport-google
+npm install --save passport passport-google-oauth2
 ```
 
 * To add passport, first add this to your const declarations at the top of your server.js file
 
 ```js
 passport = require('passport'),
-GoogleStrategy = require('passport-google').Strategy;
+GoogleStrategy = require('passport-google-oauth2').Strategy;
 ```
 
 * Then you need to initialize the passport middleware. Add this right after `app.use(express.session...)`:
@@ -1332,10 +1342,10 @@ app.use(passport.session());
 
 ```js
 passport.serializeUser(function(user, done) {
-    done(null, user.identifier);
+    done(null, user.id);
 });
 passport.deserializeUser(function(id, done) {
-  done(null, { identifier: id });
+    done(null, { identifier: id });
 });
 ```
 
@@ -1348,11 +1358,15 @@ passport.deserializeUser(function(id, done) {
 
 ```js
 passport.use(new GoogleStrategy({
-        returnURL: 'http://localhost:3000/auth/google/return',
-        realm: 'http://localhost:3000/'
-    }, function(identifier, profile, done) {
-        profile.identifier = identifier;
-        return done(null, profile);
+        clientID: "SOMETHING@developer.gserviceaccount.com",
+        clientSecret: "CLIENT_SECRET",
+        callbackURL: "http://localhost:3000/auth/google/callback",
+        passReqToCallback : true
+    },
+    function(request, accessToken, refreshToken, profile, done) {
+        process.nextTick(function () {
+            return done(null, profile);
+        });
     }
 ));
 ```
@@ -1367,10 +1381,15 @@ passport.use(new GoogleStrategy({
 * the `/auth/logout` route provides a way for users to clear out their session cookies and the associated session data.
 
 ```js
-app.get('/auth/google/:return?',
-    passport.authenticate('google', { successRedirect: '/' })
-);
-app.get('/auth/logout', function(req, res) {
+app.get('/auth/google', passport.authenticate('google', { scope: [
+    'https://www.googleapis.com/auth/plus.profile.emails.read']
+}));
+app.get( '/auth/google/callback',
+    passport.authenticate( 'google', {
+        successRedirect: '/',
+        failureRedirect: '/login'
+    }));
+app.get('/logout', function(req, res){
     req.logout();
     res.redirect('/');
 });
@@ -1431,6 +1450,48 @@ const authed = function(req, res, next) {
 ## Creating Authenticated APIs
 
 [web-app/b4/server.js](the_right_way_code/web-app/b4/server.js)
+
+* we don't want all the other routes (like our static file serving) to be authenticated. Those still need to be served without any authentication. So we can't just call app.use() like we would with other middleware.
+* When you specify a route in Express, you can include middleware that you wish to apply to only that route. We’ll use this feature for the `/api/user` route:
+
+```js
+app.get('/api/user', authed, function(req, res){
+    res.json(req.user);
+});
+```
+
+* This short route handler is all we need, thanks to the `authed()` function we already made. By the time the route handler is invoked, the middleware has already confirmed that the session is valid and the user property on the request will have the right data.
+
+```js
+app.put('/api/user/bundles', [authed, express.json()], function(req, res) {
+    let userURL = config.b4db + encodeURIComponent(req.user.identifier);
+    request(userURL, function(err, couchRes, body) {
+        if (err) {
+            res.json(502, {
+                error: "bad_gateway",
+                reason: err.code
+            });
+        } else if (couchRes.statusCode === 200) {
+            let user = JSON.parse(body);
+            user.bundles = req.body;
+            request.put({ url: userURL, json: user }).pipe(res);
+        } else if (couchRes.statusCode === 404) {
+            let user = { bundles: req.body };
+            request.put({ url: userURL, json: user }).pipe(res);
+        } else {
+            res.send(couchRes.statusCode, body);
+        }
+    });
+});
+```
+
+* now we're providing two middleware functions in an array.
+* First is the `authed` middleware that we used before, and second is `express.json()`.
+    * The built-in `express.json` middleware parses each incoming request's content body when the Content-Type header is set to `application/json`.
+    * This way, when we access `req.body`, it’s already an object and not just a buffer.
+
+* we're using the `pipe()` feature of the request module to send a response forward to `res`.
+    * The usage is quite similar to a basic Stream's `pipe` method, but operates on higher-level Request and Response objects.
 
 ## Client-Side MVC
 
