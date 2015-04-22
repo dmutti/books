@@ -13,7 +13,10 @@ const
     redisClient = require('redis').createClient(),
     RedisStore = require('connect-redis')(express),
 
-    GoogleStrategy = require('passport-google-oauth2').Strategy;
+    GoogleStrategy = require('passport-google-oauth2').Strategy,
+
+    PropertiesReader = require('properties-reader'),
+    properties = PropertiesReader(__dirname + '/google-credentials.properties');
 
 
 redisClient
@@ -31,8 +34,8 @@ passport.deserializeUser(function(id, done) {
     done(null, { identifier: id });
 });
 passport.use(new GoogleStrategy({
-        clientID: "HASH@developer.gserviceaccount.com",
-        clientSecret: "CLIENT_SECRET",
+        clientID: properties.get('client.id'),
+        clientSecret: properties.get('secret.key'),
         callbackURL: "http://localhost:3000/auth/google/callback",
         passReqToCallback : true
     },
