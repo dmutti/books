@@ -1,22 +1,11 @@
-/***
- * Excerpted from "Node.js the Right Way",
- * published by The Pragmatic Bookshelf.
- * Copyrights apply to this code. It may not be used to create training material, 
- * courses, books, articles, and the like. Contact us if you are in doubt.
- * We make no guarantees that this code is fit for any purpose. 
- * Visit http://www.pragmaticprogrammer.com/titles/jwnode for more book information.
-***/
-/**
- * app.js
- */
 (function(){
 
 var
-  
+
   templates = {},
-  
+
   bundles,
-  
+
   getBundles = function() {
     $.ajax({
       url: '/api/user/bundles'
@@ -32,7 +21,7 @@ var
       showBundles();
     });
   },
-  
+
   saveBundles = function(bundles, callback) {
     $.ajax({
       type: 'PUT',
@@ -47,21 +36,21 @@ var
       callback(err);
     });
   },
-  
+
   showErr = function(xhr, status, err) {
     $('.alert-danger').fadeIn().find('.message').text(err);
   },
-  
+
   showView = function(selected) {
     window.location.hash = '#' + selected;
     $('.view').hide().filter('#' + selected + '-view').show();
   },
-  
+
   showBundles = function() {
     showView('list-bundles');
     $('.bundles').html(templates['list-bundles']({ bundles: bundles }));
   },
-  
+
   showBundle = function(bundle) {
     showView('edit-bundle');
     $('#edit-bundle-view')
@@ -98,11 +87,11 @@ $.ajax({
 
 // implement adding a new bundle
 $('.new-bundle-form').submit(function(event) {
-  
+
   event.preventDefault();
-  
+
   var name = $('#new-bundle-name').val();
-  
+
   $.ajax({
     type: 'POST',
     url: '/api/bundle?name=' + encodeURIComponent(name),
@@ -118,7 +107,7 @@ $('.new-bundle-form').submit(function(event) {
       }
     });
   }, showErr);
-  
+
 });
 
 // field search typeahead
@@ -136,12 +125,12 @@ $('.find-book.by-author .search').typeahead({
 // field search results
 $('.find-book').submit(function(event) {
   event.preventDefault();
-  
+
   var
     $form = $(this),
     field = $form.find('[name="field"]').val(),
     q = $(this).find('.search').val();
-  
+
   $.ajax({
     url: '/api/search/book/by_' + field + '?q=' + encodeURIComponent(q),
     accepts: 'application/json'
@@ -149,26 +138,26 @@ $('.find-book').submit(function(event) {
   .then(function(data, status, xhr) {
     $('.books-results').html(templates['list-books']({ books: data }));
   }, showErr);
-  
+
 });
 
 // bundle book list results
 $('.bundle-books').click(function(event) {
-  
+
   var
     $button = $(event.target).closest('button'),
     id,
     pgid,
     title;
-  
+
   if (!$button.length) {
     return;
   }
-  
+
   id = $button.closest('.view').find('h2').data('id');
   pgid = $button.closest('tr').data('id');
   title = $button.closest('tr').find('a').first().text();
-  
+
   if (confirm('Remove "' + title + '"?')) {
     $.ajax({
       type: 'DELETE',
@@ -183,24 +172,24 @@ $('.bundle-books').click(function(event) {
     })
     .then(showBundle, showErr);
   }
-  
+
 });
 
 // book search results
 $('.books-results').click(function(event) {
-  
+
   var
     $button = $(event.target).closest('button'),
     id,
     pgid;
-  
+
   if (!$button.length) {
     return;
   }
-  
+
   id = $button.closest('.view').find('h2').data('id');
   pgid = $button.closest('tr').data('id');
-  
+
   $.ajax({
     type: 'PUT',
     url: '/api/bundle/' + id + '/book/' + pgid,
@@ -213,7 +202,7 @@ $('.books-results').click(function(event) {
     });
   })
   .then(showBundle, showErr);
-  
+
 });
 
 // setup close button
@@ -223,21 +212,21 @@ $('.alert-danger .close').click(function(event) {
 
 // edit bundle buttons
 $('.bundles').click(function(event) {
-  
+
   var
     $button = $(event.target).closest('button'),
     id,
     name;
-  
+
   if (!$button.length) {
     return;
   }
-  
+
   id = $button.closest('tr').data('id');
   name = $button.closest('tr').find('td').eq(0).text();
-  
+
   if ($button.is('.delete')) {
-    
+
     if (confirm('Delete "' + name + '"?')) {
       delete bundles[id];
       saveBundles(bundles, function(err, body) {
@@ -248,17 +237,17 @@ $('.bundles').click(function(event) {
         }
       });
     }
-    
+
   } else {
-    
+
     $.ajax({
       url: '/api/bundle/' + id,
       accepts: 'application/json'
     })
     .then(showBundle, showErr);
-    
+
   }
-  
+
 });
 
 

@@ -1495,4 +1495,44 @@ app.put('/api/user/bundles', [authed, express.json()], function(req, res) {
 
 ## Client-Side MVC
 
+* To build a front end for the b4 APIs, we'll use MVC.
+* The MVC software-design pattern is a popular and convenient way to structure user-facing applications.
+    * Model -- The business logic and data for the application
+    * View -- Representation of the model that is shown to the user
+    * Controller -- Code that receives user interaction to inform the model
+* In our application
+    * the model will be responsible for keeping track of the book bundles for the user
+    * the view will be the Document Object Model (DOM) in the browser, as rendered by the model
+    * the controller logic will be invoked by events on the DOM
+
+### Hash-Based Views
+
+* When a web application consists of only a single page, you need some way of denoting that different content is being shown
+    * One way to do this is with URL hashes -- the content after the `#` symbol in a URL
+    * For example: `http://localhost:3000/#list-bundles`
+
+[web-app/b4/static/index.html](the_right_way_code/web-app/b4/static/index.html)
+
+```html
+<div id="welcome-view" class="view">
+    <h2>Welcome</h2>
+    <!-- ... -->
+</div>
+<div id="list-bundles-view" class="view">
+    <h2>Your Bundles</h2>
+    <!-- ... -->
+</div>
+```
+
+* We want exactly one of these views visible at a time, and for that we need a little client-side JavaScript.
+
+[web-app/b4/static/app.js](the_right_way_code/web-app/b4/static/app.js)
+
+```js
+showView = function(selected) {
+    window.location.hash = '#' + selected;
+    $('.view').hide().filter('#' + selected + '-view').show();
+},
+```
+
 ## Wrapping Up
