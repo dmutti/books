@@ -1576,4 +1576,54 @@ $.ajax({
 
 ### Synchronizing Models with REST APIs
 
+* The `static/app.js` file in the b4 project contains a variable called `bundles`
+    * a local copy of the actual user bundles stored on the server
+    * To start, the web app needs to pull down the remote copy -- this is what `getBundles()` does
+
+```js
+getBundles = function() {
+    $.ajax({
+        url: '/api/user/bundles'
+    })
+    .then(function(data, status, xhr) {
+        bundles = data;
+        showBundles();
+    }, function(xhr, status, err) {
+        if (xhr.status >= 500) {
+            showErr(xhr, status, err);
+        }
+        bundles = {};
+        showBundles();
+    });
+},
+```
+
+* we use the `$.ajax()` function to pull down `/api/user/bundles`
+    * If the request succeeds, we use the value returned
+    * otherwise we start with an empty object (`{}`)
+* If the request fails with a status code in the 500 range, then we show the error using the `showErr()` function. In either case, we move on to `showBundles()`
+
+```js
+saveBundles = function(bundles, callback) {
+    $.ajax({
+        type: 'PUT',
+        url: '/api/user/bundles',
+        data: JSON.stringify(bundles),
+        contentType: 'application/json; charset=utf-8',
+        accepts: 'application/json'
+    })
+    .then(function(data, status, xhr) {
+        callback(null, data);
+    }, function(xhr, status, err) {
+        callback(err);
+    });
+},
+```
+
+* This function takes a `bundles` object to push, and a Node-style callback function that will be called on success or failure.
+    * It uses `$.ajax()` to PUT the bundles object up to `/api/user/bundles`
+    * The `contentType` option indicates that the data is already pre-serialized as JSON and doesn't require form encoding
+
+### Generating HTML with Handlebars
+
 ## Wrapping Up
