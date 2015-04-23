@@ -1535,4 +1535,45 @@ showView = function(selected) {
 },
 ```
 
+* First we set `window.location.hash` to match the specified view. For example, if we call `showView('list-bundles')`, that updates the page's URL to end in `#list-bundles`.
+* Next, we find all of the `<div>`s on the page with class `view`, hide them, then find just the one whose ID matches our chosen view, and show it.
+
+```js
+$(window).on('hashchange', function(event){
+    var view = (window.location.hash || '').replace(/^#/, '');
+    if ($('#' + view + '-view').length) {
+        showView(view);
+    }
+});
+```
+
+* The `showView()` function works great if we want to set the view programmatically, but we should also respond to direct URL changes
+    * To do that, we listen to the hashchange event on the window
+* The following code starts out by grabbing the `window.location.hash` and saving it in a variable called `view`.
+* Next this function checks whether there's an element on the page with the matching view ID, and if so, calls `showView()`.
+
+```js
+$.ajax({
+    url: '/api/user',
+    accepts: 'application/json'
+})
+
+.then(function(data, status, xhr) {
+    getBundles();
+}, function(xhr, status, err) {
+    showView('welcome');
+});
+```
+
+* Now there's only one more view-navigation task to take care of: what to do when the page first loads
+    * On startup, the page should find out whether users are authenticated
+    * If so, users should see the list-bundles view; otherwise, send them to the welcome view
+* First, we kick off an asynchronous request `/api/user` with jQuery's `$.ajax()`
+    * This method is like a promise-producing request()
+* We call `then()` with two handlers, one for success and one for failure.
+    * If the request was successful, we move on to `getBundles()`;
+    * otherwise we show the user the `welcome` view.
+
+### Synchronizing Models with REST APIs
+
 ## Wrapping Up
