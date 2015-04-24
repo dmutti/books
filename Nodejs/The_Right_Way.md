@@ -1626,4 +1626,10 @@ saveBundles = function(bundles, callback) {
 
 ### Generating HTML with Handlebars
 
-## Wrapping Up
+[web-app/b4/static/index.html](the_right_way_code/web-app/b4/static/index.html)
+
+* There are many of JavaScript templating engines to choose from -- this app uses [Handlebars](http://handlebarsjs.com/).
+* **Our b4 app compiles and executes the Handlebars templates entirely on the client side**
+    * but you can push some or all of these tasks to the server since Handlebars can run in Node.js as well
+    * you could compile the templates in Node, and then just perform the data replacement in the browser
+    * Or you could perform the data replace- ment in Node too, and serve up HTML chunks instead of JSON
