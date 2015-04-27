@@ -125,3 +125,23 @@ while (events = demultiplexer.watch(watchedList)) { //[2]
     * libuv today represents the low-level I/O engine of Node.js
 
 ## The callback pattern
+
+* Callbacks are functions that are invoked to propagate the result of an operation
+and this is exactly what we need when dealing with asynchronous operations.
+    * They practically replace the use of the return instruction that, as we know, always executes synchronously
+* [closures](https://developer.mozilla.org/pt-BR/docs/Web/JavaScript/Guide/Closures) are an ideal construct for implementing callbacks
+    * With closures, we can in fact reference the environment in which a function was created
+    * we can always maintain the context in which the asynchronous operation was requested, no matter when or where its callback is invoked.
+
+### The continuation-passing style
+
+* In JavaScript, a callback is a function that is passed as an argument to another
+function and is invoked with the result when the operation completes.
+    * called **continuation-passing style**
+    * it simply indicates that a result is propagated by passing it to another function (the callback), instead of directly returning it to the caller.
+
+#### Synchronous continuation-passing style
+
+### Synchronous or asynchronous?
+
+### Node.js callback conventions
