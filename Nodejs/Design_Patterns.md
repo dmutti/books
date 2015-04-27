@@ -76,9 +76,9 @@ ecosystem
 socketA, pipeB;
 watchedList.add(socketA, FOR_READ); //[1]
 watchedList.add(pipeB, FOR_READ);
-while(events = demultiplexer.watch(watchedList)) { //[2]
+while (events = demultiplexer.watch(watchedList)) { //[2]
     //event loop
-    foreach(event in events) { //[3]
+    foreach (event in events) { //[3]
        //This read will never block and will always return data
        data = event.resource.read();
        if (data === RESOURCE_CLOSED) {
@@ -96,12 +96,32 @@ while(events = demultiplexer.watch(watchedList)) { //[2]
 2. The event notifier is set up with the group of resources to be watched. This call is synchronous and blocks until any of the watched resources is ready for a read. When this occurs, the event demultiplexer returns from the call and a new set of events is available to be processed.
 3. Each event returned by the event demultiplexer is processed. At this point, the resource associated with each event is guaranteed to be ready to read and to not block during the operation. When all the events are processed, the flow will block again on the event demultiplexer until new events are again available to be processed. This is called the **event loop**.
 
+![Node.js Event Demultiplexing](Design_Patterns_fig_1.png "Node.js Event Demultiplexing")
+
 * with this pattern, we can now handle several I/O operations inside a single thread, without using a busy-waiting technique
-* the following image helps us understand how concurrency works in a single-threaded application using a synchronous event demultiplexer and non-blocking I/O
+* the previous image helps us understand how concurrency works in a single-threaded application using a synchronous event demultiplexer and non-blocking I/O
     * The tasks are spread over time, instead of being spread across multiple threads. This has the clear advantage of minimizing the total idle time of the thread
     * To have only a single thread has a beneficial impact on the way programmers approach concurrency in general. The absence of in-process race conditions and multiple threads to synchronize allows us to use much simpler concurrency strategies.
 
-![Node.js Event Demultiplexing](Design_Patterns_fig_1.png "Node.js Event Demultiplexing")
-
 
 ### The reactor pattern
+
+* The reactor pattern is a specialization of the event demultiplexing algorithm
+* The main idea behind it is to have a handler (which in Node.js is represented by a `callback` function) associated with each I/O operation, which will be invoked as soon as an event is produced and processed by the event loop
+* **Pattern (reactor): handles I/O by blocking until new events are available from a set of observed resources, and then reacting by dispatching each event to an associated handler.**
+
+![Node.js Reactor Pattern](Design_Patterns_fig_2.png "Node.js Reactor Pattern")
+
+1. The application generates a new I/O operation by submitting a request to the Event Demultiplexer. The application also specifies a handler, which will be invoked when the operation completes. Submitting a new request to the Event Demultiplexer is a non-blocking call and it immediately returns the control back to the application.
+2. When a set of I/O operations completes, the Event Demultiplexer pushes the new events into the **Event Queue**
+3. At this point, the Event Loop iterates over the items of the Event Queue
+4. For each event, the associated handler is invoked
+5. The handler, which is part of the application code, will give back the control to the Event Loop when its execution completes (**5a**). However, new asynchronous operations might be requested during the execution of the handler (**5b**), causing new operations to be inserted in the Event Demultiplexer (**1**), before the control is given back to the Event Loop.
+6. **When all the items in the Event Queue are processed, the loop will block again on the Event Demultiplexer which will then trigger another cycle**
+
+### The non-blocking I/O engine of Node.js – libuv
+
+* Node.js core team created a C library called [libuv](http://nikhilm.github.io/uvbook/), with the objective to make Node.js compatible with all the major platforms and normalize the non-blocking behavior of the different types of resource
+    * libuv today represents the low-level I/O engine of Node.js
+
+## The callback pattern
