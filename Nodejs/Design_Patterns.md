@@ -56,3 +56,42 @@ ecosystem
 * For this reason, the traditional approach to handle concurrency in web servers is to kick off a thread or a process (or to reuse one taken from a pool) for each concurrent connection that needs to be handled
 * Unfortunately, a thread is not cheap in terms of system resources, it consumes memory and causes context switches
     * so having a long running thread for each connection and not using it for most of the time, is not the best compromise in terms of efficiency.
+
+### Non-blocking I/O
+
+* In this operating mode, the system call **always returns immediately without waiting for the data to be read or written**
+    * If no results are available at the moment of the call, the function will simply return a predefined constant, indicating that there is no data available to return at that moment.
+* The most basic pattern for accessing this kind of non-blocking I/O is to actively poll the resource within a loop until some actual data is returned; this is called **busy-waiting**
+    * the loop will consume precious CPU only for iterating over resources that are unavailable most of the time
+    * Polling algorithms usually result in a huge amount of wasted CPU time
+
+### Event demultiplexing
+
+* modern operating systems provide a native mechanism to handle concurrent, non-blocking resources in an efficient way
+* this mechanism is called **synchronous event demultiplexer** or **event notification interface**
+    * This component collects and queues I/O events that come from a set of watched resources, and block until new events are available to process
+
+```js
+//### PSEUDOCODE
+socketA, pipeB;
+watchedList.add(socketA, FOR_READ); //[1]
+watchedList.add(pipeB, FOR_READ);
+while(events = demultiplexer.watch(watchedList)) { //[2]
+    //event loop
+    foreach(event in events) { //[3]
+       //This read will never block and will always return data
+       data = event.resource.read();
+       if (data === RESOURCE_CLOSED) {
+           //the resource was closed, remove it from the watched list
+           demultiplexer.unwatch(event.resource);
+       } else {
+           //some actual data was received, process it
+           consumeData(data);
+       }
+   }
+}
+```
+
+1. The resources are added to a data structure, associating each one of them with a specific operation, in our example a read.
+2. The event notifier is set up with the group of resources to be watched. This call is synchronous and blocks until any of the watched resources is ready for a read. When this occurs, the event demultiplexer returns from the call and a new set of events is available to be processed.
+3. Each event returned by the event demultiplexer is processed. At this point, the resource associated with each event is guaranteed to be ready to read and to not block during the operation. When all the events are processed, the flow will block again on the event demultiplexer until new events are again available to be processed. This is called the **event loop**.
