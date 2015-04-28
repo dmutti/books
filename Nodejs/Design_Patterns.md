@@ -166,6 +166,108 @@ console.log('after');
 
 #### Asynchronous continuation-passing style
 
+```js
+function addAsync(a, b, callback) {
+    setTimeout(function() {
+        callback(a + b);
+    }, 100);
+}
+console.log('before');
+addAsync(1, 2, function(result) {
+    console.log('Result: ' + result);
+});
+console.log('after');
+```
+
+* we use `setTimeout()` to simulate an asynchronous invocation of the callback.
+* Since `setTimeout()` triggers an asynchronous operation, it will not wait anymore for the callback to be executed, but instead, it returns immediately giving the control back to addAsync(), and then back to its caller
+    * This property allows the stack to unwind, and the control to be given back to the event loop as soon as an asynchronous request is sent, thus allowing a new event from the queue to be processed.
+* When the asynchronous operation completes, the execution is then resumed starting from the callback provided to the asynchronous function that caused the unwinding
+* thanks to closures it is trivial to maintain the context of the caller of the asynchronous function, even if the callback is invoked at a different point in time and from a different location.
+
+#### Non continuation-passing style callbacks
+
+* There are several circumstances in which the presence of a callback argument might make you think that a function is asynchronous or is using a continuation-passing style; that's not always true
+
+```js
+var result = [1, 5, 7].map(function(element) {
+    return element – 1;
+});
+```
+
 ### Synchronous or asynchronous?
 
+#### An unpredictable function
+
+* One of the most dangerous situations is to have an API that behaves synchronously under certain conditions and asynchronously under others
+* The following function is dangerous because
+    * it behaves asynchronously until the cache is not set -- which is until the `fs.readFile()` function returns its results
+    * but it will also be synchronous for all the subsequent requests for a file already in the cache -- triggering an immediate invocation of the callback.
+
+```js
+var fs = require('fs');
+var cache = {};
+
+function inconsistentRead(filename, callback) {
+    if(cache[filename]) {
+        //invoked synchronously
+        callback(cache[filename]);
+    ￼} else {
+        //asynchronous function
+        fs.readFile(filename, 'utf8', function(err, data) {
+            cache[filename] = data;
+            callback(data);
+        });
+    }
+}
+```
+
+#### Using synchronous APIs
+
+* **it is imperative for an API to clearly define its nature, either synchronous or asynchronous.**
+* **it is always a good practice to implement a synchronous API using a direct style; this will eliminate any confusion around its nature and will also be more efficient from a performance perspective.**
+
+* using a synchronous API instead of an asynchronous one has some caveats
+    * A synchronous API might not be always available for the needed functionality
+    * A synchronous API will block the event loop and put the concurrent requests on hold. It practically breaks the Node.js concurrency, slowing down the whole application.
+
+#### Deferred execution
+
+* Another alternative for fixing our `inconsistentRead()` function is to make it purely asynchronous.
+* **The trick here is to schedule the synchronous callback invocation
+to be executed "in the future" instead of being run immediately in the same event loop cycle.**
+    * this is possible using `process.nextTick()`, which defers the execution of a function until the next pass of the event loop
+* `process.nextTick()` functioning is very simple
+    * it takes a callback as an argument and pushes it on the top of the event queue, in front of any pending I/O event, and returns immediately
+    * The callback will then be invoked as soon as the event loop runs again
+
+```js
+var fs = require('fs');
+var cache = {};
+function consistentReadAsync(filename, callback) {
+    if(cache[filename]) {
+        process.nextTick(function() {
+            callback(cache[filename]);
+        });
+    } else {
+        //asynchronous function
+        fs.readFile(filename, 'utf8', function(err, data) {
+            cache[filename] = data;
+            callback(data);
+        });
+    }
+}
+```
+
+* Another API for deferring the execution of code is `setImmediate()`
+    * despite the name—might actually be slower than `process.nextTick()`
+* Callbacks deferred with `process.nextTick()` run before any other I/O event is fired
+    * with `setImmediate()`, the execution is queued behind any I/O event that is already in the queue
+* Since `process.nextTick()` runs before any already scheduled I/O, **it might cause I/O starvation under certain circumstances** (for example: a recursive invocation)
+    * **this can never happen with setImmediate()**
+
 ### Node.js callback conventions
+
+* These conventions apply to the Node.js core API but they are also followed virtually by every userland module and application.
+
+#### Callbacks come last
