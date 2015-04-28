@@ -142,6 +142,30 @@ function and is invoked with the result when the operation completes.
 
 #### Synchronous continuation-passing style
 
+* the result is passed back to the caller using the `return` instruction; this is also called **direct style**
+
+```js
+function add(a, b) {
+    return a + b;
+}
+```
+
+* The equivalent continuation-passing style of the preceding function would be as follows
+* The `add()` function is a synchronous **CPS** function, which means that it will return a value only when the callback completes its execution.
+
+```js
+function add(a, b, callback) {
+    callback(a + b);
+}
+console.log('before');
+add(1, 2, function(result) {
+    console.log('Result: ' + result);
+});
+console.log('after');
+```
+
+#### Asynchronous continuation-passing style
+
 ### Synchronous or asynchronous?
 
 ### Node.js callback conventions
