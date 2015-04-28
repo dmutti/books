@@ -271,3 +271,56 @@ function consistentReadAsync(filename, callback) {
 * These conventions apply to the Node.js core API but they are also followed virtually by every userland module and application.
 
 #### Callbacks come last
+
+* if a function accepts in input a callback, this has to be passed as the last argument
+* The motivation for this convention is that the function call is more readable in case the callback is defined in place
+
+```js
+fs.readFile(filename, [options], callback)
+```
+
+#### Error comes first
+
+* any error produced by a CPS function is always passed as the first argument of the callback
+* and any actual result is passed starting from the second argument
+* If the operation succeeds without errors, the first argument will be `null` or `undefined`
+* It is a good practice to always check for the presence of an error
+* Another important convention to take into account is that the error must always be of type `Error`
+    * simple strings or numbers should never be passed as error objects
+
+```js
+fs.readFile('foo.txt', 'utf8', function(err, data) {
+    if(err)
+        handleError(err);
+    else
+        processData(data);
+});
+```
+
+#### Propagating errors
+
+* Propagating errors in synchronous, direct style functions is done with the well-known `throw` command, which causes the error to jump up in the call stack until it's caught.
+* In asynchronous CPS, proper error propagation is done by simply passing the `error` to the next callback in the CPS chain
+
+```js
+var fs = require('fs');
+function readJSON(filename, callback) {
+    fs.readFile(filename, 'utf8', function(err, data) {
+        var parsed;
+        if(err)
+            //propagate the error and exit the current function
+            return callback(err);
+        try {
+            //parse the file contents
+            parsed = JSON.parse(data);
+        } catch(err) {
+            //catch parsing errors
+            return callback(err);
+        }
+        //no errors, propagate just the data
+        callback(null, parsed);
+    });
+};
+```
+
+#### Uncaught exceptions
