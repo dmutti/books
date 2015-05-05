@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "zmq": "~2.8.0",
+    "variations-stream": "~0.1.3"
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "request": "^2.45.0",
+    "split": "^0.3.0"
+  }
+}

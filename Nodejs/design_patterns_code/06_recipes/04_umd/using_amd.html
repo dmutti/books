@@ -1,0 +1,17 @@
+<html>
+  <head>
+    <title>Load UMD module from AMD</title>
+    <script src="require.js"></script>
+    <script>
+      window.addEventListener('load', function() {
+        require(['umdModule'], function(umdModule) {
+          var hello = umdModule.sayHello('World!');
+          var body = document.getElementsByTagName("body")[0];
+          body.innerHTML = hello;
+        });
+      });
+    </script>
+  </head>
+  <body>
+  </body>
+</html>

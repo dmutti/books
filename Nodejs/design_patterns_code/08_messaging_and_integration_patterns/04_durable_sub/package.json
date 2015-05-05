@@ -1,0 +1,11 @@
+{
+  "dependencies": {
+    "ws": "~0.4.32",
+    "ecstatic": "~0.5.4",
+    "amqplib": "~0.2.1",
+    "JSONStream": "~0.9.0",
+    "monotonic-timestamp": "0.0.9",
+    "level": "~0.18.0",
+    "request": "~2.42.0"
+  }
+}

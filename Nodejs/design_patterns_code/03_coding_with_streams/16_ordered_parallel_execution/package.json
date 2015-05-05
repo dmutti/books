@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "request": "^2.45.0",
+    "split": "^0.3.0",
+    "through2-parallel": "^0.1.3"
+  }
+}

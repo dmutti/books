@@ -1,0 +1,19 @@
+{
+  "dependencies": {
+    "backbone": "^1.1.2",
+    "body-parser": "^1.9.2",
+    "ecstatic": "^0.5.4",
+    "errorhandler": "^1.2.2",
+    "express": "^4.10.1",
+    "jquery": "^2.1.1",
+    "level": "^0.18.0",
+    "level-sublevel": "^6.3.15",
+    "node-uuid": "^1.4.1",
+    "underscore": "^1.7.0",
+    "validator": "^3.22.1"
+  },
+  "browser": {
+    "./models/collectionSync.js": "./models/clientSync.js",
+    "./models/modelSync.js": "./models/clientSync.js"
+  }
+}

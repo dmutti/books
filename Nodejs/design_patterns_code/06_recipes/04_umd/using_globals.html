@@ -1,0 +1,16 @@
+<html>
+  <head>
+    <title>Load UMD module using globals</title>
+    <script src="mustache.js"></script>
+    <script src="umdModule.js"></script>
+    <script>
+      window.addEventListener('load', function() {
+        var hello = UmdModule.sayHello('World!');
+        var body = document.getElementsByTagName("body")[0];
+        body.innerHTML = hello;
+      });
+    </script>
+  </head>
+  <body>
+  </body>
+</html>

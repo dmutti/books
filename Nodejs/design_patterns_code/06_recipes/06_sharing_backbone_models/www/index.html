@@ -1,0 +1,58 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <script src='/bundle.js'></script>
+  </head>
+  <style>
+    .list-group-item > *:before {
+      margin-right: 5px;
+    }
+    
+    .list-group-item > * {
+      margin-right: 10px;
+    }
+  </style>
+  <body>
+    <div class='container' id='contactsView'></div>
+  
+    <script type="text/template" id="contacts-tpl">
+      <h2>My contacts:</h2>
+      <ul class="list-group" id="contactList">
+        <% contacts.forEach(function(contact) { %>
+        <li class="list-group-item" data-id="<%= contact.id %>">
+          <span class="glyphicon glyphicon-user">
+            <%= contact.name %>
+          </span> 
+          <span class="glyphicon glyphicon-envelope">
+            <%= contact.email || 'none' %>
+          </span>
+          <span class="glyphicon glyphicon-phone">
+            <%= contact.phone || 'none' %>
+          </span>
+          <a href='' class="glyphicon glyphicon-remove pull-right"></a>
+        </li>
+        <% }); %>
+      </ul>
+      
+      <div class="panel panel-default">
+        <div class='panel-heading'>Create new contact</div>
+        <form role="form" class='panel-body' id="newContactForm">
+          <div class='error-container'></div>
+          <div class="form-group">
+            <label for="name" class='control-label'>Name</label>
+            <input type="text" class="form-control" name="name">
+          </div>
+          <div class="form-group">
+            <label for="email" class='control-label'>Email</label>
+            <input type="text" class="form-control" name="email">
+          </div>
+          <div class="form-group">
+            <label for="phone" class='control-label'>Phone</label>
+            <input type="text" class="form-control" name="phone">
+          </div>
+          <button type="submit" class="btn btn-default">Submit</button>
+        </form>
+      </div>
+    </script>
+  </body>
+</html>

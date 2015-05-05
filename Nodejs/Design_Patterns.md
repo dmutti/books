@@ -329,20 +329,18 @@ function readJSON(filename, callback) {
 * Throwing an exception inside an asynchronous callback will cause the exception to jump up to the event loop and never be propagated to the next callback
 * **this is an unrecoverable state and the application will simply shut down printing the error to the `stderr` interface**
 
-[01_design_fundamentals/uncaught_01.js](design_patterns_code/01_design_fundamentals/uncaught_01.js)
+[01_node.js_design_fundamentals/06_callbacks_uncaught_exceptions/uncaught.js](design_patterns_code/01_node.js_design_fundamentals/06_callbacks_uncaught_exceptions/uncaught.js)
 
 * wrapping the invocation of `readJSONThrows()` with a try-catch block will not work
     * because the stack in which the block operates is different from the one in which our callback is invoked
 
-[01_design_fundamentals/uncaught_02.js](design_patterns_code/01_design_fundamentals/uncaught_02.js)
+[01_node.js_design_fundamentals/06_callbacks_uncaught_exceptions/uncaughtIntercept.js](design_patterns_code/01_node.js_design_fundamentals/06_callbacks_uncaught_exceptions/uncaughtIntercept.js)
 
 * The preceding catch statement will never receive the JSON parsing exception
     * it will travel back to the stack in which the exception was thrown
     * the stack ends up in the event loop and not with the function that triggers the asynchronous operation
 * we still have a last chance to perform some cleanup or logging before the application terminates  
     * Node.js emits a special event called `uncaughtException` just before exiting the process
-
-[01_design_fundamentals/uncaught_03.js](design_patterns_code/01_design_fundamentals/uncaught_03.js)
 
 * **an uncaught exception leaves the application in a state that is not guaranteed to be consistent**
     * there might still have incomplete I/O requests running, or closures might have become inconsistent
@@ -351,3 +349,37 @@ function readJSON(filename, callback) {
 ## The module system and its patterns
 
 * Modules are the main mechanism to enforce **information hiding** by keeping private all the functions and variables that are not explicitly marked to be **exported**
+
+### The revealing module pattern
+
+* One of the major problems with JavaScript is the absence of namespacing
+    * Programs run in the global scope polluting it with data that comes from both internal application code and dependencies
+* A popular technique to solve this problem is called revealing module pattern and it looks like the following
+
+```js
+var module = (function() {
+    var privateFoo = function() { ... };
+    var privateVar = [ ];
+
+    var export = {
+        publicFoo = function() { ... },
+        publicVar = function() { ... }
+    }
+    return export;
+}) ();
+```
+
+* **This pattern leverages a self-invoking function to create a private scope, exporting only the parts that are meant to be public**
+* the `module` variable contains only the exported API, while the rest of the module content is practically inaccessible from outside
+
+### Node.js modules explained
+
+* To describe how it works, we can make an analogy with the revealing module pattern, where each module runs in a private scope, so that every variable that is defined locally does not pollute the global namespace
+
+#### A homemade module loader
+
+* Let's start by creating a function that loads the content of a module, wraps it into a private scope, and evaluates it
+
+[01_node.js_design_fundamentals/07_homemade_module_loader/loader.js](design_patterns_code/01_node.js_design_fundamentals/07_homemade_module_loader/loader.js)
+
+* Features such as `eval()` or the functions of the [vm module](http://nodejs.org/ api/vm.html) can be easily used in the wrong way or with the wrong input, thus opening a system to code injection attacks. They should always be used with extreme care or avoided altogether.
