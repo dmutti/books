@@ -383,3 +383,12 @@ var module = (function() {
 [01_node.js_design_fundamentals/07_homemade_module_loader/loader.js](design_patterns_code/01_node.js_design_fundamentals/07_homemade_module_loader/loader.js)
 
 * Features such as `eval()` or the functions of the [vm module](http://nodejs.org/ api/vm.html) can be easily used in the wrong way or with the wrong input, thus opening a system to code injection attacks. They should always be used with extreme care or avoided altogether.
+* The loader module does the following:
+    1. resolve the full path of the module and assigns it to `id`. This task is delegated to `require.resolve()`, which implements a specific resolving algorithm
+    2. If the module was already loaded in the past, it should be available in the cache.
+    3. If the module was not yet loaded we create a `module` object that contains an exports property initialized with an empty object literal
+    4. The module object is cached
+    5. The module source code is read from its file and the code is evaluated. The module exports its public API by manipulating or replacing the `module.exports` object
+    6. the content of `module.exports`, which represents the public API of the module, is returned to the caller
+
+#### Defining a module
