@@ -324,3 +324,30 @@ function readJSON(filename, callback) {
 ```
 
 #### Uncaught exceptions
+
+* in order to avoid any exception to be thrown into the `fs.readFile()` callback, we put a try-catch block around `JSON.parse()`
+* Throwing an exception inside an asynchronous callback will cause the exception to jump up to the event loop and never be propagated to the next callback
+* **this is an unrecoverable state and the application will simply shut down printing the error to the `stderr` interface**
+
+[01_design_fundamentals/uncaught_01.js](design_patterns_code/01_design_fundamentals/uncaught_01.js)
+
+* wrapping the invocation of `readJSONThrows()` with a try-catch block will not work
+    * because the stack in which the block operates is different from the one in which our callback is invoked
+
+[01_design_fundamentals/uncaught_02.js](design_patterns_code/01_design_fundamentals/uncaught_02.js)
+
+* The preceding catch statement will never receive the JSON parsing exception
+    * it will travel back to the stack in which the exception was thrown
+    * the stack ends up in the event loop and not with the function that triggers the asynchronous operation
+* we still have a last chance to perform some cleanup or logging before the application terminates  
+    * Node.js emits a special event called `uncaughtException` just before exiting the process
+
+[01_design_fundamentals/uncaught_03.js](design_patterns_code/01_design_fundamentals/uncaught_03.js)
+
+* **an uncaught exception leaves the application in a state that is not guaranteed to be consistent**
+    * there might still have incomplete I/O requests running, or closures might have become inconsistent
+* in production, always exit anyway from the application after an uncaught exception is received
+
+## The module system and its patterns
+
+* Modules are the main mechanism to enforce **information hiding** by keeping private all the functions and variables that are not explicitly marked to be **exported**
