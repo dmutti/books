@@ -392,3 +392,60 @@ var module = (function() {
     * [6] the content of `module.exports`, which represents the public API of the module, is returned to the caller
 
 #### Defining a module
+
+```js
+var dependency = require('./anotherModule');
+
+function log() {
+    console.log('Well done ' + dependency.username);
+}
+
+module.exports.run = function() {
+    log();
+};
+```
+
+* everything inside a module is private unless it's assigned to the `module.exports` variable
+* The contents of this variable are then cached and returned when the module is loaded using `require()`
+
+#### Defining globals
+
+* Even if all the variables and functions that are declared in a module are defined in its local scope, it is still possible to define a global variable
+* the module system exposes a special variable called `global`
+    * Everything that is assigned to this variable will end up automatically in the global scope
+
+#### module.exports vs exports
+
+* The variable exports is just a reference to the initial value of `module.exports`
+    * such a value is essentially a simple object literal created before the module is loaded.
+* If we want to export something other than an object literal, as for example a function, an instance, or even a string, we have to reassign `module.exports` as follows:
+
+```js
+module.exports = function() {
+    console.log('Hello');
+}
+```
+
+#### require is synchronous
+
+* `require` function is synchronous
+    * it returns the module contents using a simple direct style, and no callback is required.
+* **any assignment to module.export must be synchronous as well**
+* This property has important repercussions in the way we define modules, as it limits us to mostly using synchronous code during the definition of a module.
+
+#### The resolving algorithm
+
+* Node.js solves this problem [*dependency hell*] elegantly by loading a different version of a module depending on where the module is loaded from.
+* The resolving algorithm can be divided into the following three major branches:
+    * **File modules** - If `moduleName` starts with "/" it's considered already an absolute path to the module and it's returned as it is. If it starts with "./", then `moduleName` is considered a relative path, which is calculated starting from the requiring module
+    * **Core modules** - If `moduleName` is not prefixed with "/" or "./", the algorithm will first try to search within the core Node.js modules
+    * **Package modules** - If no core module is found matching `moduleName`, then the search continues by looking for a matching module into the first `node_modules` directory that is found navigating up in the directory structure starting from the requiring module. The algorithm continues to search for a match by looking into the next `node_modules` directory up in the directory tree, until it reaches the root of the filesystem.
+
+#### The module cache
+
+* Each module is loaded and evaluated only the first time it is required, since any subsequent call of `require()` will simply return the cached version.
+* Caching is crucial for performances, but it also has some important functional implications:
+    * **It makes it possible to have cycles within module dependencies**
+    * It guarantees, to some extent, that always the same instance is returned when requiring the same module from within a given package
+
+### Module definition patterns
