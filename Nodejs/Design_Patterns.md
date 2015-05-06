@@ -449,3 +449,134 @@ module.exports = function() {
     * It guarantees, to some extent, that always the same instance is returned when requiring the same module from within a given package
 
 ### Module definition patterns
+
+* The module system, besides being a mechanism for loading dependencies, is also a tool for defining APIs.
+
+#### Named exports
+
+* The most basic method for exposing a public API is using **named exports**
+* It consists in assigning all the values we want to make public to properties of the object referenced by `exports` (or `module.exports`)
+    * the resulting exported object becomes a container or namespace for a set of related functionality
+
+```js
+//file logger.js
+exports.info = function(message) {
+    console.log('info: ' + message);
+};
+
+//file main.js
+var logger = require('./logger');
+logger.info('This is an informational message');
+```
+
+#### Exporting a function
+
+* It consists in reassigning the whole `module.exports` variable to a function
+* Its main strength it's the fact that it exposes only a single functionality, which provides a clear entry point for the module, and makes it simple to understand and use
+* it also honors the principle of small surface area very well
+* A possible extension of this pattern is using the exported function as namespace for other public APIs
+
+```js
+//file logger.js
+module.exports = function(message) { //standard
+    console.log('info: ' + message);
+};
+
+module.exports.verbose = function(message) { //extension
+    console.log('verbose: ' + message);
+};
+
+//file main.js
+var logger = require('./logger');
+logger('This is an informational message'); //standard
+logger.verbose('This is a verbose message'); //extension
+```
+
+#### Exporting a constructor
+
+* It is a specialization of a module that exports a function
+* we allow the user to create new instances using the constructor
+    * we also give them the ability to extend its prototype and forge new classes
+
+```js
+//file logger.js
+function Logger(name) {
+    this.name = name;
+};
+
+Logger.prototype.log = function(message) {
+    console.log('[' + this.name + '] ' + message);
+};
+
+Logger.prototype.info = function(message) {
+    this.log('info: ' + message);
+};
+
+Logger.prototype.verbose = function(message) {
+    this.log('verbose: ' + message);
+};
+module.exports = Logger;
+
+//file main.js
+var Logger = require('./logger');
+var dbLogger = new Logger('DB');
+
+dbLogger.info('This is an informational message');
+var accessLogger = new Logger('ACCESS');
+accessLogger.verbose('This is a verbose message');
+```
+
+* A variation of this pattern consists in applying a `guard` against invocations that don't use the new instruction. This little trick allows us to use our module as a factory.
+* we check whether `this` exists and is an instance of `Logger`
+    * If any of these conditions is false, it means that the `Logger()` function was invoked without using `new`
+    * we proceed with creating the new instance properly and returning it to the caller
+
+```js
+function Logger(name) {
+    if(!(this instanceof Logger)) {
+        return new Logger(name);
+    }
+    this.name = name;
+};
+
+//file main.js
+var Logger = require('./logger');
+var dbLogger = Logger('DB');
+accessLogger.verbose('This is a verbose message');
+```
+
+#### Exporting an instance
+
+* We can leverage the caching mechanism of `require()` to easily define stateful instances
+    * objects with a state created from a constructor or a factory, which can be shared across different modules
+* This pattern is very much like creating a **Singleton**, however, it does not guarantee the uniqueness of the instance across the entire application
+    * a module might be installed multiple times inside the dependency tree of an application
+    * This results with multiple instances of the same logical module, all running in the context of the same Node.js application.
+* Because the module is cached, every module that requires the `logger` module will actually always retrieve the same instance of the object, thus sharing its state.
+
+
+```js
+//file logger.js
+function Logger(name) {
+    this.count = 0;
+    this.name = name;
+};
+
+Logger.prototype.log = function(message) {
+    this.count++;
+    console.log('[' + this.name + '](' + this.count + ') ' + message);
+};
+
+module.exports = new Logger('DEFAULT'); //standard
+module.exports.Logger = Logger; //extension
+
+//file main.js
+var logger = require('./logger'); //standard
+logger.log('This is an informational message');
+
+
+var logger2 = new logger.Logger('CUSTOM'); //extension
+logger2.log('This is an informational message');
+```
+
+#### Modifying other modules or the global scope
