@@ -580,3 +580,44 @@ logger2.log('This is an informational message');
 ```
 
 #### Modifying other modules or the global scope
+
+* A module can even export nothing
+    * or can modify the global scope and any object in it, including other modules in the cache
+* this pattern can be useful and safe under some circumstances (for example, for testing)
+* **monkey patching**
+    * the practice of modifying the existing objects at runtime to change or extend their behavior or to apply temporary fixes
+* `patcher` must be required before using the `logger` module for the first time in order to allow the patch to be applied
+
+```js
+//file patcher.js
+// ./logger is another module
+require('./logger').customMessage = function() {
+    console.log('This is a new functionality');
+};
+
+//file main.js
+require('./patcher');
+var logger = require('./logger');
+logger.customMessage();
+```
+
+## The observer pattern
+
+* Pattern (observer): defines an object (called subject), which can notify a set of observers (or listeners), when a change in its state happens.
+
+### The EventEmitter
+
+* The observer pattern is already built into the core and is available through the `EventEmitter` class
+* The `EventEmitter` is a prototype, and it is exported from the `events` core module
+* **Inside the listener, `this` refers to the instance of the `EventEmitter` that produces the event**
+
+```js
+var EventEmitter = require('events').EventEmitter;
+var eeInstance = new EventEmitter();
+```
+
+* The essential methods of the `EventEmitter` are
+    * `on(event, listener)`: This method allows you to register a new listener (a function) for the given event type (a string)
+    * `once(event, listener)`: This method registers a new listener, which is then removed after the event is emitted for the first time
+    * `emit(event, [arg1], [...])`: This method produces a new event and provides additional arguments to be passed to the listeners
+    * `removeListener(event, listener)`: This method removes a listener for the specified event type
