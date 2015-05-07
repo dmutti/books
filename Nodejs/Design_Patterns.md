@@ -621,3 +621,7 @@ var eeInstance = new EventEmitter();
     * `once(event, listener)`: This method registers a new listener, which is then removed after the event is emitted for the first time
     * `emit(event, [arg1], [...])`: This method produces a new event and provides additional arguments to be passed to the listeners
     * `removeListener(event, listener)`: This method removes a listener for the specified event type
+* big difference between a listener and a traditional Node.js callback
+    * the first argument is not an error, but it can be any data passed to `emit()` at the moment of its invocation
+
+### Create and use an EventEmitter
