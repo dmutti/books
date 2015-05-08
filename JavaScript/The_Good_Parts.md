@@ -178,3 +178,47 @@ MYAPP.flight = {
 ```
 
 # Functions
+
+* Functions in JavaScript are objects
+    * Objects are collections of name/value pairs having a hidden link to a prototype object
+    * Objects produced from object literals are linked to `Object.prototype`
+* Function objects are linked to `Function.prototype` (which is itself linked to `Object.prototype`)
+    * Every function is also created with two additional hidden properties
+        * the function's context
+        * the code that implements the function's behavior.
+* Every function object is also created with a `prototype` property
+    * Its value is an object with a constructor property whose value is the function
+    * This is distinct from the hidden link to `Function.prototype`
+
+## Function Literal
+
+* Function objects are created with function literals
+* The function object created by a function literal contains a link to that outer context
+    * This is called closure
+    * This is the source of enormous expressive power
+
+```js
+var add = function(a,b) {
+    return a + b;
+};
+```
+
+## Invocation
+
+* Invoking a function suspends the execution of the current function, passing control and parameters to the new function
+* In addition to the declared parameters, every function receives two additional parameters
+    * `this` -  determined by the invocation pattern (method invocation pattern, the function invocation pattern, the constructor invocation pattern, and the apply invocation pattern)
+    * `arguments`
+* There is no runtime error when the number of arguments and the number of parameters do not match
+    * If there are too many argument values, the extra argument values will be ignored
+    * If there are too few argument values, the undefined value will be substituted for the missing values
+* There is no type checking on the argument values
+    * any type of value can be passed to any parameter.
+
+### The Method Invocation Pattern
+
+### The Function Invocation Pattern
+
+### The Constructor Invocation Pattern
+
+### The Apply Invocation Pattern
