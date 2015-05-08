@@ -665,3 +665,44 @@ findPatternObject
 * `FindPattern` object has a full set of methods, in addition to being observable by inheriting the functionality of the `EventEmitter`
 
 ### Synchronous and asynchronous events
+
+* As with callbacks, events can be emitted synchronously or asynchronously
+    * **it is crucial that we never mix the two approaches in the same `EventEmitter`**
+* When the events are emitted asynchronously, the user has all the time to register new listeners even after the `EventEmitter` is initialized, because the events are guaranteed not to be fired until the next cycle of the event loop
+* **emitting events synchronously requires that all the listeners are registered before the `EventEmitter` function starts to emit any event**
+* If the ready event was emitted asynchronously, then the following code would work perfectly; however, the event is produced synchronously and the listener is registered after the event was already sent, so the result is that the listener is never invoked; the code will print nothing to the console.
+
+```js
+function SyncEmit() {
+    this.emit('ready');
+}
+util.inherits(SyncEmit, EventEmitter);
+
+var syncEmit = new SyncEmit();
+
+syncEmit.on('ready', function() {
+    console.log('Object is ready to be used');
+});
+```
+
+### EventEmitter vs Callbacks
+
+* A common dilemma when defining an asynchronous API is to check whether to use an `EventEmitter` or simply accept a callback
+* The general differentiating rule is semantic
+    * callbacks should be used when a result must be returned in an asynchronous way
+    * events should be used when there is a need to communicate that something has just happened
+* callbacks have some limitations when it comes to supporting different types of events
+    * we can still differentiate between multiple events by passing the type as an argument of the callback, or by accepting several callbacks, one for each supported event. However, this cannot exactly be considered an elegant API. In this situation, an `EventEmitter` can give a better interface and leaner code
+* Another case where the `EventEmitter` might be preferable is when the same event can occur multiple times, or not occur at all
+    * A callback is expected to be invoked exactly once, whether the operation is successful or not
+    * The fact that we have a possibly repeating circumstance should let us think again about the semantic nature of the occurrence, which is more similar to an event that has to be communicated rather than a result; in this case an `EventEmitter` is the preferred choice
+* an API using callbacks can notify only that particular callback, while using an `EventEmitter` function it's possible for multiple listeners to receive the same notification
+
+### Combine callbacks and EventEmitter
+
+* This pattern is extremely useful when we want to implement the principle of **small surface area** by exporting a traditional asynchronous function as the main functionality, while still providing richer features, and more control by returning an `EventEmitter`
+    * Example: [node-glob module](https://npmjs.org/package/glob)
+    * The main entry point of the module is the function it exports `glob(pattern, [options], callback)`
+    * the function returns an `EventEmitter` that provides a more fine-grained report over the state of the process
+
+        Pattern: create a function that accepts a callback and returns an `EventEmitter`, thus providing a simple and clear entry point for the main functionality, while emitting more fine-grained events using the `EventEmitter`.
