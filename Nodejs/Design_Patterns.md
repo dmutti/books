@@ -625,3 +625,43 @@ var eeInstance = new EventEmitter();
     * the first argument is not an error, but it can be any data passed to `emit()` at the moment of its invocation
 
 ### Create and use an EventEmitter
+
+[01_node.js_design_fundamentals/09_eventemitter_findpattern/main.js](design_patterns_code/01_node.js_design_fundamentals/09_eventemitter_findpattern/main.js)
+
+* The simplest way is to create a new instance and use it directly
+* The EventEmitter created will produce the following three events:
+    * fileread: This event occurs when a file is read
+    * found: This event occurs when a match has been found
+    * error: This event occurs when an error has occurred during the reading of the file
+
+### Propagating errors
+
+* The `EventEmitter` (as it happens for callbacks) cannot just throw exceptions when an error condition occurs, as they would be lost in the event loop if the event is emitted asynchronously
+* **the convention is to emit a special event, called `error`, and to pass an `Error` object as an argument**
+
+### Make any object observable
+
+[01_node.js_design_fundamentals/10_eventemitter_inherits/FindPattern.js](design_patterns_code/01_node.js_design_fundamentals/10_eventemitter_inherits/FindPattern.js)
+
+* to make a generic object observable is possible by extending the `EventEmitter` class
+* The `FindPattern` prototype that we defined extends the `EventEmitter` using the `inherits()` function provided by the core module `util`
+
+[01_node.js_design_fundamentals/10_eventemitter_inherits/main.js](design_patterns_code/01_node.js_design_fundamentals/10_eventemitter_inherits/main.js)
+
+```js
+var findPatternObject = new FindPattern(/hello \w+/);
+findPatternObject
+    .addFile('fileA.txt')
+    .addFile('fileB.json')
+    .find()
+    .on('found', function(file, match) {
+        console.log('Matched "' + match + '" in file ' + file);
+    })
+    .on('error', function(err) {
+        console.log('Error emitted ' + err.message);
+    });
+```
+
+* `FindPattern` object has a full set of methods, in addition to being observable by inheriting the functionality of the `EventEmitter`
+
+### Synchronous and asynchronous events
