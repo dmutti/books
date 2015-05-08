@@ -704,5 +704,4 @@ syncEmit.on('ready', function() {
     * Example: [node-glob module](https://npmjs.org/package/glob)
     * The main entry point of the module is the function it exports `glob(pattern, [options], callback)`
     * the function returns an `EventEmitter` that provides a more fine-grained report over the state of the process
-
-        Pattern: create a function that accepts a callback and returns an `EventEmitter`, thus providing a simple and clear entry point for the main functionality, while emitting more fine-grained events using the `EventEmitter`.
+* **Pattern** -- create a function that accepts a callback and returns an `EventEmitter`, thus providing a simple and clear entry point for the main functionality, while emitting more fine-grained events using the `EventEmitter`.
