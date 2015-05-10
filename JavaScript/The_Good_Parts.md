@@ -302,3 +302,60 @@ console.log(myQuo.get_status()); //confused
 ```
 
 ### The Apply Invocation Pattern
+
+* The `apply` method lets us construct an array of arguments to use to invoke a function
+    * It also lets us choose the value of `this`
+* The apply method takes two parameters
+    * The first is the value that should be bound to `this`
+    * The second is an array of parameters
+
+```js
+var add = function(a, b) {
+    return a + b;
+};
+
+var array = [3, 4];
+var sum = add.apply(null, array);
+console.log(sum);
+
+//----------------------------------
+
+var statusObject = {
+    status: 'A-OK'
+};
+
+var Quo = function (string) {
+    this.status = string;
+};
+
+Quo.prototype.get_status = function () {
+    return this.status;
+};
+
+var status = Quo.prototype.get_status.apply(statusObject);
+console.log(status);//A-OK
+```
+
+## Arguments
+
+* the `arguments` array gives the function access to all of the arguments that were supplied with the invocation, including excess arguments that were not assigned to parameters
+* Because of a design error, arguments is not really an array
+    * It is an array-like object
+    * `arguments` has a length property, but it lacks all of the array methods
+
+```js
+var sum = function() {
+    var sum = 0;
+    for (i in arguments) {
+        sum += arguments[i];
+    }
+    return sum;
+}
+
+console.log(sum(1,2,3));
+```
+
+## Functions
+
+* A function always returns a value. If the return value is not specified, then `undefined` is returned
+* If the function was invoked with the `new` prefix and the return value is not an object, then `this` (the new object) is returned instead.
