@@ -254,6 +254,51 @@ var sum = add(3, 4);    // sum is 7
     * A consequence of this error is that a method cannot employ an inner function to help it do its work because the inner function does not share the method’s access to the object as its `this` is bound to the wrong value
     * workaround: define a variable and assigns it the value of `this`. then the inner function will have access to `this` through that variable. By convention, the name of that variable is `that`
 
+```js
+var myObject = {
+    value: 0,
+    increment: function(inc) {
+        this.value += typeof inc === 'number' ? inc : 1;
+    },
+    add: function(first, second) {
+        return first + second;
+    }
+};
+
+myObject.double = function() {
+    var that = this; //workaround
+
+    var helper = function() {
+        that.value += that.add(that.value, that.value);
+    };
+    helper();
+};
+
+myObject.increment();
+myObject.increment(2);
+myObject.double();
+console.log(myObject.value);
+```
+
 ### The Constructor Invocation Pattern
+
+* JavaScript is a prototypal inheritance language. **Objects can inherit properties directly from other objects. The language is class-free.**
+* If a function is invoked with the `new` prefix, then a new object will be created with a hidden link to the value of the function’s `prototype` member, and this will be bound to that new object
+* Functions that are intended to be used with the new prefix are called constructors
+    * By convention, they are kept in variables with a capitalized name. If a constructor is called without the new prefix, very bad things can happen without a compile-time or runtime warning, so the capitalization convention is really important.
+* **Use of this style of constructor functions is not recommended.**
+
+```js
+var Quo = function (string) {
+    this.status = string;
+};
+
+Quo.prototype.get_status = function () {
+    return this.status;
+};
+
+var myQuo = new Quo("confused");
+console.log(myQuo.get_status()); //confused
+```
 
 ### The Apply Invocation Pattern
