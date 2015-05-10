@@ -217,7 +217,42 @@ var add = function(a,b) {
 
 ### The Method Invocation Pattern
 
+* When a function is stored as a property of an object, we call it a method.
+* When a method is invoked, `this` is bound to that object
+* If an invocation expression contains a refinement (that is, a `.` dot expression or `[subscript]` expression), it is invoked as a method
+* A method can use `this` to access the object so that it can retrieve values from the object or modify the object
+* **The binding of `this` to the object happens at invocation time**
+    * This very late binding makes functions that use `this` highly reusable
+* Methods that get their object context from this are called public methods
+
+```js
+var myObject = {
+    value: 0,
+    increment: function(inc) {
+        this.value += typeof inc === 'number' ? inc : 1;
+    }
+};
+
+myObject.increment();
+console.log(myObject.value); //1
+
+myObject.increment(2);
+console.log(myObject.value); //3
+```
+
 ### The Function Invocation Pattern
+
+* When a function is not the property of an object, then it is invoked as a function
+* When a function is invoked with this pattern, `this` is bound to the global object
+
+```js
+var sum = add(3, 4);    // sum is 7
+```
+
+* This was a mistake in the design of the language
+    * Had the language been designed correctly, when the inner function is invoked, `this` would still be bound to the `this` variable of the outer function
+    * A consequence of this error is that a method cannot employ an inner function to help it do its work because the inner function does not share the method’s access to the object as its `this` is bound to the wrong value
+    * workaround: define a variable and assigns it the value of `this`. then the inner function will have access to `this` through that variable. By convention, the name of that variable is `that`
 
 ### The Constructor Invocation Pattern
 
