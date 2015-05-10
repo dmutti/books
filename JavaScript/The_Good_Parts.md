@@ -359,3 +359,77 @@ console.log(sum(1,2,3));
 
 * A function always returns a value. If the return value is not specified, then `undefined` is returned
 * If the function was invoked with the `new` prefix and the return value is not an object, then `this` (the new object) is returned instead.
+
+## Exceptions
+
+* The `throw` statement interrupts execution of the function
+    * It should be given an exception object containing a `name` property that identifies the type of the exception, and a descriptive `message` property
+    * You can also add other properties.
+* A `try` statement has a single `catch` block that will catch all exceptions. If your handling depends on the type of the exception, then the exception handler will have to inspect the name to determine the type of the exception.
+
+
+```js
+var add = function(a, b) {
+    if (typeof a !== 'number' || typeof b !== 'number') {
+        throw {
+            name: 'TypeError',
+            message: 'add needs numbers'
+        };
+    }
+    return a + b;
+};
+
+var try_it = function() {
+    try {
+        add("seven");
+    } catch (e) {
+        console.log(e.name + ': ' + e.message);
+    }
+}
+
+try_it();
+```
+
+## Augmenting Types
+
+* adding a method to `Object.prototype` makes that method available to all objects. This also works for functions, arrays, strings, numbers, regular expressions, and booleans.
+* by augmenting `Function.prototype`, we can make a method available to all functions
+* By augmenting `Function.prototype` with a `method` method, we no longer have to type
+the name of the prototype property.
+* all values are immediately endowed with the new methods, even values that were created before the methods were created
+
+```js
+Function.prototype.method = function(name, func) {
+    this.prototype[name] = func;
+    return this;
+};
+
+Number.method('integer', function () {
+    return Math[this < 0 ? 'ceil' : 'floor'](this);
+});
+
+console.log((-10/3).integer()); //-3
+
+String.method('trim', function () {
+    return this.replace(/^\s+|\s+$/g, '');
+});
+
+console.log('"' + " neat ".trim() + '"'); //"neat"
+```
+
+* add a method only if the method is known to be missing
+
+```js
+Function.prototype.method = function(name, func) {
+    if (!this.prototype[name]) {
+        this.prototype[name] = func;
+    }
+};
+```
+
+* the `for in` statement interacts badly with prototypes. We can mitigate that with
+    * `hasOwnProperty` method to screen out inherited properties
+    * and we can look for specific types
+
+
+## Recursion
