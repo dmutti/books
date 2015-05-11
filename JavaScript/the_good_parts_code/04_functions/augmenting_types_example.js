@@ -13,4 +13,4 @@ String.method('trim', function () {
     return this.replace(/^\s+|\s+$/g, '');
 });
 
-console.log('"' + " neat ".trim() + '"');
+console.log('"' + " neat ".trim() + '"'); //"neat"

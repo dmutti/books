@@ -1,0 +1,1 @@
+var quo = function (status) {    return {        get_status: function() {            return status;        }    };};var myQuo = quo("amazed");console.log(myQuo.get_status());

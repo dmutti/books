@@ -433,3 +433,148 @@ Function.prototype.method = function(name, func) {
 
 
 ## Recursion
+
+```js
+var hanoi = function(disc, src, aux, dst) {
+    if (disc > 0) {
+        hanoi(disc - 1, src, dst, aux);
+        console.log('Move disc ' + disc + ' from ' + src + ' to ' + dst);
+        hanoi(disc - 1, aux, src, dst);
+    }
+};
+hanoi(3, 'Src', 'Aux', 'Dst');
+```
+
+## Scope
+
+* JavaScript does not have block scope even though its block syntax suggests that it does.
+* JavaScript does have function scope. Parameters and variables defined in a function are not visible outside of the function, and variables defined anywhere within a function is visible everywhere within the function
+* In many modern languages, it is recommended that variables be declared as late as possible, at the first point of use. That turns out to be bad advice for JavaScript because it lacks block scope.
+    * **it is best to declare all of the variables used in a function at the top of the function body**
+
+## Closure
+
+* `myObject` had a value and an increment method. Suppose we wanted to protect the value from unauthorized changes.
+* Instead of initializing `myObject` with an object literal, we will initialize myObject by calling a function that returns an object literal
+    * That function defines a `value` variable
+    * That variable is always available to the `increment` and `getValue` methods, but the function’s scope keeps it hidden from the rest of the program
+* We are not assigning a function to `myObject`. We are assigning the result of invoking that function
+    * Notice the `()` on the last line
+    * The function returns an object containing two methods, and those methods continue to enjoy the privilege of access to the value variable
+
+```js
+
+var myObject = function() {
+    var value = 0;
+    return {
+        increment: function(inc) {
+            value += typeof inc === 'number' ? inc : 1;
+        },
+        getValue: function() {
+            return value;
+        }
+    };
+}();
+
+myObject.increment();
+myObject.increment(2);
+console.log(myObject.getValue()); //3
+```
+
+* Doing the same thing with `Quo`
+    * This quo function is designed to be used without the `new` prefix, so the name is not capitalized.
+
+```js
+var quo = function (status) {
+    return {
+        get_status: function() {
+            return status;
+        }
+    };
+};
+
+var myQuo = quo("amazed");
+console.log(myQuo.get_status()); //amazed
+```
+
+## Module
+
+* We can use functions and closure to make modules. A module is a function or object that presents an interface but that hides its state and implementation.
+* By using functions to produce modules, we can almost completely eliminate our use of global variables
+* The general pattern of a module is a function that defines private variables and functions; creates privileged functions which, through closure, will have access to the private variables and functions; and that returns the privileged functions or stores them in an accessible place
+
+### Example 1
+
+```js
+String.method('deentityify', function() {
+    var entity = {
+        quot: '"',
+        lt: '<',
+        gt: '>'
+    };
+
+    return function() {
+        return this.replace(/&([^&;]+);/g,
+            function(a,b) {
+                var r = entity[b];
+                return typeof r === 'string' ? r : a;
+            }
+        );
+    };
+}());
+
+console.log('&lt;&quot;&gt;'.deentityify());
+```
+
+* Notice the last line. We immediately invoke the function we just made with the `( )` operator. That invocation creates and returns the function that becomes the `deentityify` method.
+* The module pattern takes advantage of function scope and closure to create relation- ships that are binding and private. In this example, only the `deentityify` method has access to the entity data structure.
+
+### Example 2
+
+* The methods do not make use of this or that. As a result, there is no way to compromise the seqer
+* It isn’t possible to get or change the `prefix` or `seq` except as permitted by the methods
+* The seqer object is mutable, so the methods could be replaced, but that still does not give access to its secrets
+* If we passed `seqer.gensym` to a third party’s function, that function would be able to generate unique strings, but would be unable to change the `prefix` or `seq`
+
+```js
+var serial_maker = function() {
+    var prefix = '';
+    var seq = 0;
+    return {
+        set_prefix: function(p) {
+            prefix = String(p);
+        },
+        set_seq: function(s) {
+            seq = s;
+        },
+        gensym: function() {
+            var result = prefix + seq;
+            seq += 1;
+            return result;
+        }
+    };
+};
+var seqer = serial_maker();
+seqer.set_prefix('Q');
+seqer.set_seq(1000);
+console.log(seqer.gensym());
+```
+
+## Cascade
+
+* Some methods do not have a return value
+    * For example, it is typical for methods that set or change the state of an object to return nothing
+* If we have those methods return `this` instead of `undefined`, we can enable cascades
+
+```js
+getElement('myBoxDiv').
+    move(350, 150).
+    width(100).
+    height(100).
+    color('red').
+    border('10px outset').
+    padding('4px').
+    appendText("Please stand by");
+```
+
+## Curry
