@@ -578,3 +578,19 @@ getElement('myBoxDiv').
 ```
 
 ## Curry
+
+* Functions are values, and we can manipulate function values in interesting ways
+* `Currying` allows us to produce a new function by combining a function and an argument
+* The `curry` method works by creating a closure that holds that original function and the arguments to curry
+    * It returns a function that, when invoked, returns the result of calling that original function, passing it all of the arguments from the invocation of curry and the current invocation
+    * It uses the Array `concat` method to concatenate the two arrays of arguments together
+
+```js
+Function.method('curry', function () {
+    var slice = Array.prototype.slice,
+        args = slice.apply(arguments),
+        that = this;
+    return function () {
+        return that.apply(null, args.concat(slice.apply(arguments)));
+    };
+});
