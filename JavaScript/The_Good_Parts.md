@@ -628,3 +628,52 @@ var fibonacci_memoized = function() {
 ```
 
 # Inheritance
+
+* **JavaScript, being a loosely typed language, never casts. The lineage of an object is irrelevant. What matters about an object is what it can do, not what it is descended from.**
+* JavaScript is a prototypal language, which means that objects inherit directly from other objects.
+
+## Pseudoclassical
+
+* Instead of having objects inherit directly from other objects, an unnecessary level of indirection is inserted such that objects are produced by constructor functions.
+* When a function object is created, the Function constructor that produces the function object runs some code like this:
+
+```js
+this.prototype = { constructor: this };
+```
+
+* The new function object is given a `prototype` property whose value is an object containing a constructor property whose value is the new function object.
+    * The `prototype` object is the place where inherited traits are to be deposited
+    * Every function gets a `prototype` object because the language does not provide a way of deter- mining which functions are intended to be used as constructors.
+* When a function is invoked with the constructor invocation pattern using the `new` prefix, this modifies the way in which the function is executed.
+    * there is a serious hazard with the use of constructor functions. If you forget to include the `new` prefix when calling a constructor function, then `this` will not be bound to a new object
+    * `this` will be bound to the global object, so instead of augmenting your new object, you will be clobbering global variables
+    * To mitigate this problem, there is a convention that all constructor functions are named with an initial capital, and that nothing else is spelled with an initial capital.
+    * A much better alternative is to not use `new` at all.
+* Much of the complexity of class hierarchies is motivated by the constraints of static type checking. JavaScript is completely free of those constraints
+    * In classical languages, class inheritance is the only form of code reuse. JavaScript has more and better options.
+
+## Object Specifiers
+
+* It sometimes happens that a constructor is given a very large number of parameters. This can be troublesome because it can be very difficult to remember the order of the arguments
+* In such cases, it can be much friendlier if we write the constructor to accept a single object specifier instead. That object contains the specification of the object to be constructed
+
+* instead of
+
+```js
+var myObject = maker(f, l, m, c, s);
+```
+
+* we can write
+
+```js
+var myObject = maker({
+    first: f,
+    last: l,
+    state: s,
+    city: c
+});
+```
+
+* The arguments can now be listed in any order, arguments can be left out if the con- structor is smart about defaults, and the code is much easier to read
+
+## Prototypal
