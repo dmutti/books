@@ -594,3 +594,16 @@ Function.method('curry', function () {
         return that.apply(null, args.concat(slice.apply(arguments)));
     };
 });
+
+var add = function(a, b) {
+    return a + b;
+};
+
+var add1 = add.curry(1);
+console.log(add1(6)); //7
+```
+
+## Memoization
+
+* Functions can use objects to remember the results of previous operations, making it possible to avoid unnecessary work
+    * This optimization is called *memoization*
