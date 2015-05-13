@@ -607,3 +607,24 @@ console.log(add1(6)); //7
 
 * Functions can use objects to remember the results of previous operations, making it possible to avoid unnecessary work
     * This optimization is called *memoization*
+
+```js
+var fibonacci_recursive = function(n) {
+    return n < 2 ? n : fibonacci_recursive(n-1) + fibonacci_recursive(n-2);
+};
+
+var fibonacci_memoized = function() {
+    var memo = [0, 1];
+    var fib = function(n) {
+        var result = memo[n];
+        if (typeof result !== 'number') {
+            result = fib(n-1) + fib(n-2);
+            memo[n] = result;
+        }
+        return result;
+    };
+    return fib;
+}();
+```
+
+# Inheritance
