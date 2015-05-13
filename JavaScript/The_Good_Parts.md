@@ -656,7 +656,6 @@ this.prototype = { constructor: this };
 
 * It sometimes happens that a constructor is given a very large number of parameters. This can be troublesome because it can be very difficult to remember the order of the arguments
 * In such cases, it can be much friendlier if we write the constructor to accept a single object specifier instead. That object contains the specification of the object to be constructed
-
 * instead of
 
 ```js
