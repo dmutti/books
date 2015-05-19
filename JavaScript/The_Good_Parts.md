@@ -745,3 +745,84 @@ var constructor = function(spec, my) {
 * The `my` object is a container of secrets that are shared by the constructors in the inheritance chain
     * The use of the `my` object is optional
     * If a `my` object is not passed in, then a `my` object is made
+* Declare the private instance variables and private methods for the object (done by simply declaring variables)
+    * variables and inner functions of the constructor become the private members of the instance
+    * inner functions have access to `spec` and `my` and `that` and the private variables
+* add the shared secrets to the `my` object. This is done by assignment: `my.member = value;`
+* Now, we make a new object and assign it to `that` (there are lots of ways to make a new object)
+* Next, we augment `that`, adding the privileged methods that make up the object’s interface
+    * We can assign new functions to members of `that`
+    * more securely, we can define the functions first as private methods, and then assign them to `that`
+
+```js
+var methodical = function() {
+    //...
+};
+that.methodical = methodical;
+```
+
+* The advantage to defining `methodical` in two steps is that if other methods want to call methodical, they can call `methodical()` instead of `that.methodical()`
+    * If the instance is damaged or tampered with so that `that.methodical` is replaced, the methods that call `methodical` will continue to work the same because their private `methodical` is not affected by modification of the instance
+* Finally, we return `that`
+* If all of the state of an object is private, then the object is tamper-proof
+    * Properties of the object can be replaced or deleted, but the integrity of the object is not compromised
+    * If we create an object in the functional style, and if all of the methods of the object make no use of `this` or `that`, then the object is durable.
+* A durable object cannot be compromised. Access to a durable object does not give an attacker the ability to access the internal state of the object except as permitted by the methods
+
+```js
+var mammal = function(spec) {
+    var that = { };
+    that.get_name = function() {
+        return spec.name;
+    };
+    that.says = function() {
+        return spec.saying || 'not_found';
+    };
+    return that;
+};
+var myMammal = mammal({name: 'Herb'});
+
+var cat = function(spec) {
+    spec.saying = spec.saying || 'meow';
+    var that = mammal(spec);
+    that.purr = function(n) {
+        var i, s = '';
+        if (s) {
+            s += '-';
+        }
+        s += 'r';
+    };
+    that.get_name = function() {
+        return that.says() + ' ' + spec.name + ' ' + that.says();
+    };
+    return that;
+};
+var myCat = cat({name: 'Henrietta'});
+
+Function.prototype.method = function(name, func) {
+    this.prototype[name] = func;
+    return this;
+};
+
+Object.method('superior', function(name) {
+    var that = this,
+        method = that[name];
+    return function() {
+        return method.apply(that, arguments);
+    };
+});
+
+var coolcat = function(spec) {
+    var that = cat(spec),
+        super_get_name = that.superior('get_name');
+    that.get_name = function(n) {
+        return 'like ' + super_get_name() + ' baby';
+    };
+    return that;
+}
+
+var myCoolCat = coolcat({name: 'bixby'});
+console.log(myCoolCat.get_name());
+```
+
+## Parts
