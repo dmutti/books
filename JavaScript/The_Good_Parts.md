@@ -826,3 +826,70 @@ console.log(myCoolCat.get_name());
 ```
 
 ## Parts
+
+* We can compose objects out of sets of parts
+* The "part" here is an "event processing part" embodied in the eventuality function object. You could imagine different parts that add other functions. The idea here is that you can use this system to add this functionality to individual objects where you need it. This concept is called a Mixin.
+*
+* [](http://stackoverflow.com/questions/6173780/douglas-crockfords-javascript-the-good-parts-chapter-5-5)
+
+```js
+var eventuality = function(that) {
+    var registry = { };
+
+    that.fire = function(event) {
+        var array,
+            func,
+            handler,
+            i,
+            type = typeof event === 'string' ? event : event.type;
+
+        if (registry.hasOwnProperty(type)) {
+            array = registry[type];
+            for (i = 0; i < array.length; i++) {
+                handler = array[i];
+                console.log('fire(): handler found at loop ' + i);
+
+                func = handler.method;
+                if (typeof func === 'string') {
+                    console.log('fire(): the found func is a string');
+                    console.log(func);
+                } else {
+                    console.log('fire(): the found method is NOT a string');
+                    func.apply(this, handler.parameters);
+                }
+
+            }
+        }
+        return this;
+    };
+    that.on = function(type, method, parameters) {
+        var handler = {
+            method: method,
+            parameters: typeof parameters === 'string' ? [parameters] : parameters
+        };
+        if (registry.hasOwnProperty(type)) {
+            registry[type].push(handler);
+        } else {
+            console.log('on(): "' + type + '" event registered');
+            registry[type] = [handler];
+        }
+        return this;
+    };
+    return that;
+}
+
+var myVar = {
+    hello: function(name) {
+        console.log('hello ' + name);
+    },
+    message: "this is a message"
+};
+eventuality(myVar);
+
+myVar.on('test', myVar.hello, 'Danilo');
+myVar.fire('test');
+myVar.on('message', myVar.message);
+myVar.fire({type: 'message'});
+```
+
+# Arrays
