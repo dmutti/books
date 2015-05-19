@@ -933,3 +933,40 @@ numbers.push('quatro'); //[ 'zero', 'one', 'two', 'tres', 'quatro' ]
 ```
 
 ## Delete
+
+* the `delete` operator can be used to remove elements from an array
+    * Unfortunately, that leaves a hole in the array
+
+```js
+var numbers = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'];
+delete numbers[2]; //[ 'zero', 'one', , 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine' ]
+```
+
+* JavaScript arrays have a `splice` method
+    *  The first argument is an ordinal in the array
+    * The second argument is the number of elements to delete
+    * Any additional arguments get inserted into the array at that point
+    * **Because every property after the deleted property must be removed and reinserted with a new key, this might not go quickly for large arrays**
+
+```js
+var numbers = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'];
+numbers.splice(2,1);
+```
+
+## Confusion
+
+* A common error in JavaScript programs is to use an object when an array is required or an array when an object is required
+* The rule is simple: **when the property names are small sequential integers, you should use an array. Otherwise, use an object**
+    *  The `typeof` operator reports that the type of an array is 'object'
+
+```js
+var is_array = function(value) {
+    return value && // reject null and other false values
+        typeof value === 'object' && // true for objects, arrays, and (weirdly) null
+        typeof value.length === 'number' && // the value has a length property that is a number
+        typeof value.splice === 'function' && // the value contains a splice method
+        !(value.propertyIsEnumerable('length')); //the length property is enumerable (will length be produced by a for in loop?)
+};
+```
+
+## Methods
