@@ -715,3 +715,33 @@ console.log(myCat.get_name()); //meow Henrietta meow
 ```
 
 ## Functional
+
+* One weakness of the previous inheritance patterns is that we get no privacy.
+* **All properties of an object are visible. We get no private variables and no private methods.**
+* a much better alternative: we start by making a function that will produce objects. We will give it a name that starts with a lowercase letter because it will not require the use of the `new` prefix. The function contains four steps
+    * 1. It creates a new object (an object literal, a constructor function with the `new` prefix, Object.create, or any function that returns an object)
+    * 2. It optionally defines private instance variables and methods. These are just ordinary `vars` of the function
+    * 3. It augments that new object with methods. Those methods will have privileged access to the parameters and the `vars` defined in the second step.
+    * 4. It returns that new object.
+
+```js
+var constructor = function(spec, my) {
+    var that, other_private_instance_variables;
+    my = my || { };
+
+    //Add shared variables and functions to my
+
+    that = a_new_object;
+
+    //Add privileged methods to that
+
+    return that;
+};
+```
+
+* The `spec` object contains all of the information that the constructor needs to make an instance
+    * The contents of the `spec` could be copied into private variables or transformed by other functions
+    * Or the methods can access information from `spec` as they need it.
+* The `my` object is a container of secrets that are shared by the constructors in the inheritance chain
+    * The use of the `my` object is optional
+    * If a `my` object is not passed in, then a `my` object is made
