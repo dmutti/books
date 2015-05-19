@@ -829,8 +829,6 @@ console.log(myCoolCat.get_name());
 
 * We can compose objects out of sets of parts
 * The "part" here is an "event processing part" embodied in the eventuality function object. You could imagine different parts that add other functions. The idea here is that you can use this system to add this functionality to individual objects where you need it. This concept is called a Mixin.
-*
-* [](http://stackoverflow.com/questions/6173780/douglas-crockfords-javascript-the-good-parts-chapter-5-5)
 
 ```js
 var eventuality = function(that) {
@@ -893,3 +891,45 @@ myVar.fire({type: 'message'});
 ```
 
 # Arrays
+
+* JavaScript provides an object that has some array-like characteristics
+* significantly slower than a real array, but be more convenient to use
+* inherits from `Array.prototype`
+
+## Array Literals
+
+* An array literal is a pair of square brackets surrounding zero or more values separated by commas
+* JavaScript allows an array to contain any mixture of values
+
+```js
+var empty = [ ];
+var numbers = ['zero', 'one', 'two'];
+var misc = ['string', 98.6, false, null, undefined, ['nested', 'array'], {object: true}, NaN, Infinity];
+console.log(empty[1]);//undefined
+console.log(numbers[1]);//one
+for (var i = 0; i < misc.length; i++) {
+    console.log('//' + i + ': ' + misc[i]);
+}
+```
+
+## Length
+
+* array `length` is not an upper bound
+*  If you store an element with a subscript that is greater than or equal to the current `length`, the `length` will increase to contain the new element.  
+    * **There is no array bounds error**
+* The [] postfix subscript operator converts its expression to a string using the expression’s `toString` method if it has one. That string will be used as the property name
+    * If the string looks like a positive integer that is greater than or equal to the array’s current length and is less than 4,294,967,295, then the length of the array is set to the new subscript plus one.
+* The `length` can be set explicitly
+    * Making the `length` larger does not allocate more space for the array
+    *  Making the `length` smaller will cause all properties with a subscript that is greater than or equal to the new `length` to be deleted
+* A new element can be appended to the end of an array by assigning to the array’s current `length`
+    * sometimes it is more convenient to use the `push` method
+
+```js
+var numbers = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'];
+numbers.length = 3; //[ 'zero', 'one', 'two' ]
+numbers[numbers.length] = 'tres'; //[ 'zero', 'one', 'two', 'tres' ]
+numbers.push('quatro'); //[ 'zero', 'one', 'two', 'tres', 'quatro' ]
+```
+
+## Delete
