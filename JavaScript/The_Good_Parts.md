@@ -1084,7 +1084,8 @@ console.log(Array.matrix(2, 3));// [ [ 0, 0, 0 ], [ 0, 0, 0 ] ]
     * The `RegExp` constructor is useful when a regular expression must be generated at runtime using material that is not available to the programmer.
 
 ```js
-var my_regexp = new RegExp("\"(?:\\.|[^\\\\\\\"])*\"", 'g');
+var parse_number = /^-?\d+(?:\.\d*)?(?:e[+\-]?\d+)?$/i;//literal
+var my_regexp = new RegExp("\"(?:\\.|[^\\\\\\\"])*\"", 'g');//constructor
 ```
 
 ## Elements
