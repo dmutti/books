@@ -1120,3 +1120,7 @@ var my_regexp = new RegExp("\"(?:\\.|[^\\\\\\\"])*\"", 'g');//constructor
     * It can also match line-ending characters when the `m` flag is specified
 
 ### Regexp Escape
+
+* The backslash character indicates escapement in regexp factors as well as in strings, but in regexp factors, it works a little differently.
+* `\d` is the same as [0-9] -- It matches a digit. `\D` is the opposite: [^0-9]
+* `\s` is the same as [\f\n\r\t\u000B\u0020\u00A0\u2028\u2029] -- a partial set of Unicode whitespace characters. `\S` is the opposite: [^\f\n\r\t\u000B\u0020\u00A0\u2028\ u2029]
