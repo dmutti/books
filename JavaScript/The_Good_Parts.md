@@ -1060,4 +1060,31 @@ Array.matrix = function(rows, columns) {
 console.log(Array.matrix(2, 3));// [ [ 0, 0, 0 ], [ 0, 0, 0 ] ]
 ```
 
-# Regular Expressions7
+# Regular Expressions
+
+* JavaScript’s Regular Expression feature was borrowed from Perl
+* The methods that work with regular expressions are
+    * `regexp.exec`, `regexp.test`
+    * `string.match`, `string.replace`, `string.search`, and `string.split`
+* The part of the language that is least portable is the implementation of regular expressions
+    * Regular expressions that are very complicated or convoluted are more likely to have portability problems
+    * Nested regular expressions can also suffer horrible performance problems in some implementations
+    * Simplicity is the best strategy.
+
+## Construction
+
+* The preferred way to make a `RegExp` object is to use a regular expression literal.
+    * Regular expression literals are enclosed in slashes
+* There are three flags that can be set on a `RegExp`: `g`, `i`, and `m`
+    * **g** - Global (match multiple times; the precise meaning of this varies with the method)
+    * **i** - Insensitive (ignore character case)
+    * **m** - Multiline (^ and $ can match line-ending characters)
+* The other way to make a regular expression is to use the `RegExp` constructor. The constructor takes a string and compiles it into a `RegExp` object.
+    * The second parameter is a string specifying the flags
+    * The `RegExp` constructor is useful when a regular expression must be generated at runtime using material that is not available to the programmer.
+
+```js
+var my_regexp = new RegExp("\"(?:\\.|[^\\\\\\\"])*\"", 'g');
+```
+
+## Elements
