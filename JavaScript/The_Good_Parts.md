@@ -970,3 +970,94 @@ var is_array = function(value) {
 ```
 
 ## Methods
+
+* `Array.prototype` can be augmented the same way as `Object.prototype`
+    * we want to add an array method that will allow us to do computation on an array
+* It is not useful to use the `Object.create` method on arrays because it produces an object, not an array
+    * The object produced will inherit the array’s values and methods, but it will not have the special `length` property.
+
+```js
+Function.prototype.method = function(name, func) {
+    this.prototype[name] = func;
+    return this;
+};
+
+Array.method('reduce', function(f) {
+    var i, value;
+    for (i = 0; i < this.length; i++) {
+        value = f(this[i], value);
+    }
+    return value;
+});
+
+var add = function(a, b) {
+    if (b === undefined) {
+        return a;
+    }
+    if (a === undefined) {
+        return b;
+    }
+    return a + b;
+};
+
+var mult = function(a, b) {
+    if (b === undefined) {
+        return a;
+    }
+    if (a === undefined) {
+        return b;
+    }
+    return a * b;
+}
+var data = [4, 8, 15, 16, 23, 42];
+console.log(data.reduce(add));
+console.log(data.reduce(mult));
+
+data.sum = function() {
+    return data.reduce(add);
+}
+console.log(data.sum());
+```
+
+## Dimensions
+
+* JavaScript arrays usually are not initialized
+* we can fix this with the following function
+
+```js
+Array.dim = function(dimension) {
+    var a = [ ], i;
+    for (i = 0; i < dimension; i++) {
+        a[i] = 0;
+    }
+    return a;
+}
+console.log(Array.dim(10)); // [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ]
+```
+
+* To make a two-dimensional array or an array of arrays, you must build the arrays yourself
+
+```js
+Array.dim = function(dimension) {
+    var a = [ ], i;
+    for (i = 0; i < dimension; i++) {
+        a[i] = 0;
+    }
+    return a;
+};
+console.log(Array.dim(10)); // [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ]
+
+Array.matrix = function(rows, columns) {
+    var m = [ ], a, i, j;
+    for (i = 0; i < rows; i++) {
+        m[i] = [ ];
+        for (j = 0; j < columns; j++) {
+            m[i][j] = 0;
+        }
+    }
+    return m;
+};
+console.log(Array.matrix(2, 3));// [ [ 0, 0, 0 ], [ 0, 0, 0 ] ]
+```
+
+# Regular Expressions7
