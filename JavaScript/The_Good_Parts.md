@@ -1089,3 +1089,34 @@ var my_regexp = new RegExp("\"(?:\\.|[^\\\\\\\"])*\"", 'g');//constructor
 ```
 
 ## Elements
+
+### Regexp Choice
+
+* A *regexp* choice contains one or more *regexp sequences*
+* The sequences are separated by the | (vertical bar) character
+* The choice matches if any of the sequences match
+    * It attempts to match each of the sequences in order.
+
+```js
+"into".match(/in|int/)
+```
+
+### Regexp Sequence
+
+* A *regexp sequence* contains one or more *regexp factors*
+* Each factor can optionally be followed by a quantifier that determines how many times the factor is allowed to appear
+    * If there is no quantifier, then the factor will be matched one time
+
+### Regexp Factor
+
+* A *regexp factor* can be a character, a parenthesized group, a character class, or an escape sequence
+* All characters are treated literally except for the control characters and the special characters: `\ / [ ] ( ) { } ? + * | . ^ $`
+    * these must be escaped with a `\` prefix if they are to be matched literally
+    * any special character can be given a `\` prefix to make it literal
+* An unescaped `.` matches any character except a line-ending character
+* An unescaped `^` matches the beginning of the text when the `lastIndex` property is zero
+    * It can also match line-ending characters when the `m` flag is specified
+* An unescaped `$` matches the end of the text
+    * It can also match line-ending characters when the `m` flag is specified
+
+### Regexp Escape
