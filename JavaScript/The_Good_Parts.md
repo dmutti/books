@@ -1144,9 +1144,22 @@ var my_regexp = new RegExp("\"(?:\\.|[^\\\\\\\"])*\"", 'g');//constructor
 * a convenient way of specifying one of a set of characters
     * if we wanted to match a vowel, we could write `(?:a|e|i|o|u)`, but it is more conveniently written as the class `[aeiou]`.
 * Classes provide two other conveniences
-* The first is that ranges of characters can be specified
-    * `! " # $ % &amp; ' ( ) * + , - . / : ; < = > ? @ [ \ ] ^ _ &#96; { | } ~` is equivalent to `[ ! - \ / : - @ \ [ - &#96; { - ~ ]`
-* The other convenience is the complementing of a class
-    * If the first character after the `[` is `^`, then the class excludes the specified characters
+* ranges of characters can be specified: `[A-Za-z]`
+* The other convenience is the complementing of a class. If the first character after the `[` is `^`, then the class excludes the specified characters
 
 ### Regexp Class Escape
+
+* The rules of escapement within a character class are slightly different than those for a regexp factor
+* `[\b]` is the backspace character
+* the special characters that should be escaped in a character class: `- / [ \ ] ^`
+
+### Regexp Quantifier
+
+* A regexp factor may have a regexp quantifier suffix that determines how many times the factor should match
+    * A number wrapped in curly braces means that the factor should match that many times
+* Matching tends to be greedy, matching as many repetitions as possible up to the limit, if there is one
+    * `?` is the same as {0,1}. `*` is the same as {0,}. `+` is the same as {1,}.
+    * If the quantifier has an extra `?` suffix, then matching tends to be lazy, attempting to match as few repetitions as possible
+    * It is usually best to stick with the greedy matching
+
+# Methods
