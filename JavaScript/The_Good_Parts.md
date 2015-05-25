@@ -1163,3 +1163,11 @@ var my_regexp = new RegExp("\"(?:\\.|[^\\\\\\\"])*\"", 'g');//constructor
     * It is usually best to stick with the greedy matching
 
 # Methods
+
+## Array
+
+* array.concat(item...) -- produces a new array containing a **shallow** copy of this array with the items appended to it. If an item is an array, then each of its elements is appended individually
+* array.join(separator) -- makes a string from an array. It does this by making a string of each of the array’s elements, and then concatenating them all together with a separator between them. The default separator is `,`.
+* array.pop( ) -- makes  an array work like a stack. The pop method removes and
+returns the last element in this array. If the array is empty, it returns undefined.
+* array.push(item...) -- appends items to the end of an array. it modifies the array and appends array items whole. It returns the new length of the array
