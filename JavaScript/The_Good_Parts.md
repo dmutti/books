@@ -1132,3 +1132,21 @@ var my_regexp = new RegExp("\"(?:\\.|[^\\\\\\\"])*\"", 'g');//constructor
     * you could search text for duplicated words with `/[A-Za-z\u00C0-\u1FFF\u2800-\uFFFD'\-]+\s+\1/gi`
 
 ### Regexp Group
+
+* There are four kinds of groups
+* 1. **Capturing** -- A capturing group is a regexp choice wrapped in parentheses. The characters that match the group will be captured
+* 2. **Noncapturing** -- A noncapturing group has a `(?:` prefix. A noncapturing group simply matches; it does not capture the matched text.
+* 3. **Positive lookahead** -- A positive lookahead group has a `(?=` prefix. It is like a noncapturing group except that after the group matches, the text is rewound to where the group started, effectively matching nothing. **not a good part**
+* 4. **Negative lookahead** -- A negative lookahead group has a `(?!` prefix. It is like a positive lookahead group, except that it matches only if it fails to match. **not a good part**
+
+### Regexp Class
+
+* a convenient way of specifying one of a set of characters
+    * if we wanted to match a vowel, we could write `(?:a|e|i|o|u)`, but it is more conveniently written as the class `[aeiou]`.
+* Classes provide two other conveniences
+* The first is that ranges of characters can be specified
+    * `! " # $ % & ' ( ) * + , - . / : ; < = > ? @ [ \ ] ^ _ ` { | } ~` is equivalent to `[!-\/:-@\[-`{-~]`
+* The other convenience is the complementing of a class
+    * If the first character after the `[` is `^`, then the class excludes the specified characters
+
+### Regexp Class Escape
