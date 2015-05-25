@@ -1145,7 +1145,7 @@ var my_regexp = new RegExp("\"(?:\\.|[^\\\\\\\"])*\"", 'g');//constructor
     * if we wanted to match a vowel, we could write `(?:a|e|i|o|u)`, but it is more conveniently written as the class `[aeiou]`.
 * Classes provide two other conveniences
 * The first is that ranges of characters can be specified
-    * `! " # $ % & ' ( ) * + , - . / : ; < = > ? @ [ \ ] ^ _ \` { | } ~` is equivalent to `[! - \ / : - @ \ [ - \` { - ~ ]`
+    * `! " # $ % &amp; ' ( ) * + , - . / : ; < = > ? @ [ \ ] ^ _ &#96; { | } ~` is equivalent to `[ ! - \ / : - @ \ [ - &#96; { - ~ ]`
 * The other convenience is the complementing of a class
     * If the first character after the `[` is `^`, then the class excludes the specified characters
 
