@@ -1173,4 +1173,8 @@ returns the last element in this array. If the array is empty, it returns undefi
 * `array.push(item...)` -- appends items to the end of an array. It modifies the array and appends array items whole; it returns the new length of the array
 * `array.reverse()` -- modifies the array by reversing the order of the elements. It returns the array
 * `array.shift()` -- removes the first element from an array and returns it. If the array is empty, it returns `undefined`; usually much slower than `pop`
-* `array.slice(start, end)` --
+* `array.slice(start, end)` -- makes a shallow copy of a portion of an array. The first element copied will be `array[start]`. It will stop before copying `array[end]`. The end parameter is optional, and the default is `array.length`.
+* `array.sort(comparefn)` -- JavaScript’s default comparison function assumes that the elements to be sorted are strings. It converts the numbers to strings as it compares them, ensuring a shockingly incorrect result.
+    * Your comparison function should take two parameters and return 0 if the two parameters are equal, a negative number if the first parameter should come first, and a positive number if the second parameter should come first.
+    * [07_methods/array_sort_example.js](the_good_parts_code/07_methods/array_sort_example.js)
+* `array.splice(start, deleteCount, item...)` --
