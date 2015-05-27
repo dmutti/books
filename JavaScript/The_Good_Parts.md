@@ -1197,3 +1197,19 @@ returns the last element in this array. If the array is empty, it returns undefi
 * `number.toString(radix)` -- converts this number to a string. The optional radix parameter controls radix, or base. It should be between 2 and 36 (default radix is base 10)
 
 ## Object
+
+* `object.hasOwnProperty(name)` -- returns true if the object contains a property having the name. **The prototype chain is not examined**
+    * [07_methods/object_has_own_property_example.js](the_good_parts_code/07_methods/object_has_own_property_example.js)
+
+## RegExp
+
+* `regexp.exec(string)` --the most powerful (and slowest) of the methods that use regular expressions.
+    * If it successfully matches the regexp and the string, it returns an array.
+        * The 0 element of the array will contain the substring that matched the regexp.
+        * The 1 element is the text captured by group 1
+        * the 2 element is the text captured by group 2, and so on
+    * if the match fails, it returns null.
+    * [07_methods/regexp_exec_example.js](the_good_parts_code/07_methods/regexp_exec_example.js)
+* `regexp.test(string)` -- the simplest (and fastest) of the methods that use regular expressions. If the regexp matches the string, it returns true; otherwise, it returns false. **Do not use the g flag with this method**
+
+## String
