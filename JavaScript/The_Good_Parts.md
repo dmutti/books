@@ -1177,4 +1177,23 @@ returns the last element in this array. If the array is empty, it returns undefi
 * `array.sort(comparefn)` -- JavaScript’s default comparison function assumes that the elements to be sorted are strings. It converts the numbers to strings as it compares them, ensuring a shockingly incorrect result.
     * Your comparison function should take two parameters and return 0 if the two parameters are equal, a negative number if the first parameter should come first, and a positive number if the second parameter should come first.
     * [07_methods/array_sort_example.js](the_good_parts_code/07_methods/array_sort_example.js)
-* `array.splice(start, deleteCount, item...)` --
+* `array.splice(start, deleteCount, item...)` -- removes elements from an array, replacing them with new items.
+    * The start parameter is the number of a position within the array.
+    * The deleteCount parameter is the number of elements to delete starting from that position
+    * If there are additional parameters, those items will be inserted at the position
+    * It returns an array containing the deleted elements
+* `array.unshift(item...)` -- like the push method, except that it shoves the items onto the front of this array instead of at the end. It returns the array’s new length
+
+## Function
+
+* `function.apply(thisArg, argArray)` -- invokes a function, passing in the object that will be bound to `this` and an optional array of arguments. The `apply` method is used in the apply invocation pattern
+
+## Number
+
+* `number.toExponential(fractionDigits)` -- converts this number to a string in the exponential form. The optional fractionDigits parameter controls the number of decimal places. It should be between 0 and 20
+    * [07_methods/number_to_exp_example.js](the_good_parts_code/07_methods/number_to_exp_example.js)
+* `number.toFixed(fractionDigits)` -- converts this number to a string in the decimal form. The optional fractionDigits parameter controls the number of decimal places. It should be between 0 and 20 (default is 0)
+* `number.toPrecision(precision)` -- converts this number to a string in the decimal form. The optional precision parameter controls the number of digits of precision. It should be between 1 and 21
+* `number.toString(radix)` -- converts this number to a string. The optional radix parameter controls radix, or base. It should be between 2 and 36 (default radix is base 10)
+
+## Object
