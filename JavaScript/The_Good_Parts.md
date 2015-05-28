@@ -1213,3 +1213,14 @@ returns the last element in this array. If the array is empty, it returns undefi
 * `regexp.test(string)` -- the simplest (and fastest) of the methods that use regular expressions. If the regexp matches the string, it returns true; otherwise, it returns false. **Do not use the g flag with this method**
 
 ## String
+
+* `string.charAt(pos)` -- returns the character at position `pos` in this string. The result of this method is a string (JavaScript does not have a character type)
+    * If `pos` is less than zero or greater than or equal to `string.length`, it returns the empty string
+* `string.charCodeAt(pos)` -- same as charAt, except that instead of returning a string, it returns an integer representation of the code point value of the character at position `pos` in that string.
+    * If pos is less than zero or greater than or equal to `string.length`, it returns `NaN`
+* `string.concat(string...)` -- makes a new string by concatenating other strings together (rarely used because the `+` operator is more convenient)
+* `string.indexOf(searchString, position)` -- searches for a **searchString** within a string. If it is found, it returns the position of the first matched character; otherwise, it returns -1
+    * `position` causes the search to begin at some specified position in the string
+* `string.lastIndexOf(searchString, position)` -- like the `indexOf` method, except that it searches from the end of the string instead of the front
+* `string.localeCompare(that)` -- compares two strings
+* `string.match(regexp)` --
