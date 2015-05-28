@@ -1244,3 +1244,59 @@ returns the last element in this array. If the array is empty, it returns undefi
 * `string.toLowerCase()` -- produces a new string that is made by converting this string to lowercase
 * `string.toUpperCase()` -- produces a new string that is made by converting this string to uppercase.
 * `String.fromCharCode(char...)` -- produces a string from a series of numbers.
+
+# Awful Parts
+
+## Global Variables
+
+* The problem with JavaScript isn’t just that it allows global variables, it requires them
+* JavaScript does not have a linker. All compilation units are loaded into a common global object
+* There are three ways to define global variables
+    * The first is to place a var statement outside of any function: `var foo = value;`
+    * The second is to add a property directly to the global object. The global object is the container of all global variables. In web browsers, the global object goes by the name window: `window.foo = value;`
+    * The third is to use a variable without declaring it. This is called implied global: `foo = value;`
+
+## Scope
+
+* JavaScript uses the block syntax, but does not provide block scope: a variable declared in a block is visible everywhere in the function containing the block
+* **It is better to declare all variables at the top of each function.**
+
+## Semicolon Insertion
+
+* JavaScript has a mechanism that tries to correct faulty programs by automatically inserting semicolons. Do not depend on this. It can mask more serious errors.
+* **If a return statement returns a value, that value expression must begin on the same line as the return**
+
+```js
+var func1 = function() {
+    return
+    {
+        status: true
+    }
+};
+
+var func2 = function() {
+    return {
+        status: true
+    }
+};
+
+console.log(func1()); //undefined
+console.log(func2()); //{ status: true }
+```
+
+### Reserved Words
+
+* When reserved words are used as keys in object literals, they must be quoted. They cannot be used with the dot notation, so it is sometimes necessary to use the bracket notation instead.
+
+```js
+var method; //ok
+var class; //nok
+object = {box: value}; //ok
+object = {case: value}; //nok
+object = {'case': value};  // ok
+object.box = value; //ok
+object.case = value; //nok
+object['case'] = value; //ok
+```
+
+### typeof
