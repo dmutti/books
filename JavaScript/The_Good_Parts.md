@@ -1225,4 +1225,22 @@ returns the last element in this array. If the array is empty, it returns undefi
 * `string.localeCompare(that)` -- compares two strings
 * `string.match(regexp)` -- matches a string and a regular expression. If there is no `g` flag, then the result of calling `string.match(regexp)` is the same as calling `regexp.exec(string)`. if the regexp has the `g` flag, then it produces an array of all the matches but excludes the capturing groups.
     * [07_methods/regexp_match_example.js](the_good_parts_code/07_methods/regexp_match_example.js)
-* `string.replace(searchValue, replaceValue)` --
+* `string.replace(searchValue, replaceValue)` -- does a search and replace operation on this string, producing a new string. If `searchValue` is a string, only the first occurrence of it is replaced. If searchValue is a regular expression and if it has the `g` flag, then it will replace all occurrences. If it does not have the `g` flag, then it will replace only the first occurrence.
+    * If `replaceValue` is a string, the character `$` has special meaning
+        * **$$** - $
+        * **$&** - the matched text
+        * **$number** - capture group text
+        * **$`** - the text preceding the match
+        * **$'** - the text following the match
+    * If the `replaceValue` is a function, it will be called for each match, and the string returned by the function will be used as the replacement text.
+    * [07_methods/regexp_replace_example.js](the_good_parts_code/07_methods/regexp_replace_example.js)
+* `string.search(regexp)` -- like the `indexOf` method, except that it takes a regular expression object instead of a string. It returns the position of the first character of the first match, if there is one, or -1 if the search fails. The `g` flag is ignored.
+* `string.slice(start, end)` -- makes a new string by copying a portion of another string. The end parameter is one greater than the position of the last character. To get n characters starting at position p, use `string.slice(p, p + n)`.
+* `string.split(separator,limit)` -- creates an array of strings by splitting this string into pieces. The optional `limit` parameter can limit the number of pieces that will be split.
+    * If the separator is the empty string, an array of single characters is produced
+* `string.substring(start, end)` -- the same as the `slice` method. There is no reason to use it. Use `slice` instead.
+* `string.toLocaleLowerCase()` -- produces a new string that is made by converting this string to lowercase using the rules for the locale
+* `string.toLocaleUpperCase()` -- produces a new string that is made by converting this string to uppercase using the rules for the locale
+* `string.toLowerCase()` -- produces a new string that is made by converting this string to lowercase
+* `string.toUpperCase()` -- produces a new string that is made by converting this string to uppercase.
+* `String.fromCharCode(char...)` -- produces a string from a series of numbers.
