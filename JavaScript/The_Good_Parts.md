@@ -1223,4 +1223,6 @@ returns the last element in this array. If the array is empty, it returns undefi
     * `position` causes the search to begin at some specified position in the string
 * `string.lastIndexOf(searchString, position)` -- like the `indexOf` method, except that it searches from the end of the string instead of the front
 * `string.localeCompare(that)` -- compares two strings
-* `string.match(regexp)` --
+* `string.match(regexp)` -- matches a string and a regular expression. If there is no `g` flag, then the result of calling `string.match(regexp)` is the same as calling `regexp.exec(string)`. if the regexp has the `g` flag, then it produces an array of all the matches but excludes the capturing groups.
+    * [07_methods/regexp_match_example.js](the_good_parts_code/07_methods/regexp_match_example.js)
+* `string.replace(searchValue, replaceValue)` --
