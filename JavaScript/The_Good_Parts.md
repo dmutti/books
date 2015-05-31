@@ -1300,3 +1300,66 @@ object['case'] = value; //ok
 ```
 
 ### typeof
+
+* typeof returns a string that identifies the type of its operand
+* `typeof null` returns **object**
+    * a better test for null: `my_value === null`
+* typeof cannot distinguish between null and objects, but you can because null is falsy and all objects are truthy
+* Implementations disagree on the type of regular expression objects. Some implementations report that `typeof /a/` is **object**, and others say that it is **function**
+
+```js
+if (my_value && typeof my_value === 'object') {
+    // my_value is an object or an array!
+}
+```
+
+### parseInt
+
+* parseInt stops when it sees a nondigit, so `parseInt("16")` and `parseInt("16 tons")` produce the same result
+* If the first character of the string is 0, then the string is evaluated in base 8 instead of base 10
+    * parseInt can take a radix parameter, so that `parseInt("08", 10)` produces 8
+* **always provide the radix parameter**
+
+### +
+
+* If either operand is an empty string, it produces the other operand converted to a string
+* If both operands are numbers, it produces the sum
+    * Otherwise, it converts both operands to strings and concatenates them
+
+### Floating Point
+
+* Binary floating-point numbers are inept at handling decimal fractions
+* Fortunately, integer arithmetic in floating point is exact, so decimal representation errors can be avoided by scaling
+
+### NaN
+
+* `NaN` stands for **not a number**
+* If `NaN` is an operand in an arithmetic operation, then `NaN` will be the result
+* JavaScript provides an `isNaN` function that can distinguish between numbers and `NaN`
+* **Best approach: `isNumber` function**
+
+```js
+typeof NaN === 'number'; //true
+NaN === NaN    // false
+NaN !== NaN    // true
+
+isNaN(NaN) //true
+isNaN(0) //false
+isNaN('oops') //true
+isNaN('0') //false
+
+var isNumber = function isNumber(value) {
+    return typeof value === 'number' &&
+        isFinite(value);
+}
+```
+
+### Phony Arrays
+
+* JavaScript does not have real arrays. But their performance can be considerably worse than real arrays. The `typeof` operator does not distinguish between arrays and objects.
+
+### Falsy Values
+
+* `undefined` and `NaN` are not constants. They are global variables, and you can change their values. That should not be possible, and yet it is. Don’t do it.
+
+### hasOwnProperty
