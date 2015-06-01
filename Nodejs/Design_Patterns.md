@@ -707,3 +707,46 @@ syncEmit.on('ready', function() {
 * **Pattern** -- create a function that accepts a callback and returns an `EventEmitter`, thus providing a simple and clear entry point for the main functionality, while emitting more fine-grained events using the `EventEmitter`.
 
 # Asynchronous Control Flow Patterns
+
+* Writing asynchronous code can be a different experience, especially when it comes
+to control flow.
+* One common mistake is to fall into the trap of the **callback hell** problem and see the code growing horizontally rather than vertically, with a nesting that makes even simple routines hard to read and maintain
+
+## The difficulties of asynchronous programming
+
+* Most of the time, creating closures is not functionally needed, so it's more a matter of discipline than a problem related to asynchronous programming.
+
+### Creating a simple web spider
+
+[02_asynchronous_control_flow_patterns/01_simple_web_spider/spider.js](design_patterns_code/02_asynchronous_control_flow_patterns/01_simple_web_spider/spider.js)
+
+* this code executes the following tasks
+
+```js
+// Checks if the URL was already downloaded by verifying
+// that the corresponding file was not already created
+fs.exists(filecodename, function(exists) //...
+
+// If the file is not found, the URL is downloaded
+request(url, function(err, response, body) //...
+
+// we make sure whether the directory that will
+// contain the file exists or not:
+mkdirp(path.dirname(filename), function(err) //...
+
+// we write the body of the HTTP response to the
+// filesystem:
+fs.writeFile(filename, body, function(err) //...
+```
+
+### The callback hell
+
+## Using plain JavaScript
+
+## The async library
+
+## Promises
+
+## Generators
+
+## Comparison
