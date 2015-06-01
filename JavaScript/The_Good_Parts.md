@@ -1284,7 +1284,7 @@ console.log(func1()); //undefined
 console.log(func2()); //{ status: true }
 ```
 
-### Reserved Words
+## Reserved Words
 
 * When reserved words are used as keys in object literals, they must be quoted. They cannot be used with the dot notation, so it is sometimes necessary to use the bracket notation instead.
 
@@ -1299,7 +1299,7 @@ object.case = value; //nok
 object['case'] = value; //ok
 ```
 
-### typeof
+## typeof
 
 * typeof returns a string that identifies the type of its operand
 * `typeof null` returns **object**
@@ -1313,25 +1313,25 @@ if (my_value && typeof my_value === 'object') {
 }
 ```
 
-### parseInt
+## parseInt
 
 * parseInt stops when it sees a nondigit, so `parseInt("16")` and `parseInt("16 tons")` produce the same result
 * If the first character of the string is 0, then the string is evaluated in base 8 instead of base 10
     * parseInt can take a radix parameter, so that `parseInt("08", 10)` produces 8
 * **always provide the radix parameter**
 
-### +
+## +
 
 * If either operand is an empty string, it produces the other operand converted to a string
 * If both operands are numbers, it produces the sum
     * Otherwise, it converts both operands to strings and concatenates them
 
-### Floating Point
+## Floating Point
 
 * Binary floating-point numbers are inept at handling decimal fractions
 * Fortunately, integer arithmetic in floating point is exact, so decimal representation errors can be avoided by scaling
 
-### NaN
+## NaN
 
 * `NaN` stands for **not a number**
 * If `NaN` is an operand in an arithmetic operation, then `NaN` will be the result
@@ -1354,12 +1354,24 @@ var isNumber = function isNumber(value) {
 }
 ```
 
-### Phony Arrays
+## Phony Arrays
 
 * JavaScript does not have real arrays. But their performance can be considerably worse than real arrays. The `typeof` operator does not distinguish between arrays and objects.
 
-### Falsy Values
+## Falsy Values
 
 * `undefined` and `NaN` are not constants. They are global variables, and you can change their values. That should not be possible, and yet it is. Don’t do it.
 
-### hasOwnProperty
+## hasOwnProperty
+
+* `hasOwnProperty` is a method, not an operator
+* it could be replaced with a different function or even a value that is not a function
+
+## Object
+
+* objects are never truly empty because they can pick up members from the prototype chain
+* `{ }`  inherits from Object.prototype, and Object.prototype contains a member named constructor whose value is Object.
+* Solution: test for membership with the `hasOwnProperty` method or by looking for specific types
+* [appendix_a/object_example.js](the_good_parts_code/appendix_a/object_example.js)
+
+# Bad Parts
