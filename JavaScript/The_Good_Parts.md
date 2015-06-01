@@ -1375,3 +1375,38 @@ var isNumber = function isNumber(value) {
 * [appendix_a/object_example.js](the_good_parts_code/appendix_a/object_example.js)
 
 # Bad Parts
+
+## with Statement
+
+* intended to provide a shorthand when accessing the properties of an object
+* its results can sometimes be unpredictable, so it should be avoided
+
+## eval
+
+* The eval function compromises the security of your application because it grants too much authority to the eval’d text
+* It compromises the performance of the language as a whole in the same way that the `with` statement does
+* The `Function` constructor is another form of eval, and should similarly be avoided
+
+## Bitwise Operators
+
+* In Java, the bitwise operators work with integers. JavaScript doesn’t have integers. It only has double precision floating-point numbers.
+* the bitwise operators convert their number operands into integers, do their business, and then convert them back
+* In JavaScript, these operators are very far from the hardware and very slow. JavaScript is rarely used for doing bit manipulation.
+
+## Typed Wrappers
+
+* JavaScript has a set of typed wrappers which produces an object that has a `valueOf` method that returns the wrapped value
+* **completely unnecessary and occasionally confusing. Don’t use** `new Boolean` or `new Number` or `new String`
+* **avoid** `new Object` and `new Array`. Use `{}` and `[]` instead
+
+## new
+
+* JavaScript’s `new` operator creates a new object that inherits from the operand’s `prototype` member, and then calls the operand, binding the new object to `this`. This gives the operand (which had better be a constructor function) a chance to customize the new object before it is returned to the requestor.
+* If you forget to use the `new` operator, you instead get an ordinary function call, and this is bound to the global object instead of to a new object. That means that your function will be clobbering global variables when it attempts to initialize the new members. **That is a very bad thing. There is no compile-time warning. There is no runtime warning.**
+* By convention, functions that are intended to be used with `new` should be given names with initial capital letters, and names with initial capital letters should be used only with constructor functions that take the `new` prefix.
+* **An even better coping strategy is to not use `new` at all.**
+
+## void
+
+* In JavaScript, `void` is an operator that takes an operand and returns `undefined`
+* Avoid `void`
