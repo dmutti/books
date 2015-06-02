@@ -741,6 +741,14 @@ fs.writeFile(filename, body, function(err) //...
 
 ### The callback hell
 
+* The situation where the abundance of closures and in-place callback definitions transform the code into an unreadable and unmanageable blob.
+* one of the most well recognized and severe anti-patterns in Node.js and JavaScript in general
+* code written in this way assumes the shape of a pyramid due to the deep nesting and that's why it is also colloquially known as the **pyramid of doom**
+* Due to the nesting being too deep, it's almost impossible to keep track of where a function ends and where another one begins.
+    * Another issue is caused by the overlapping of the variable names used in each scope.
+* we have to keep in mind that closures come at a small price in terms of performances and memory consumption.
+    * they can create memory leaks that are not so easy to identify because we shouldn't forget that any context referenced by an active closure is retained from garbage collection.
+
 ## Using plain JavaScript
 
 ## The async library
