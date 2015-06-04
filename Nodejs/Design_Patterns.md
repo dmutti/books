@@ -751,6 +751,39 @@ fs.writeFile(filename, body, function(err) //...
 
 ## Using plain JavaScript
 
+* there are several situations where controlling the flow of a set of asynchronous tasks requires the use of specific patterns and techniques, especially if we are using only plain JavaScript without the aid of any external library
+
+### Callback discipline
+
+* the first rule to keep in mind is **to not abuse closures when defining callbacks**
+* Most of the times, fixing the callback hell problem require just some common sense
+* some basic principles that can help us keep the nesting level low and improve the organization of our code in general
+    * Exit as soon as possible. Use `return`, `continue`, or `break`, depending on the context, to immediately exit the current statement instead of writing (and nesting) complete `if/else` statements. This will help keep our code shallow.
+    * Create named functions for callbacks, keeping them out of closures and passing intermediate results as arguments. Naming our functions will also make them look better in stack traces.
+    * Split the code into smaller, reusable functions whenever it's possible.
+
+### Applying the callback discipline
+
+* let's apply them to fix the callback hell problem in our web spider application.
+* we can refactor our error-checking pattern by removing the `else` statement. This is made possible by returning from the function immediately after we receive an error
+
+```js
+// instead of
+if (err) {
+    callback(err);
+} else {
+    //code to execute when there are no errors
+}
+
+// do it
+if (err) {
+    return callback(err);
+}
+//code to execute when there are no errors
+```
+
+* then we can try to identify reusable pieces of code
+
 ## The async library
 
 ## Promises
