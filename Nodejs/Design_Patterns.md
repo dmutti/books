@@ -764,25 +764,26 @@ fs.writeFile(filename, body, function(err) //...
 
 ### Applying the callback discipline
 
+[02_asynchronous_control_flow_patterns/02_plainjs_callback_discipline/spider.js](design_patterns_code/02_asynchronous_control_flow_patterns/02_plainjs_callback_discipline/spider.js)
+
 * let's apply them to fix the callback hell problem in our web spider application.
 * we can refactor our error-checking pattern by removing the `else` statement. This is made possible by returning from the function immediately after we receive an error
+* then we can try to identify reusable pieces of code
 
 ```js
-// instead of
+//---- instead of
 if (err) {
     callback(err);
 } else {
     //code to execute when there are no errors
 }
 
-// do it
+//---- do it
 if (err) {
     return callback(err);
 }
 //code to execute when there are no errors
 ```
-
-* then we can try to identify reusable pieces of code
 
 ## The async library
 
