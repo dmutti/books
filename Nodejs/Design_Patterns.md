@@ -785,6 +785,53 @@ if (err) {
 //code to execute when there are no errors
 ```
 
+* A common mistake when executing the optimization we just described, is forgetting to terminate the function after the callback is invoked.
+* We should never forget that the execution of our function will continue even after we invoke the callback. It is then important to insert a `return` instruction to block the execution of the rest of the function
+    * it doesn't really matter what output is returned by the function; the real result (or error) is produced asynchronously and passed to the callback.
+    * This property allows us to write shortcuts such as `return callback(...) `
+
+```js
+// a typical source of defects
+if (err) {
+    callback(err);
+}
+// our function will continue even after we invoke the callback
+code_to_execute_when_there_are_no_errors();
+```
+
+### Sequential execution
+
+* Executing a set of tasks in sequence means running them one at a time, one after the other. The order of execution matters and must be preserved, because the result of a task in the list may affect the execution of the next.
+
+#### Executing a known set of tasks in sequence
+
+* the following code shows how each task invokes the next upon the completion of a generic asynchronous operation. The pattern puts the emphasis on the modularization of tasks, showing how closures are not always necessary to handle asynchronous code.
+
+```js
+function task1(callback) {
+    asyncOperation(function() {
+        task2(callback);
+    });
+}
+function task2(callback) {
+    asyncOperation(function(result) {
+        task3(callback);
+    });
+}
+function task3(callback) {
+    asyncOperation(function() {
+        callback();
+    });
+}
+task1(function() {
+    //task1, task2, task3 completed
+});
+```
+
+#### Sequential iteration
+
+* what happens if we want to execute an asynchronous operation for each item in a collection? In cases such as this, we cannot hardcode the task sequence anymore, instead, we have to build it dynamically
+
 ## The async library
 
 ## Promises
