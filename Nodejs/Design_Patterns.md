@@ -830,7 +830,65 @@ task1(function() {
 
 #### Sequential iteration
 
+[02_asynchronous_control_flow_patterns/03_plainjs_sequential_execution/spider.js](design_patterns_code/02_asynchronous_control_flow_patterns/03_plainjs_sequential_execution/spider.js)
+
 * what happens if we want to execute an asynchronous operation for each item in a collection? In cases such as this, we cannot hardcode the task sequence anymore, instead, we have to build it dynamically
+
+#### The pattern
+
+* in a situation where we have the need to iterate asynchronously in sequence over the elements of a collection or in general over a list of tasks.
+* these types of algorithms become really recursive if `task()` is a synchronous operation. In such a case, the stack will not unwind at every cycle and there might be a risk of hitting the maximum call stack size limit.
+
+```js
+function iterate(index) {
+    if(index === tasks.length)  {
+        return finish();
+    }
+    var task = tasks[index];
+    task(function() {
+        iterate(index + 1);
+    });
+}
+function finish() {
+    //iteration completed
+}
+iterate(0);
+```
+
+### Parallel execution
+
+[02_asynchronous_control_flow_patterns/04_plainjs_parallel_execution/spider.js](design_patterns_code/02_asynchronous_control_flow_patterns/04_plainjs_parallel_execution/spider.js)
+
+* There are some situations where the order of the execution of a set of asynchronous tasks is not important and all we want is just to be notified when all those running tasks are completed. Such situations are better handled using a **parallel execution flow**
+* even though we have just one thread, we can still achieve concurrency, thanks to the nonblocking nature of Node.js
+* **parallel** does not mean that the tasks run simultaneously, but rather that their execution is carried out by an underlying nonblocking API and interleaved by the event loop
+    * a task gives the control back to the event loop when it requests a new asynchronous operation allowing the event loop to execute another task
+* in Node.js, we can execute in parallel only asynchronous operations, because their concurrency is handled internally by the nonblocking APIs
+
+#### The pattern
+
+```js
+var tasks = [...];
+var completed = 0;
+tasks.forEach(function(task) {
+    task(function() {
+        if (++completed === tasks.length) {
+            finish();
+        }
+    });
+});
+function finish() {
+    //all tasks completed
+}
+```
+
+#### Fixing race conditions in the presence of concurrent tasks
+
+* In Node.js, we usually don't need any fancy synchronization mechanism, as everything runs on a single thread!
+* this doesn't mean that we can't have race conditions, on the contrary, they can be quite common.
+    * ** The root of the problem is the delay between the invocation of an asynchronous operation and the notification of its result.** For instance: interleaved `fs.readFile()` calls
+
+### Limited parallel execution
 
 ## The async library
 
