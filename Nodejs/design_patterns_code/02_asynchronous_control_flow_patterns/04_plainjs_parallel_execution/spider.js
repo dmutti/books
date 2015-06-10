@@ -16,6 +16,12 @@ function spiderLinks(currentUrl, body, nesting, callback) {
 
     var completed = 0, errored = false;
 
+    //the trick to make our application wait for all the tasks
+    //to complete is to provide the spider() function with a
+    //special callback, which we call done(). The done() function
+    //increases a counter when a spider task completes. When the
+    //number of completed downloads reaches the size of the links
+    //array, the final callback is invoked
     function done(err) {
         if(err) {
             errored = true;
