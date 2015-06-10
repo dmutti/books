@@ -890,6 +890,54 @@ function finish() {
 
 ### Limited parallel execution
 
+* Often, spawning parallel tasks without control can lead to an excessive load.
+
+#### The pattern
+
+```js
+var tasks = [...];
+var concurrency = 2, running = 0, completed = 0, index = 0;
+
+//We have an iterator function, which we called  next() , and then an inner
+//loop that spawns in parallel as many tasks as possible while staying within
+//the concurrency limit
+function next() {
+    while (running < concurrency && index < tasks.length) {
+        task = tasks[index++];
+        //The next important part is the callback we pass to each task, which checks if
+        //we completed all the tasks in the list. If there are still tasks to run, it invokes
+        //next() to spawn another bunch of tasks.
+        task(function() {
+            if (completed === tasks.length) {
+                return finish();
+            }
+            completed++, running--;
+            next();
+        });
+        running++;
+    }
+};
+next();
+function finish() {
+    //all tasks finished
+}
+```
+
+### Globally limiting the concurrency
+
+* Node.js versions before 0.11 are already limiting the number of concurrent HTTP connections per host to 5. This can, however, be
+changed to accommodate our needs
+    * Find out more in the official docs at [](http://nodejs.org/docs/v0.10.0/api/http.html#http_agent_maxsockets)
+    * Starting from Node.js 0.11, there is no default limit on the number of concurrent connections.
+
+#### Queues to the rescue
+
+[02_asynchronous_control_flow_patterns/05_plainjs_limited_parallel/spider.js](design_patterns_code/02_asynchronous_control_flow_patterns/05_plainjs_limited_parallel/spider.js)
+
+* What we really want then, is to limit the global number of download operations we can have running in parallel
+* With a mechanism which makes use of queues to limit the concurrency of multiple tasks
+* The interesting property of the  TaskQueue class is that it allows us to dynamically add new items to the queue. The other advantage is that now we have a central entity responsible for the limitation of the concurrency of our tasks, which can be shared across all the instances of a function's execution.
+
 ## The async library
 
 ## Promises
