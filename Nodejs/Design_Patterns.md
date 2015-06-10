@@ -940,6 +940,77 @@ changed to accommodate our needs
 
 ## The async library
 
+* The `async` library offers a set of functions that greatly simplify the execution of a set of tasks in different configurations and it also provides useful helpers for dealing with collections asynchronously
+* a de facto standard in Node.js
+
+### Sequential execution
+
+[02_asynchronous_control_flow_patterns/06_async_sequential_execution/spider.js](design_patterns_code/02_asynchronous_control_flow_patterns/06_async_sequential_execution/spider.js)
+
+* one difficulty with the `async` library is choosing the right helper for the problem at hand
+    * for the case of the sequential execution flow, there are around 20 different functions to choose from
+
+#### Sequential execution of a known set of tasks
+
+* The `download` function executes the following three tasks in sequence
+    * [1] Download the contents of a URL
+    * [2] Create a new directory if it doesn't exist yet
+    * [3] Save the contents of the URL into a file
+* The ideal function to use with this flow is definitely async.series(), which has the following signature `async.series(tasks, [callback])`
+    * It takes a list of `tasks` and a `callback` function that is invoked when all the tasks have been completed
+    * Each task is just a function that accepts a `callback` function, which must be invoked when the task completes its execution
+    * if any of the tasks invoke its callback with an error, `async` will skip the remaining tasks in the list and jump directly to the final callback.
+* we just have to provide a flat list of tasks, usually one for each asynchronous operation, which `async` will then execute in sequence
+* For this specific situation, a possible alternative to `async.series()` would be `async.waterfall()`, which still executes the tasks in sequence but in addition, it also provides the output of each task as input to the next
+
+```js
+function download(url, filename, callback) {
+    console.log('Downloading ' + url);
+    var body;
+    async.series([
+        //The first task involves the download of the URL
+        //Also, we save the response body into a closure
+        //variable (body) so that it can be shared with the
+        //other tasks.
+        function(callback) {
+            request(url, function(err, response, resBody) {
+                if (err) {
+                    return callback(err);
+                }
+                body = resBody;
+                callback();
+            });
+        },
+        //In the second task, we want to create the directory
+        //that will hold the downloaded page. We do this by
+        //performing a partial application of the mkdirp()
+        //function, binding the path of the directory to be created.
+        mkdirp.bind(null, path.dirname(filename)),
+
+        //At last, we write the contents of the downloaded URL to a
+        //file. In this case, we could not perform a partial application
+        //(as we did for the second task), because the variable, body,
+        //is only available after the first task in the series completes.
+        //However, we can still save some lines of code by exploiting
+        //the automatic error management of async by simply passing the
+        //callback of the task directly to the fs.writeFile()
+        function(callback) {
+            fs.writeFile(filename, body, callback);
+        }
+    ], function(err) {
+        //After all the tasks are complete, the final callback of
+        //async.series() is invoked. In our case, we are simply doing some
+        //error management and then returning the body variable to callback
+        //of the download() function
+        console.log('Downloaded and saved ' + url);
+        if (err) {
+            return callback(err);
+        }
+        callback(null, body);
+    });
+}
+```
+
 ## Promises
 
 ## Generators
