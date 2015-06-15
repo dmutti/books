@@ -945,8 +945,6 @@ changed to accommodate our needs
 
 ### Sequential execution
 
-[02_asynchronous_control_flow_patterns/06_async_sequential_execution/spider.js](design_patterns_code/02_asynchronous_control_flow_patterns/06_async_sequential_execution/spider.js)
-
 * one difficulty with the `async` library is choosing the right helper for the problem at hand
     * for the case of the sequential execution flow, there are around 20 different functions to choose from
 
@@ -1010,6 +1008,35 @@ function download(url, filename, callback) {
     });
 }
 ```
+
+#### Sequential iteration
+
+[02_asynchronous_control_flow_patterns/06_async_sequential_execution/spider.js](design_patterns_code/02_asynchronous_control_flow_patterns/06_async_sequential_execution/spider.js)
+
+* `async` offers an appropriate helper for the specific situation in which we have
+to iterate over a collection -- `async.eachSeries()`
+
+### Parallel execution
+
+[02_asynchronous_control_flow_patterns/07_async_parallel_execution/spider.js](design_patterns_code/02_asynchronous_control_flow_patterns/07_async_parallel_execution/spider.js)
+
+* `async` library provides functions to handle parallel flows
+    * `each()`, `map()`, `filter()`, `reject()`, `detect()`, `some()`, `every()`, `concat()`, `parallel()`, `applyEach()`, and `times()`
+    * They follow the same logic of the functions for the sequential execution, with the difference that the tasks provided are executed in parallel
+
+### Limited parallel execution
+
+[02_asynchronous_control_flow_patterns/08_async_limited_parallel/spider.js](design_patterns_code/02_asynchronous_control_flow_patterns/08_async_limited_parallel/spider.js)
+
+* `async` can also be used to limit the concurrency of parallel tasks. the functions we can use for that:
+    * `eachLimit()`, `mapLimit()`, `parallelLimit()`, `queue()`, and `cargo()`.
+* The `async.queue()` function creates a new queue, which uses a `worker()` function to execute a set of tasks with a specified concurrency limit:
+    * `var q = async.queue(worker, concurrency);`
+* The `worker()` function receives, as input, the task to run and a callback function
+to invoke, when the task completes:
+    * `function worker(task, callback)`
+    * `task` in this case can be anything, not just a function
+* New tasks can be added to the queue by using `q.push(task, callback)`. **The callback associated to a task has to be invoked by the worker after the task has been processed.**
 
 ## Promises
 
