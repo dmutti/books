@@ -1040,6 +1040,8 @@ to invoke, when the task completes:
 
 ## Promises
 
+### What is a promise?
+
 ## Generators
 
 ## Comparison
