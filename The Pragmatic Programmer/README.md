@@ -1,6 +1,3 @@
-Contents
---------
-
 A Pragmatic Philosophy
 ----------------------
 
