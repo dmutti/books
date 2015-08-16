@@ -420,7 +420,7 @@ Consistency
 
 ### Cache Channels
 
--   [1](http://www.mnot.net/blog/2008/01/04/cache_channels)
+-   [Cache Channels](http://www.mnot.net/blog/2008/01/04/cache_channels)
 -   Cache channels implement a technique for extending the freshness lifetimes of cached representations
 -   Caches that don't understand the cache channel protocol will continue to expire representations the moment they become stale
 -   Caches that understand the protocol treat a normally stale representation as still fresh, until they hear otherwise
