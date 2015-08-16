@@ -80,7 +80,7 @@ public class PlaceBidBean implements PlaceBid {
 </resource-ref>
 ```
 
--   the value specified by the name parameter is actually interpreted further by the container similar to a value specified in the res-ref-name in the <resource-ref\> tag in the deployment descriptor.
+-   the value specified by the name parameter is actually interpreted further by the container similar to a value specified in the res-ref-name in the `<resource-ref\>` tag in the deployment descriptor.
 -   The value of the name parameter in @Resource (or res-ref-name) is translated to a fully qualified JNDI mapping in the form java:comp/env/[value of the name parameter]
 -   If you don’t specify the name element in the @Resource annotation, the JNDI name for the resource will be of the form java:comp/env/[bean class name including package]/[name of the annotated field/property] (**java:comp/env/actionbazaar.buslogic.PlaceBidBean/dataSource**)
 -   **environment naming context**
@@ -128,7 +128,7 @@ Accessing environment entries
 @Resource(name="censorship") private boolean censorship;
 ```
 
--   the values of the <env-entry-type\> tag are limited to these Java types: String, Character, Byte, Short, Integer, Long, Boolean, Double, and Float
+-   the values of the `<env-entry-type\>` tag are limited to these Java types: String, Character, Byte, Short, Integer, Long, Boolean, Double, and Float
 
 @Resource and annotation inheritance
 ------------------------------------
@@ -302,7 +302,7 @@ public class MethodName {
 -   **Around invoke methods**
     -   It's important to realize that an interceptor must always have only one method that is designated as the around invoke (AroundInvoke) method
     -   Around invoke methods must not be business methods, which means that they should not be public methods in the bean's business interface(s).
-    -   any method designated AroundInvoke must follow this pattern: **Object <METHOD\>(InvocationContext) throws Exception'''**
+    -   any method designated AroundInvoke must follow this pattern: **`Object <METHOD>(InvocationContext) throws Exception`**
 
 -   If a business method interceptor throws an exception before invoking the proceed method, the processing of other interceptors in the invocation chain and the target business method will be terminated
 
@@ -565,7 +565,7 @@ public interface javax.ejb.TimerService {
 Implementing timeout methods
 ----------------------------
 
--   methods marked with the @Timeout annotation are expected to follow this convention: **void <METHOD\>(Timer timer)'''**
+-   methods marked with the @Timeout annotation are expected to follow this convention: **`void <METHOD>(Timer timer)`**
 -   **A bean can have at most one timeout method**, which can be specified (through annotation @Timeout or deployment descriptor timeout-method) either on the bean class or on a superclass.
 -   If the bean class implements the **javax.ejb.TimedObject** interface, the **ejbTimeout** method is the bean's timeout method
 -   The Timer for which the callback was invoked is passed in as a parameter for the method as processing context

@@ -406,8 +406,8 @@ The RunAs Security Identity
 -   runAs specifies the role under which the method will run
 -   the runAs role is used as the enterprise bean's identity when it tries to invoke methods on other beans and this identity isn't necessarily the same as the identity that's currently accessing the bean
 -   Although they are not allowed to use method permissions, message-driven beans can use the @RunsAs feature
--   To specify that an enterprise bean will execute under the caller's identity rather than a propagated run-as identity, the <security-identity\> role contains a single empty element, <use-caller-identity/\>
--   The use of <security-identity\> applies to session beans
+-   To specify that an enterprise bean will execute under the caller's identity rather than a propagated run-as identity, the `<security-identity\>` role contains a single empty element, `<use-caller-identity/\>`
+-   The use of `<security-identity\>` applies to session beans
 -   Message-driven beans have only a runAs identity; they never execute under the caller identity because there is no "caller"
 -   With no caller identity to propagate, message-driven beans must always specify a runAs security identity if they interact with other secured session beans
 
@@ -447,8 +447,8 @@ Programmatic Security
 
 -   The EJBContext.isCallerInRole() method allows you to determine whether the current calling user belongs to a certain role
 -   To make the EJB container's job easier, you must declare all programmatic role access using the @javax.annotation.security.DeclareRoles annotation
--   If you do not use the @DeclareRoles annotation, then you must use the <security-role-ref\> element within the session bean's declaration
--   The <security-role-ref\> element is defined within a <session\> or <message-driven\> element. It has one subelement, <role-name\>, which names the role that is being referenced
+-   If you do not use the @DeclareRoles annotation, then you must use the `<security-role-ref\>` element within the session bean's declaration
+-   The `<security-role-ref\>` element is defined within a `<session\>` or `<message-driven\>` element. It has one subelement, <role-name\>, which names the role that is being referenced
 
 ```java
 package javax.ejb;

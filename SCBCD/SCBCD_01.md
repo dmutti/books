@@ -94,7 +94,7 @@ public class BidManagerBean { ... }
     1.  PostConstruct callbacks are invoked immediately after a bean instance is created and set up, and all the resources are injected
     2.  PreDestroy callbacks are invoked right before the bean instance is retired and removed from the pool
 
--   Callbacks must follow the pattern of void <METHOD\>() and '''cannot throw checked exceptions'''
+-   Callbacks must follow the pattern of `void <METHOD>()` and **cannot throw checked exceptions**
 -   PostConstruct is invoked only once in the life cycle of an instance: when it is transitioning from the Does Not Exist state to the Method-Ready Pool
 -   The bean class may define only one @PreDestroy method
 -   The bean class may define only one @PostConstruct method
@@ -390,7 +390,7 @@ public class ReservationProcessorBean implements javax.jms.MessageListener {
 
 ### XML
 
--   Se declarar o <messaging-type/\>, a classe não precisa implementar javax.jms.MessageListener
+-   Se declarar o `<messaging-type/\>`, a classe não precisa implementar javax.jms.MessageListener
 -   basta implementar o método **public void onMessage(javax.jms.Message arg)**
 -   visibilidade menor do que public não funciona!
 

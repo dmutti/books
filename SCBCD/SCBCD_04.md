@@ -154,7 +154,7 @@ public enum GenerationType {
     -   The AUTO strategy tells the persistence provider that you are allowing it to generate the key for you
     -   he IDENTITY strategy uses a special column type for creating primary keys
     -   The TABLE strategy designates a user-defined relational table from which the numeric keys will be generated
-    -   The SEQUENCE generator strategy uses the RDBMS' built-in structure to generate IDs sequentially
+    -   The SEQUENCE generator strategy uses the RDBMS built-in structure to generate IDs sequentially
 
 -   any generator is shared among all entities in the persistence module and therefore each generator must be uniquely named in a persistence module
 
