@@ -1,0 +1,68 @@
+h0, h1, h2, h3, h4, h5, h6, dt { 
+    font-family: Verdana, Arial, Helvetica, sans-serif; 
+}
+
+item, a, li, font, body, td {
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+}
+
+body { 
+    background-color: #14032D;
+    color: #ffffff;
+}
+
+a       { 
+    Text-Decoration: none;
+    color: #a570c5;
+}
+
+a:hover { 
+    Text-Decoration: underline;
+}
+
+a.fmt { 
+    	font-size : 8pt;
+}
+
+p.legal { 
+    	font-size : 8pt;
+}
+
+
+strong.large_heading {
+        font-family: Verdana, Helvetica, sans-serif; 
+    	font-size : 20pt;
+	font-weight : bold;
+	padding-bottom: 1pt;
+	color: #000000;
+}
+
+strong.small_heading {
+        font-family: Verdana, Helvetica, sans-serif; 
+    	font-size : 14pt;
+	font-weight : bold;
+	padding-bottom: 1pt;
+	color: #000000;
+}
+
+div.subheading {
+        font-family: Verdana, Helvetica, sans-serif; 
+    	font-size : 10pt;
+	font-weight : bold;
+	padding-top: 7pt;
+	color: #000000;
+}
+
+span.templ {
+        background-color: #0000ff;
+        color: #ffffff;
+        font-weight: bold;
+}
+
+span.instance {
+        color: #0000ff;
+}
+
+span.marker {
+        background-color: #ffff00;
+}
