@@ -24,7 +24,7 @@ Creational Patterns
 
 ### Abstract Factory Pattern
 
-![](Scea_ch_7_fig_7_1)
+![](Scea_ch_7_fig_7_1.png)
 
 -   provides an interface for creating families of related or dependent objects without specifying their concrete classes
 -   provides an abstract class that determines the appropriate concrete class to instantiate to create a set of concrete products that implement a standard interface
@@ -43,7 +43,7 @@ Creational Patterns
 
 ### Builder Pattern
 
-![](Scea_ch_7_fig_7_2)
+![](Scea_ch_7_fig_7_2.png)
 
 -   separates the construction of a complex object from its representation so the same construction process can create different objects.
 -   allows a client object to construct a complex object by specifying only its type and content
@@ -60,7 +60,7 @@ Creational Patterns
 
 ### Factory Method Pattern
 
-![](Scea_ch_7_fig_7_3)
+![](Scea_ch_7_fig_7_3.png)
 
 -   defines an interface for creating an object, but lets the subclasses decide which class to instantiate
 -   is useful for constructing individual objects for a specific purpose without the requestor knowing the specific class being instantiated
@@ -75,7 +75,7 @@ Creational Patterns
 
 ### Prototype Pattern
 
-![](Scea_ch_7_fig_7_4)
+![](Scea_ch_7_fig_7_4.png)
 
 -   allows an object to create customized objects without knowing their exact class or the details of how to create them
 -   It specifies the kinds of objects to create using a prototypical instance and creates new objects by copying this prototype.
@@ -94,7 +94,7 @@ Creational Patterns
 
 ### Singleton Pattern
 
-![](Scea_ch_7_fig_7_5)
+![](Scea_ch_7_fig_7_5.png)
 
 -   ensures that a class has only one instance and provides a global point of access to that class.
 -   **Benefits**
@@ -111,7 +111,7 @@ Structural Patterns
 
 ### Adapter Pattern
 
-![](Scea_ch_7_fig_7_6)
+![](Scea_ch_7_fig_7_6.png)
 
 -   acts as an intermediary between two classes, converting the interface of one class so that it can be used with the other
 -   implements an interface known to its clients and provides access to an instance of a class not known to its clients
@@ -125,7 +125,7 @@ Structural Patterns
 
 ### Bridge Pattern
 
-![](Scea_ch_7_fig_7_7)
+![](Scea_ch_7_fig_7_7.png)
 
 -   divides a complex component into two separate but related inheritance hierarchies
     -   the functional abstraction
@@ -142,7 +142,7 @@ Structural Patterns
 
 ### Composite Pattern
 
-![](Scea_ch_7_fig_7_8)
+![](Scea_ch_7_fig_7_8.png)
 
 -   enables you to create hierarchical tree structures of varying complexity, while allowing every element in the structure to operate with a uniform interface
 -   allows clients to treat individual objects and compositions of objects uniformly
@@ -156,7 +156,7 @@ Structural Patterns
 
 ### Decorator Pattern
 
-![](Scea_ch_7_fig_7_9)
+![](Scea_ch_7_fig_7_9.png)
 
 -   enables you to add or remove object functionality without changing the external appearance or function of the object
 -   attaches additional responsibilities to an object dynamically to provide a flexible alternative to changing object functionality without using static inheritance
@@ -171,7 +171,7 @@ Structural Patterns
 
 ### Façade Pattern
 
-![](Scea_ch_7_fig_7_10)
+![](Scea_ch_7_fig_7_10.png)
 
 -   provides a unified interface to a group of interfaces in a subsystem
 -   the subsystem is easier to use because you have only one interface
@@ -185,7 +185,7 @@ Structural Patterns
 
 ### Flyweight Pattern
 
-![](Scea_ch_7_fig_7_11)
+![](Scea_ch_7_fig_7_11.png)
 
 -   reduces the number of low-level, detailed objects within a system by sharing objects
 -   **Benefits**
@@ -197,7 +197,7 @@ Structural Patterns
 
 ### Proxy Pattern
 
-![](Scea_ch_7_fig_7_12)
+![](Scea_ch_7_fig_7_12.png)
 
 -   provides a surrogate or placeholder object to control access to the original object
 -   **Benefits**
@@ -211,7 +211,7 @@ Behavioral Patterns
 
 ### Chain of Responsibility Pattern
 
-![](Scea_ch_7_fig_7_13)
+![](Scea_ch_7_fig_7_13.png)
 
 -   establishes a chain within a system, so that a message can either be handled at the level where it is first received, or be directed to an object that can handle it
 -   **Benefits**
@@ -225,7 +225,7 @@ Behavioral Patterns
 
 ### Command Pattern
 
-![](Scea_ch_7_fig_7_14)
+![](Scea_ch_7_fig_7_14.png)
 
 -   encapsulates a request in an object, which enables you to store the command, pass the command to a method, and return the command like any other object
 -   **Benefits**
@@ -237,7 +237,7 @@ Behavioral Patterns
 
 ### Interpreter Pattern
 
-![](Scea_ch_7_fig_7_15)
+![](Scea_ch_7_fig_7_15.png)
 
 -   interprets a language to define a representation for its grammar along with an interpreter that uses the representation to interpret sentences in the language
 -   **Benefits**
@@ -248,7 +248,7 @@ Behavioral Patterns
 
 ### Iterator Pattern
 
-![](Scea_ch_7_fig_7_16)
+![](Scea_ch_7_fig_7_16.png)
 
 -   provides a consistent way to sequentially access items in a collection that is independent of and separate from the underlying collection
 -   **Benefits**
@@ -260,7 +260,7 @@ Behavioral Patterns
 
 ### Mediator Pattern
 
-![](Scea_ch_7_fig_7_17)
+![](Scea_ch_7_fig_7_17.png)
 
 -   simplifies communication among objects in a system by introducing a single object that manages message distribution among other objects
 -   promotes loose coupling by keeping objects from referring to each other explicitly, and it lets you vary their interaction independently
@@ -275,7 +275,7 @@ Behavioral Patterns
 
 ### Memento Pattern
 
-![](Scea_ch_7_fig_7_18)
+![](Scea_ch_7_fig_7_18.png)
 
 -   preserves a "snapshot" of an object's state, so that the object can return to its original state without having to reveal its content to the rest of the world
 -   **Benefits**
@@ -286,7 +286,7 @@ Behavioral Patterns
 
 ### Observer Pattern
 
-![](Scea_ch_7_fig_7_19)
+![](Scea_ch_7_fig_7_19.png)
 
 -   provides a way for a component to flexibly broadcast messages to interested receivers
 -   **Benefits**
@@ -297,7 +297,7 @@ Behavioral Patterns
 
 ### State Pattern
 
-![](Scea_ch_7_fig_7_20)
+![](Scea_ch_7_fig_7_20.png)
 
 -   allows an object to alter its behavior when its internal state changes
 -   **Benefits**
@@ -309,7 +309,7 @@ Behavioral Patterns
 
 ### Strategy Pattern
 
-![](Scea_ch_7_fig_7_21)
+![](Scea_ch_7_fig_7_21.png)
 
 -   defines a group of classes that represent a set of possible behaviors
 -   These behaviors can then be used in an application to change its functionality
@@ -322,7 +322,7 @@ Behavioral Patterns
 
 ### Template Method Pattern
 
-![](Scea_ch_7_fig_7_22)
+![](Scea_ch_7_fig_7_22.png)
 
 -   provides a method that allows subclasses to override parts of the method without rewriting it
 -   Define the skeleton of an algorithm in an operation, deferring some steps to subclasses
@@ -334,7 +334,7 @@ Behavioral Patterns
 
 ### Visitor Pattern
 
-![](Scea_ch_7_fig_7_23)
+![](Scea_ch_7_fig_7_23.png)
 
 -   provides a maintainable, easy way to represent an operation to be performed on the elements of an object structure
 -   lets you define a new operation without changing the classes of the elements on which it operates
