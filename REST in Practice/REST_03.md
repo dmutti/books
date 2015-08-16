@@ -135,8 +135,8 @@ Using Atom for Event-Driven Systems
     <generator uri="http://restbucks.com/products">Product Catalog</generator>
     <fh:archive/>
     <link rel="self" href="http://restbucks.com/products/notifications/2009/7/4"/>
-    <link rel="prev-archive href="http://restbucks.com/products/notifications/2009/7/3"/>
-    <link rel="next-archive href="http://restbucks.com/products/notifications/2009/7/5"/>
+    <link rel="prev-archive" href="http://restbucks.com/products/notifications/2009/7/3"/>
+    <link rel="next-archive" href="http://restbucks.com/products/notifications/2009/7/5"/>
 </feed>
 ```
 
