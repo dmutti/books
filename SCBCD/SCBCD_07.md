@@ -55,21 +55,21 @@ Packaging a Persistence Unit
 -   The set of classes that belong to the persistence unit can be specified
 -   the persistence provider can scan the JAR file automatically for the set of classes with the @javax.persistence.Entity annotation to deploy as entities
 -   Each persistence unit is tied to one and only one data source
--   The root of the persistence.xml XML schema is the <persistence\> element, which contains one or more <persistence-unit\> elements.
--   Each <persistence-unit\> has two attributes: name (required) and transaction-type (optional).
-    -   The transaction-type attribute defines whether you want your persistence unit to be managed by and integrated with Java EE transactions (JTA) or you want to use the resource local (RESOURCE\_LOCAL).
-    -   This attribute defaults to JTA in Java EE environments and to RESOURCE\_LOCAL in SE environments.
+-   The root of the persistence.xml XML schema is the `<persistence\>` element, which contains one or more `<persistence-unit\>` elements.
+-   Each `<persistence-unit\>` has two attributes: name (required) and transaction-type (optional).
+    -   The transaction-type attribute defines whether you want your persistence unit to be managed by and integrated with Java EE transactions (JTA) or you want to use the resource local (RESOURCE_LOCAL).
+    -   This attribute defaults to JTA in Java EE environments and to RESOURCE_LOCAL in SE environments.
 
--   The subelements of <persistence-unit\> are
-    -   <description\> (optional)
-    -   <provider\> (optional)
-    -   <jta-data-source\> (optional)
-    -   <non-jta-data-source\> (optional)
-    -   <mapping-file\> (optional)
-    -   <jar-file\> (optional)
-    -   <class\> (optional)
-    -   <properties\> (optional)
-    -   <exclude-unlisted-classes\> (optional).
+-   The subelements of `<persistence-unit\>` are
+    -   `<description\>` (optional)
+    -   `<provider\>` (optional)
+    -   `<jta-data-source\>` (optional)
+    -   `<non-jta-data-source\>` (optional)
+    -   `<mapping-file\>` (optional)
+    -   `<jar-file\>` (optional)
+    -   `<class\>` (optional)
+    -   `<properties\>` (optional)
+    -   `<exclude-unlisted-classes\>` (optional).
 
 ### The Persistence Unit Class Set
 
@@ -83,16 +83,16 @@ Packaging a Persistence Unit
 </persistence>
 ```
 
--   You can specify additional JARs that you want to be scanned using the <jar-file\> element
+-   You can specify additional JARs that you want to be scanned using the `<jar-file\>` element
     -   The value of this element is a path relative to the JAR file that contains persistence.xml
 
--   If you do not want the persistence.xml's JAR file to be scanned, then you can use the <exclude-unlisted-classes\> element.
+-   If you do not want the persistence.xml's JAR file to be scanned, then you can use the `<exclude-unlisted-classes\>` element.
 -   The final set of classes is determined by a union of all of the following metadata:
-    -   Classes annotated with @Entity in the persistence.xml file's JAR file (unless <exclude-unlisted-classes\> is specified)
-    -   Classes annotated with @Entity that are contained within any JARs listed with any <jar-file\> elements
+    -   Classes annotated with @Entity in the persistence.xml file's JAR file (unless `<exclude-unlisted-classes\>` is specified)
+    -   Classes annotated with @Entity that are contained within any JARs listed with any `<jar-file\>` elements
     -   Classes mapped in the META-INF/orm.xml file if it exists
-    -   Classes mapped in any XML files referenced with the <mapping-file\> element
-    -   Classes listed with any <class\> elements
+    -   Classes mapped in any XML files referenced with the `<mapping-file\>` element
+    -   Classes listed with any `<class\>` elements
 
 Obtaining an EntityManager
 ==========================
@@ -426,7 +426,7 @@ Entity Listeners
 
 -   Entity listeners are classes that can generically intercept entity callback events
 -   The entity listener class must have a public no-arg constructor
--   entity listener callback methods follow the form **void <METHOD\>(Object)'''**
+-   entity listener callback methods follow the form **`void <METHOD\>(Object)`**
 -   If the lifecycle callback method throws a runtime exception, the intercepted persistence operation is aborted
 -   if you have a listener class to validate that all entity data is present before persisting an entity, you could abort the persistence operation if needed by throwing a runtime exception
 -   entity listener classes do not support dependency injection
