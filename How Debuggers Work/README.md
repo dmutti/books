@@ -123,7 +123,7 @@ Debugger Architecture
 
 -   **a generic architecture for the state-of-the-art debugger**
 
-![](Debugger_architecture.png‎)
+![](Debugger_architecture.png)
 
 Architecture Overview
 ---------------------
