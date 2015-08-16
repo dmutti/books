@@ -35,7 +35,7 @@ Understanding lifecycle callbacks
 | @javax.annotation.PostConstruct | Stateless, Stateful, MDB |
 | @javax.annotation.PreDestroy    | Stateless, Stateful, MDB |
 | @javax.annotation.PrePassivate  | Stateful                 |
-| @javax.annotation.PostActivate  |                          |
+| @javax.annotation.PostActivate  | Stateful                 |
 
 ```xml
 <ejb-jar version="3.0">
