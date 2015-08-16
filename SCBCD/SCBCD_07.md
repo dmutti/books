@@ -19,6 +19,7 @@ Persistence Context
 -   An entity can become attached to the EntityManager’s context when you
     -   pass the entity to the **persist, merge, or refresh method**.
     -   retrieve using the **find method or a query within a transaction**
+
 -   A managed entity becomes **detached when it is out of scope, removed, serialized, or cloned**
 -   Unlike entities explicitly created using the new operator, an entity retrieved from the database using the EntityManager’s find method or a query is attached if retrieved within a transactional context. A retrieved instance of the entity becomes detached immediately if there is no associated transaction
 
@@ -49,24 +50,26 @@ Packaging a Persistence Unit
         -   A JAR file in the WEB-INF/lib directory in a web archive file (.war)
         -   A JAR file in the root of an enterprise archive (.ear)
         -   A JAR file in the EAR lib directory.
+
 -   Each persistence unit must have an identity, although the empty string is a valid name
 -   The set of classes that belong to the persistence unit can be specified
 -   the persistence provider can scan the JAR file automatically for the set of classes with the @javax.persistence.Entity annotation to deploy as entities
 -   Each persistence unit is tied to one and only one data source
--   The root of the persistence.xml XML schema is the <persistence> element, which contains one or more <persistence-unit> elements.
--   Each <persistence-unit> has two attributes: name (required) and transaction-type (optional).
+-   The root of the persistence.xml XML schema is the <persistence\> element, which contains one or more <persistence-unit\> elements.
+-   Each <persistence-unit\> has two attributes: name (required) and transaction-type (optional).
     -   The transaction-type attribute defines whether you want your persistence unit to be managed by and integrated with Java EE transactions (JTA) or you want to use the resource local (RESOURCE\_LOCAL).
     -   This attribute defaults to JTA in Java EE environments and to RESOURCE\_LOCAL in SE environments.
--   The subelements of <persistence-unit> are
-    -   <description> (optional)
-    -   <provider> (optional)
-    -   <jta-data-source> (optional)
-    -   <non-jta-data-source> (optional)
-    -   <mapping-file> (optional)
-    -   <jar-file> (optional)
-    -   <class> (optional)
-    -   <properties> (optional)
-    -   <exclude-unlisted-classes> (optional).
+
+-   The subelements of <persistence-unit\> are
+    -   <description\> (optional)
+    -   <provider\> (optional)
+    -   <jta-data-source\> (optional)
+    -   <non-jta-data-source\> (optional)
+    -   <mapping-file\> (optional)
+    -   <jar-file\> (optional)
+    -   <class\> (optional)
+    -   <properties\> (optional)
+    -   <exclude-unlisted-classes\> (optional).
 
 ### The Persistence Unit Class Set
 
@@ -80,15 +83,16 @@ Packaging a Persistence Unit
 </persistence>
 ```
 
--   You can specify additional JARs that you want to be scanned using the <jar-file> element
+-   You can specify additional JARs that you want to be scanned using the <jar-file\> element
     -   The value of this element is a path relative to the JAR file that contains persistence.xml
--   If you do not want the persistence.xml's JAR file to be scanned, then you can use the <exclude-unlisted-classes> element.
+
+-   If you do not want the persistence.xml's JAR file to be scanned, then you can use the <exclude-unlisted-classes\> element.
 -   The final set of classes is determined by a union of all of the following metadata:
-    -   Classes annotated with @Entity in the persistence.xml file's JAR file (unless <exclude-unlisted-classes> is specified)
-    -   Classes annotated with @Entity that are contained within any JARs listed with any <jar-file> elements
+    -   Classes annotated with @Entity in the persistence.xml file's JAR file (unless <exclude-unlisted-classes\> is specified)
+    -   Classes annotated with @Entity that are contained within any JARs listed with any <jar-file\> elements
     -   Classes mapped in the META-INF/orm.xml file if it exists
-    -   Classes mapped in any XML files referenced with the <mapping-file> element
-    -   Classes listed with any <class> elements
+    -   Classes mapped in any XML files referenced with the <mapping-file\> element
+    -   Classes listed with any <class\> elements
 
 Obtaining an EntityManager
 ==========================
@@ -110,6 +114,9 @@ EntityManagerFactory
 public class Persistence {
     public static EntityManagerFactory createEntityManagerFactory(String unitName);
     public static EntityManagerFactory createEntityManagerFactory(String unitName, java.util.Map props);
+    public static EntityManagerFactory createEntityManagerFactory(String unitName);
+    public static EntityManagerFactory createEntityManagerFactory(String unitName, java.util.Map props);
+}
 ```
 
 -   The class looks for persistence.xml deployment descriptors within your Java classpath
@@ -159,6 +166,7 @@ Obtaining a Persistence Context
 
 -   A persistence context can be created by calling the EntityManagerFactory.createEntityManager() method.
     -   The returned EntityManager instance represents an extended persistence context.
+
 -   EntityManager.joinTransaction() is required to be invoked only when an EntityManager is created explicitly using an EntityManagerFactory.
 -   If you are using EJB container managed persistence contexts, then you do not need to perform this extra step.
 -   An EntityManager can be injected directly into an EJB using the @javax.persistence.PersistenceContext annotation
@@ -198,6 +206,7 @@ public @interface PersistenceContext {
 -   This means that if you interact with any entity managers within the context of a transaction, no matter if they are different instances that are injected into different beans, the same persistence context will be used
 -   You must never call close( ) on an injected entity manager
     -   If you close an entity manager, an IllegalStateException is thrown.
+
 -   An EXTENDED entity manager can only be injected into a stateful session bean
     -   The persistence context has the same life span as the bean
     -   When the stateful session bean is removed, the persistence context is closed
@@ -247,6 +256,7 @@ Persisting Entities
 -   When the actual insertion happens depends on a few variables.
     -   If persist() is called within a transaction, the insert may happen immediately, or it may be queued until the end of the transaction, depending on the flush mode
     -   You can always force the insertion manually within a transaction by calling the flush() method
+
 -   You may call persist() outside of a transaction if and only if the entity manager is an EXTENDED persistence context
 -   When you call persist() outside of a transaction with an EXTENDED persistence context, the insert is queued until the persistence context is associated with a transaction
 -   An injected extended persistence context is automatically associated with a JTA transaction by the EJB container
@@ -262,15 +272,19 @@ Finding Entities
 -   **find()**
     -   returns null if the entity is not found in the database
     -   initializes the state based on the lazy-loading policies of each property
+
 -   **getReference()**
     -   The getReference() method is used to get an instance, whose state may be lazily fetched.
     -   The implementation may construct a hollow entity and return it to you instead.
         -   The state only gets loaded when you attempt to access a persistent field.
         -   At that time, the implementation may throw an EntityNotFoundException if it discovers that the entity does not exist in the datastore.
+
     -   The implementation may also throw an EntityNotFoundException from the getReference method itself.
+
 -   Both find() and getReference() throw an IllegalArgumentException if their parameters are not an entity type
 -   You are allowed to invoke them outside the scope of a transaction.
     -   In this case, any object returned is detached if the EntityManager is transaction-scoped but remains managed if it is an extended persistence context
+
 -   An EntityManager with extended persistence context uses same persistence context across multiple transaction boundaries.
     -   As long as the same EntityManager is used (whether inside or outside of a transaction), returns the same object reference when find() method is invoked as the entities remain managed even after the outside the transaction boundaries as well.
 
@@ -297,10 +311,12 @@ public void updateCabin(Cabin cabin) {
         -   a full copy of the cabin parameter is made and returned from the merge( ) method
         -   This copy is managed by the entity manager, and any additional setter methods called on this copy will be synchronized with the database when the EntityManager decides to flush
         -   The cabin parameter remains detached and unmanaged.
+
     -   **If the entity manager is already managing a Cabin instance with the same primary key**
         -   the contents of the cabin parameter are copied into this managed object instance
         -   The merge( ) operation will return this managed instance.
         -   The cabin parameter remains detached and unmanaged.
+
 -   The merge( ) method will throw an IllegalArgumentException if its parameter is not an entity type.
 -   The transactionRequiredException is thrown if this method is invoked on a transaction-scoped persistence context.
 -   if the entity manager is an extended persistence context, it is legal to invoke this method outside of a transaction scope and the update will be queued until the persistence context interacts with a transaction.
@@ -350,24 +366,30 @@ Callback Events
 -   @javax.persistence.PrePersist
     -   occurs immediately when the EntityManager.persist() call is invoked
     -   or whenever an entity instance is scheduled to be inserted into the database (as with a cascaded merge).
+
 -   @javax.persistence.PostPersist
     -   not triggered until the actual database insert.
+
 -   @javax.persistence.PostLoad
     -   triggered after an entity instance has been loaded by a find() or getreference() method call on the EntityManager interface, or when an EJB QL query is executed
     -   also called after the refresh() method is invoked
+
 -   @javax.persistence.PreUpdate
     -   triggered just before the state of the entity is synchronized with the database
+
 -   @javax.persistence.PostUpdate
     -   happens after the state of the entity is synchronized with the database
+
 -   @javax.persistence.PreRemove
     -   triggered whenever EntityManager.remove() is invoked on the entity bean, directly or because of a cascade
+
 -   @javax.persistence.PostRemove
     -   happens immediately after the actual database delete occurs
 
 Callbacks on Entity Classes
 ---------------------------
 
--   entity listener callback methods follow the form **public, private, protected, or package-protected void <METHOD>(Object)** and throw no checked exceptions
+-   **entity listener callback methods follow the form **public, private, protected, or package-protected void <METHOD\>(Object) and throw no checked exceptions**
 -   If the lifecycle callback method throws a runtime exception, the intercepted persistence operation is aborted
 
 ```java
@@ -404,7 +426,7 @@ Entity Listeners
 
 -   Entity listeners are classes that can generically intercept entity callback events
 -   The entity listener class must have a public no-arg constructor
--   entity listener callback methods follow the form *' void <METHOD>(Object)*'
+-   entity listener callback methods follow the form **void <METHOD\>(Object)'''**
 -   If the lifecycle callback method throws a runtime exception, the intercepted persistence operation is aborted
 -   if you have a listener class to validate that all entity data is present before persisting an entity, you could abort the persistence operation if needed by throwing a runtime exception
 -   entity listener classes do not support dependency injection
