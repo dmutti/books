@@ -286,11 +286,11 @@ Using Caching Directives in Responses
     -   make normally uncacheable responses cacheable
     -   make normally cacheable responses uncacheable
     -   do not affect the cacheability of a response at all; rather, they determine the freshness of an already cacheable response
--   **max-age=<delta-seconds>**
+-   **max-age=`<delta-seconds>`**
     -   controls both cacheability and freshness
     -   It makes a response capable of being cached by local and shared caches (proxies and reverse proxies), as well as specifying a freshness lifetime in seconds.
     -   A max-age value overrides any Expiry value supplied in a response
--   **s-maxage=<delta-seconds>**
+-   **s-maxage=`<delta-seconds>`**
     -   this directive serves two functions
         -   it makes responses cacheable, but only by shared caches
         -   it specifies a freshness lifetime in seconds
@@ -313,12 +313,12 @@ Using Caching Directives in Responses
     -   only works for responses that have been made cacheable using another header or directive
 -   **no-store**
     -   makes normally cacheable content uncacheable by all caches
--   **stale-while-revalidate=<delta-seconds>**
+-   **stale-while-revalidate=`<delta-seconds>`**
     -   In situations where a cache is able to release a stale response, this directive allows the cache to release the response immediately, but instructs it to also revalidate it in the background
     -   nonblocking!
     -   favors reduced latency over consistency
     -   If a stale representation is not revalidated before delta-seconds have passed, however, the cache should stop serving it
--   **stale-if-error=<delta-seconds>**
+-   **stale-if-error=`<delta-seconds>`**
     -   allows a cache to release a stale response if it encounters an error while contacting the origin server
     -   If a response is staler than the stale window specified by delta-seconds, it should not be released
     -   favors availability over consistency
@@ -361,7 +361,7 @@ Consistency
 -   If the resource hasn't changed the service replies with 304 Not Modified
 -   When a service replies with 304 Not Modified, it can also include Expires, Cache-Control, and Vary headers
 -   Caches can update their cached representation with any new values in these headers
--   **ETag**'
+-   **ETag**
     -   Consumers should always treat ETags as opaque string tokens
     -   consider when implementing ETags in a service
         -   computation
@@ -377,13 +377,13 @@ Consistency
 
 -   Consumers can influence cache behavior by sending Cache-Control directives in requests
 -   it expresses express their preference for representations that fall within particular freshness bounds, or their tolerance for stale representations
--   **max-age=<delta-seconds>**
+-   **max-age=`<delta-seconds>`**
     -   Indicates that the consumer will only accept cached representations that are not older than the specified age, delta-seconds
     -   maxage=0 causes an end-to-end revalidation all the way to the origin server
--   **max-stale=<delta-seconds>**
+-   **max-stale=`<delta-seconds>`**
     -   Indicates that the consumer is prepared to accept representations that have been stale for up to the specified number of seconds
     -   the consumer indicates it is prepared to accept a stale response of any age by omitting delta-seconds value
--   **min-fresh=<delta-seconds>**
+-   **min-fresh=`<delta-seconds>`**
     -   the consumer wants only cached representations that will still be fresh when the current age of the cached object is added to the supplied delta-seconds value
 -   **only-if-cached**
     -   Tells a cache to return only a cached representation
@@ -480,7 +480,7 @@ Consistency
 ```
 
 -   Each event has its own ID, which has nothing to do with the identifiers of any cached representations
--   the `<link>` element's href valueassociates the event with a group or particular representation
+-   the `<link>` element's href value associates the event with a group or particular representation
 -   the cache stops extending the freshness lifetime of any representations belonging to this group and next time a consumer issues a request the cache will revalidate its stale representation with the origin server
 -   If a cache can't connect to the channel, it can no longer continue to extend the freshness lifetime
 -   **Using small freshness lifetimes together with cache channels, we can reduce the time it takes for the overall distributed application to reach a consistent state**
