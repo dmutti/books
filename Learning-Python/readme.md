@@ -445,4 +445,521 @@ round(2.567), round(2.467), round(2.567, 2) # (3, 2, 2.57)
 
 ## Decimal Type
 
+* decimals are fixed-precision floating-point values
+* the decimal type is well suited to representing fixed-precision quantities like sums of money and can help you achieve better numeric accuracy
+* When decimals of different precision are mixed in expressions, Python converts up to the largest number of decimal digits automatically
+* The precision is applied globally for all decimals created in the calling thread
 
+```python
+from decimal import Decimal
+Decimal('0.1') + Decimal('0.1') + Decimal('0.1') - Decimal('0.3') # Decimal('0.0')
+Decimal(0.1) + Decimal(0.1) + Decimal(0.1) - Decimal(0.3)
+
+import decimal
+decimal.getcontext().prec = 4
+```
+
+* it’s also possible to reset precision temporarily by using the with context manager statement
+* The precision is reset to its original value on statement exit
+
+```python
+import decimal
+with decimal.localcontext() as ctx:
+    ctx.prec = 2
+    Decimal(0.1) + Decimal(0.1) + Decimal(0.1) - Decimal(0.3) # 1.1E-17
+```
+
+## Fraction Type
+
+* It essentially keeps both a numerator and a denominator explicitly, so as to avoid some of the inaccuracies and limitations of floating-point math
+* fractions have a `from_float` method, and float accepts a `Fraction` as an argument
+
+```python
+from fractions import Fraction
+x = Fraction(1, 3)
+y = Fraction(4, 6)
+x + y # Fraction(1, 1)
+x * y # Fraction(2, 9)
+Fraction('.25') # Fraction(1, 4)
+Fraction(2.5) # Fraction(5, 2)
+```
+
+### Type Mixing
+
+* although you can convert from floating point to fraction, in some cases there is an unavoidable precision loss when you do so, because the number is inaccurate in its original floating-point form
+
+* Fraction + int -> Fraction
+* Fraction + float -> float
+* Fraction + Fraction -> Fraction
+
+## Sets
+
+```python
+set([1, 2, 3, 4]) # {1, 2, 3, 4}
+{1, 2, 3, 4} # {1, 2, 3, 4}
+
+set('spam') # {'s', 'a', 'p', 'm'}
+S = {'s', 'p', 'a', 'm'} # {'s', 'a', 'p', 'm'}
+S.add('alot') # {'s', 'a', 'p', 'alot', 'm'}
+
+type({}) # dict
+type(set())  # set
+```
+
+* an unordered collection of unique and immutable objects that supports operations corresponding to mathematical set theory
+* `{}` is still a dictionary in all Pythons. Empty sets must be created with the `set` built-in, and print the same way
+* **sets can only contain immutable (a.k.a. "hashable") object types**
+    * lists and dictionaries cannot be embedded in sets, but tuples can if you need to store compound values
+* Sets themselves are mutable too, and so cannot be nested in other sets directly
+    * if you need to store a set inside another set, the `frozenset` built-in call works just like set but creates an immutable set that cannot change and thus can be embedded in other sets
+* Set comprehensions run a loop and collect the result of an expression on each iteration; a loop variable gives access to the current iteration value for use in the collection expression. The result is a new set you create by running the code, with all the normal set behavior
+
+```python
+{x ** 2 for x in [1, 2, 3, 4]} # {16, 1, 4, 9}
+```
+
+## Booleans
+
+* Python today has an explicit Boolean data type called `bool`, with the values True and False available as preassigned built-in names. 
+    * Internally, the names True and False are instances of `bool`, which is in turn just a subclass (in the object-oriented sense) of the built-in integer type `int`.
+    * True and False behave exactly like the integers 1 and 0, except that they have customized printing logic -- they print themselves as the words True and False, instead of the digits 1 and 0
+    * `bool` accomplishes this by redefining `str` and `repr` string formats for its two objects
+
+# The Dynamic Typing Interlude
+
+* In Python, types are determined automatically at runtime, not in response to declarations in your code
+    * This means that you never declare variables ahead of time
+* A variable never has any type information or constraints associated with it. The notion of type lives with objects, not names.
+    * Variables are generic in nature; they always simply refer to a particular object at a particular point in time.
+* **variables are created when assigned, can reference any type of object, and must be assigned before they are referenced**
+* Because variables have no type, we haven’t actually changed the type of the variable a; we’ve simply made the variable reference a different type of object
+    * All we can ever say about a variable in Python is that it references a particular object at a particular point in time
+* in Python, whenever a name is assigned to a new object, the space held by the prior object is reclaimed if it is not referenced by any other name or object
+
+## Shared References
+
+```python
+a = 3
+b = a
+a = 'spam'
+print(b) # 3
+```
+
+* there is no way to ever link a variable to another variable in Python. Rather, both variables point to the same object via their references.
+* in Python variables are always pointers to objects, not labels of changeable memory areas: setting a variable to a new value does not alter the original object, but rather causes the variable to reference an entirely different object.
+* The net effect is that assignment to a variable itself can impact only the single variable being assigned.
+
+## Shared References and In-Place Changes
+
+```python
+L1 = [1,2,3]
+L2 = L1
+L1[0] = 6
+L2 # [6,2,3]
+```
+
+* This behavior only occurs for mutable objects that support in-place changes, and is usually what you want, but you should be aware of how it works, so that it's expected.
+* if you don't want such behavior, you can request that Python copy objects instead of making references.
+    * using the built-in `list` function and the standard library `copy` module
+    * the most common way is to slice from start to finish
+
+```python
+import copy
+L1 = [1,2,3]
+L2 = L1[:] # list(L1) or copy.copy(L1)
+L1[0] = 6
+L1 # [6,2,3]
+L2 # [1,2,3]
+```
+
+## Shared References and Equality
+
+```python
+L = [1, 2, 3]
+M = L
+L == M # True -> same values
+L is M # True -> same objects
+
+###############
+L = [1, 2, 3]
+M = [1, 2, 3]
+L == M # True -> same values
+L is M # False -> different objects
+```
+
+* **the `==` operator, tests whether the two referenced objects have the same values**
+* **the `is` operator, instead tests for object identity -- it returns `True` only if both names point to the exact same object**
+* **small integers and strings are cached and reused, `is` tells us they reference the same single object**
+* Because you cannot change immutable numbers or strings in place, it doesn't matter how many references there are to the same object -- every reference will always see the same, unchanging value
+
+## Weak References
+
+* a weak reference, implemented by the `weakref` standard library module, is a reference to an object that does not by itself prevent the referenced object from being garbage-collected
+* If the last remaining references to an object are weak references, the object is reclaimed and the weak references to it are automatically deleted (or otherwise notified).
+* Useful in dictionary-based caches of large objects
+
+# String Fundamentals
+
+* In Python 3.X there are three string types
+    * `str` is used for Unicode text (including ASCII)
+    * `bytes` is used for binary data (including encoded text)
+    * `bytearray` is a mutable variant of bytes
+* Files work in two modes
+    * `text`, which represents content as `str` and implements Unicode encodings
+    * `binary`, which deals in raw bytes and does no data translation
+* Python has no distinct type for individual characters; you just use one-character strings
+
+| Operation | Interpretation |
+|-----------|----------------|
+| S = '' | empty string |
+| S = "spam's" | same as single |
+| S = 's\np\ta\x00m' | Escape sequences |
+| S = """...multiline...""" | Triple-quoted block strings |
+| S = r'\temp\spam' | Raw strings (no escapes) |
+| B = b'sp\xc4m' | Byte strings |
+| U = u'sp\u00c4m' | Unicode strings |
+| S1 + S2 | concatenate |
+| S * 3 | repeat |
+| S[i] | index |
+| S[i:j] | slice |
+| len(S) | length |
+| "a %s parrot" % kind | String formatting expression |
+| "a {0} parrot".format(kind) | String formatting method |
+| S.find('pa') | search |
+| S.rstrip() | remove whitespace |
+| S.replace('pa', 'xx') | replacement |
+| S.split(',') | split on delimiter |
+| S.isdigit() | content test |
+| S.lower() | case conversion |
+| S.endswith('spam') | end test |
+| 'spam'.join(strlist) | delimiter join |
+| S.encode('latin-1') | Unicode encoding |
+| B.decode('utf8') | Unicode decoding |
+| for x in S: print(x) | iteration |
+| 'spam' in S | membership |
+| [c * 2 for c in S] | iteration |
+| re.match('sp(.*)am', line) | Pattern matching: library `module`|
+
+* single and double-quote characters are interchangeable
+    * string literals can be written enclosed in either two single or two double quotes
+    * The reason for supporting both is that it allows you to embed a quote character of the other variety inside a string without escaping it with a backslash
+    * Standard: **'standard'**
+* Python automatically concatenates adjacent string literals in any expression
+    * Adding commas between these strings would result in a tuple, not a string
+* **if Python does not recognize the character after a \ as being a valid escape code, it simply keeps the backslash in the resulting string**
+
+```python
+title = "Meaning " 'of' " Life"
+title # 'Meaning of Life'
+
+title = "Meaning ", 'of', " Life"
+title # ('Meaning ', 'of', ' Life')
+```
+
+## Raw Strings Suppress Escapes
+
+* `myfile = open('C:\new\text.dat', 'w')`
+* the call tries to open a file named "C:(newline)ew(tab)ext.dat"
+    * If the letter `r` (uppercase or lowercase) appears just before the opening quote of a string, it turns off the escape mechanism. The result is that Python retains your backslashes literally, exactly as you type them.
+* `myfile = open(r'C:\new\text.dat', 'w')` or `myfile = open('C:\\new\\text.dat', 'w')`
+
+## Triple Quotes Code Multiline Block Strings
+
+* Python collects all the triple-quoted text into a single multiline string, with embedded newline characters (`\n`) at the places where your code has line breaks
+* triple-quoted strings will retain all the enclosed text, including any to the right of your code that you might intend as comments
+* put your comments above or below the quoted text
+* triple-quoted strings are also sometimes used as a way to multiline comments
+
+```python
+X = 1
+"""
+import os
+print(os.getcwd())
+"""
+Y = 2
+```
+
+## Indexing and Slicing
+
+* `S[:]` fetches items at offsets 0 through the end--making a top-level copy of S
+* Extended slicing `(S[i:j:k])` accepts a step (or stride) k, which defaults to +1
+* `S[::-1]` collects items in the opposite order -- it reverses the sequence
+
+## String Conversion Tools
+
+* `"42" + 1`
+* because `+` can mean both addition and concatenation, the choice of conversion would be ambiguous
+* **In Python, magic is generally omitted if it will make your life more complex.**
+* you need to employ conversion tools before you can treat a string like a number, or vice versa
+    * `int("42"), str(42)`
+* it is also possible to convert a single character to its underlying integer code (e.g., its ASCII byte value) by passing it to the built-in `ord` function
+    * this returns the actual binary value used to represent the corresponding character in memory.
+    * The `chr` function performs the inverse operation, taking an integer code and converting it to the corresponding character
+
+```python
+str(3.1415), float("1.5") # ('3.1415', 1.5)
+text = "1.234E-10"
+float(text) # 1.234e-10
+
+ord('s') # 115
+chr(115) # 's'
+int('1101', 2) # 13 - Convert binary to integer: built-in
+bin(13) # '0b1101' - Convert integer to binary: built-in
+```
+
+## String Methods
+
+* The fact that concatenation operations and the `replace` method generate new string objects each time they are run is actually a potential downside of using them to change strings
+* If you have to apply many changes to a very large string, you might be able to improve your script's performance by converting the string to an object that does support in-place changes
+* joining substrings all at once might often run faster than concatenating them individually
+
+```python
+S = 'spammy'
+L = list(S)
+L[3] = 'x'
+L[4] = 'x'
+S = ''.join(L)
+
+
+line = 'aaa bbb ccc'
+cols = line.split() # default: whitespace
+cols # ['aaa', 'bbb', 'ccc']
+```
+
+## String formatting type codes
+
+| Code | Meaning |
+|------|---------|
+| s | String (or any object's str(X) string) |
+| r | Same as s, but uses repr, not str |
+| c | Character (int or str) |
+| d | Decimal (base-10 integer) |
+| i | Integer |
+| u | Same as d (obsolete: no longer unsigned) |
+| o | Octal integer (base 8) |
+| x or X | Hex integer (base 16) |
+| e or E | Floating point with exponent |
+| f or F | Floating-point decimal |
+| g or G | Floating-point (e or f) or (E or F) |
+| % | Literal % (coded as %%) |
+
+* The general structure of conversion targets looks like this: `%[(keyname)][flags][width][.precision]typecode`
+    * Provide a key name for indexing the dictionary used on the right side of the expression
+    * List flags that specify things like left justification (`−`), numeric sign (`+`), a blank before positive numbers and a `-` for negatives (a space), and zero fills (`0`)
+    * Give a total minimum field width for the substituted text
+    * Set the number of digits (precision) to display after a decimal point for floating-point numbers
+    * Both the width and precision parts can also be coded as a `*` to specify that they should take their values from the next item in the input values on the expression's right side (useful when this isn't known until runtime).
+
+## String formatting expressions
+
+* `'...%s...' % (values)`
+* the `%` [1] operator provides a compact way to code multiple string substitutions all at once, instead of building and concatenating parts individually
+* On the left of the `%` operator, provide a format string containing one or more embedded conversion targets, each of which starts with a `%` (e.g., `%d`).
+* On the right of the `%` operator, provide the object (or objects, embedded in a tuple) that you want Python to insert into the format string on the left in place of the conversion target (or targets).
+* when you're inserting more than one value, you need to group the values in a tuple `(...)`
+
+```python
+'That is %d %s bird!' % (1, 'dead') # 'That is 1 dead bird!'
+'%d %s %g you' % (1, 'spam', 4.0) # '1 spam 4 you'
+
+'%f, %.2f, %.*f' % (1/3.0, 1/3.0, 4, 1/3.0) # '0.333333, 0.33, 0.3333'
+
+x = 1.23456789
+'%-6.2f | %05.2f | %+06.1f' % (x, x, x) # '1.23   | 01.23 | +001.2'
+```
+
+### Dictionary-Based Formatting Expressions
+
+```python
+'%(qty)d more %(food)s' % {'qty': 1, 'food': 'spam'} # '1 more spam'
+
+food = 'spam'
+qty = 10
+vars()
+
+'%(qty)d more %(food)s' % vars() # '10 more spam'
+```
+
+
+## String formatting method calls
+
+* `'...{}...'.format(values)`
+* there is no best-use recommendation between expressions and method calls today, and most programmers would be well served by a cursory understanding of both schemes
+* The string object's `format` method uses the subject string as a template, and takes any number of arguments that represent values to be substituted according to the template.
+* Within the subject string, curly braces designate substitution targets and arguments to be inserted either by position (`{1}`), or keyword (`{food}`), or relative position (`{}`)
+
+```python
+# 'spam, ham and eggs'
+'{0}, {1} and {2}'.format('spam', 'ham', 'eggs')
+'{motto}, {pork} and {food}'.format(motto='spam', pork='ham', food='eggs')
+'{motto}, {0} and {food}'.format('ham', motto='spam', food='eggs')
+'{}, {} and {}'.format('spam', 'ham', 'eggs')
+
+somelist = list('SPAM')
+'first={0[0]}, third={0[2]}'.format(somelist) # 'first=S, third=A'
+```
+
+## General Type Categories
+
+* strings are immutable sequences: they cannot be changed in place (the immutable part), and they are positionally ordered collections that are accessed by offset (the sequence part)
+* there are three major type (and operation) categories in Python that have this generic nature
+    * **Numbers (integer, floating-point, decimal, fraction, others)** Support addition, multiplication, etc.
+    * **Sequences (strings, lists, tuples)** Support indexing, slicing, concatenation, etc.
+    * **Mappings (dictionaries)** Support indexing by key, etc.
+* Mutable Types Can Be Changed in Place
+    * **Immutables (numbers, strings, tuples, frozensets)** None of the object types in the immutable category support in-place changes, though we can always run expressions to make new objects and assign their results to variables as needed.
+    * **Mutables (lists, dictionaries, sets, bytearray)** the mutable types can always be changed in place with operations that do not create new objects.
+
+# Lists and Dictionaries
+
+* Python lists are
+    * Ordered collections of arbitrary objects
+    * Accessed by offset
+    * Variable-length, heterogeneous, and arbitrarily nestable
+        * sequence operations such as concatenation and slicing return new lists
+    * Arrays of object references
+
+| Operation | Interpretation |
+|-----------|----------------|
+| L = [] | empty list |
+| L = [123, 'abc', 1.23, {}] | |
+| L = ['Bob', 40.0, ['dev', 'mgr']] | nested sublists |
+| L = list('spam') | List of an iterable's items |
+| L = list(range(-4, 4)) | list of successive integers |
+| L[i] | index |
+| L[i][j] | index of index |
+| L[i:j] | slice |
+| len(L) | length |
+| L1 + L2 | concatenate |
+| L * 3 | repeat |
+| for x in L: print(x) | iteration |
+| 3 in L | membership |
+| L.append(4) | growing |
+| L.extend([5,6,7]) | |
+| L.insert(i, X) | |
+| L.index(X) | searching |
+| L.count(X) | |
+| L.sort() | sorting |
+| L.reverse() | reversing |
+| L.copy() | copying |
+| L.clear() | clearing |
+| L.pop(i) | shrinking |
+| L.remove(X) | |
+| del L[i] | |
+| del L[i:j] | |
+| L[i:j] = [] | |
+| L[i] = 3 | Index assignment |
+| L[i:j] = [4,5,6] | slice assignment |
+| L = [x**2 for x in range(5)] | List comprehensions |
+| list(map(ord, 'spam')) | maps |
+
+## Basic List Operations
+
+* the `+` operator works the same for lists and strings
+    * it expects the same sort of sequence on both sides -- otherwise, you get a type error when the code runs
+    * you cannot concatenate a list and a string unless you first convert the list to a string (using tools such as `str` or `%` formatting) or convert the string to a list (the `list` built-in function does the trick)
+
+## List Comprehensions
+
+* list comprehensions are a way to build a new list by applying an expression to each item in any iterable
+* the `map` built-in function does similar work, but applies a function to items in a sequence and collects all the results in a new list
+
+```python
+res = [c * 4 for c in 'SPAM'] # ['SSSS', 'PPPP', 'AAAA', 'MMMM']
+
+res = []
+for c in 'SPAM':
+    res.append(c * 4)
+res # ['SSSS', 'PPPP', 'AAAA', 'MMMM']
+
+list(map(abs, [-1, -2, 0, 1, 2])) # [1, 2, 0, 1, 2]
+```
+
+## Indexing, Slicing, and Matrixes
+
+* slicing a list always returns a new list
+* When using a list, you can change its contents by assigning to either a particular item (offset) or an entire section (slice)
+* Slice assignment is perhaps best thought of as a combination of two steps:
+    * 1. Deletion. The slice you specify to the left of the = is deleted.
+    * 2. Insertion. The new items contained in the iterable object to the right of the = are inserted into the list on the left, at the place where the old slice was deleted.
+* `append` expects you to pass in a single object, not a list
+    * `L.append(X)` changes L in place
+    * `L+[X]` makes a new list
+ 
+```python
+L = ['spam', 'Spam', 'SPAM!']
+L[1] = 'eggs'
+L[0:2] = ['eat', 'more'] # # Replaces items 0,1
+
+L = list(range(10)) # [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+L[0:5] = [-1,-2,-3] # [-1, -2, -3, 5, 6, 7, 8, 9]
+
+L = [1]
+L[:0] = [2, 3, 4] # insert all at :0, [2, 3, 4, 1]
+L[len(L):] = [5, 6, 7] # insert all at len(L), [2, 3, 4, 1, 5, 6, 7]
+```
+
+### Sorting lists
+
+* `sort`, orders a list in place
+* it uses Python standard comparison tests
+* by default sorts in ascending order
+* You can modify sort behavior by passing in keyword arguments
+* magnitude comparison of mixed types raises an exception
+    * `[1, 2, 'spam'].sort()` will raise an exception
+* Python no longer supports passing in an arbitrary comparison function to sorts, to implement different orderings
+    * The suggested workaround is to use the `key=func` keyword argument to code value transformations during the sort
+* `append` and sort change the associated list object in place, but don't return the list as a result
+* **`sorted` sorts any collection (not just lists) and returns a new list for the result (instead of in-place changes)**
+
+```python
+L = ['abc', 'ABD', 'aBe']
+L.sort() # ['ABD', 'aBe', 'abc']
+
+L = ['abc', 'ABD', 'aBe']
+L.sort(key=str.lower) # ['abc', 'ABD', 'aBe']
+
+L = ['abc', 'ABD', 'aBe']
+L.sort(key=str.lower, reverse=True) # ['aBe', 'ABD', 'abc']
+
+# built-in function
+sorted(L, key=str.lower, reverse=True) # ['abc', 'ABD', 'aBe']
+
+# creates a new list
+L = ['abc', 'ABD', 'aBe']
+sorted([x.lower() for x in L], reverse=True) # ['abe', 'abd', 'abc']
+
+students = [ ('john', 'A', 15), ('jane', 'B', 12), ('dave', 'B', 10) ]
+students.sort(key = lambda student : student[2], reverse=True)
+# [('john', 'A', 15), ('jane', 'B', 12), ('dave', 'B', 10)]
+
+students.sort(key = lambda student : student[0].lower())
+# [('dave', 'B', 10), ('jane', 'B', 12), ('john', 'A', 15)]
+```
+
+### Other common list methods
+
+* `reverse` reverses the list in-place
+* `extend` and `pop` methods insert multiple items at and delete an item from the end of the list, respectively
+* the `reversed` built-in function works much like sorted and returns a new result object, but **it must be wrapped in a list call**
+* `extend` adds many items, and `append` adds one
+* the list `pop` method is often used in conjunction with append to implement a quick last-in-first-out (LIFO) stack structure. The end of the list serves as the top of the stack
+
+```python
+#**************************************
+
+L = [1, 2]
+L.extend([3, 4, 5]) # [1, 2, 3, 4, 5]
+
+L = [1,2]
+L.append([3, 4, 5]) # [1, 2, [3, 4, 5]]
+
+L = [1, 2, 3, 4]
+list(reversed(L)) # [1, 2, 3, 4]
+
+L = []
+L.insert(99, '99') # ['99']
+L.insert(0, '100') # ['100', '99']
+```
+
+### Other common list operations
