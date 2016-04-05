@@ -899,7 +899,7 @@ L[:0] = [2, 3, 4] # insert all at :0, [2, 3, 4, 1]
 L[len(L):] = [5, 6, 7] # insert all at len(L), [2, 3, 4, 1, 5, 6, 7]
 ```
 
-### Sorting lists
+## Sorting lists
 
 * `sort`, orders a list in place
 * it uses Python standard comparison tests
@@ -937,13 +937,16 @@ students.sort(key = lambda student : student[0].lower())
 # [('dave', 'B', 10), ('jane', 'B', 12), ('john', 'A', 15)]
 ```
 
-### Other common list methods
+## Other common list methods
 
 * `reverse` reverses the list in-place
 * `extend` and `pop` methods insert multiple items at and delete an item from the end of the list, respectively
 * the `reversed` built-in function works much like sorted and returns a new result object, but **it must be wrapped in a list call**
 * `extend` adds many items, and `append` adds one
 * the list `pop` method is often used in conjunction with append to implement a quick last-in-first-out (LIFO) stack structure. The end of the list serves as the top of the stack
+* Because lists are mutable, you can use the `del` statement to delete an item or section in place
+* you can also delete a section of a list by assigning an empty list to a slice (`L[i:j]=[]`)
+    * Python deletes the slice named on the left, and then inserts nothing.
 
 ```python
 #**************************************
@@ -960,6 +963,380 @@ list(reversed(L)) # [1, 2, 3, 4]
 L = []
 L.insert(99, '99') # ['99']
 L.insert(0, '100') # ['100', '99']
+
+L = ['spam', 'eggs', 'ham', 'toast']
+del L[0] # ['eggs', 'ham', 'toast']
+del L[1:] # ['eggs']
 ```
 
-### Other common list operations
+## Dictionaries
+
+* Python dictionaries are
+    * Accessed by key, not offset position
+    * Unordered collections of arbitrary objects -- Python pseudo-randomizes their left-to-right order to provide quick lookup
+    * Variable-length, heterogeneous, and arbitrarily nestable
+    * Of the category "mutable mapping" -- dictionaries are the only built-in, core type representatives of the mapping category -- objects that map keys to values
+    * Tables of object references (hash tables)
+* When coded as a literal expression, a dictionary is written as a series of `key:value` pairs, separated by commas, enclosed in curly braces
+
+| Operation | Interpretation |
+|-----------|----------------|
+| D = {} | empty dictionary |
+| D = {'name': 'Bob', 'age': 40} | |
+| E = {'cto': {'name': 'Bob', 'age': 40}} | nesting |
+| D = dict(name='Bob', age=40) | alternative construction techniques |
+| D = dict([('name', 'Bob'), ('age', 40)]) | |
+| D = dict(zip(keyslist, valueslist)) | |
+| D = dict.fromkeys(['name', 'age']) | |
+| D['name'] | Indexing by key |
+| E['cto']['age'] | |
+| 'age' in D | Membership: key present test |
+| D.keys() | |
+| D.values() | |
+| D.items() | all key+value tuples |
+| D.copy() | copy (top-level) |
+| D.clear() | remove all items |
+| D.update(D2) | merge by keys |
+| D.get(key, default?) | fetch by key, if absent default (or None) |
+| D.pop(key, default?) | remove by key, if absent default (or error) |
+| D.setdefault(key, default?) | fetch by key, if absent set default (or None) |
+| D.popitem() | remove/return any (key, value) pair; etc |
+| len(D) | Length: number of stored entries |
+| D[key] = 42 | Adding/changing keys |
+| del D[key] | Deleting entries by key |
+| list(D.keys()) | Dictionary views |
+| D1.keys() & D2.keys() | |
+| D = {x: x*2 for x in range(10)} | Dictionary comprehensions |
+
+* Provided all the key's values are the same initially, you can also create a dictionary with this special form—simply pass in a list of keys and an initial value for all of the values (the default is `None`)
+
+```python
+dict.fromkeys(['a', 'b'], 0)
+# {'a': 0, 'b': 0}
+
+dict.fromkeys(['a', 'b'])
+# {'a': None, 'b': None}
+```
+
+## Basic Dictionary Operations
+
+* Fetching a nonexistent key is normally an error, but the `get` method returns a default value -- `None`, or a passed-in default
+* The `update` method **merges (in-place)** the keys and values of one dictionary into another, blindly overwriting values of the same key if there's a clash
+
+```python
+D = {'spam': 2, 'ham': 1, 'eggs': 3}
+
+# wrap them in a list call there to collect their values all at once for display
+list(D.keys()) # ['eggs', 'spam', 'ham']
+list(D.values()) # [3, 2, 1]
+list(D.items()) # [('eggs', 3), ('spam', 2), ('ham', 1)]
+
+# Get
+D['banana'] # ERROR
+print(D.get('banana')) # None
+
+# Update
+D = {'spam': 2, 'ham': 1, 'eggs': 3}
+E = {'toast':4, 'spam':1}
+D.update(E)
+D # {'eggs': 3, 'ham': 1, 'spam': 1, 'toast': 4}
+E # {'spam': 1, 'toast': 4}
+```
+
+### Example
+
+* in dictionaries, there's just one value per key, but there may be many keys per value
+* A given value may be stored under multiple keys (yielding multiple keys per value), and a value might be a collection itself (supporting multiple values per key)
+* keys need not always be strings
+    * any other immutable objects work as keys
+    * Tuples may be used as dictionary keys too, allowing compound key values to have associated values
+    * User-defined class instance objects can also be used as keys, as long as they are "hashable"
+    * **Mutable objects such as lists, sets, and other dictionaries don't work as keys (TypeError: unhashable type)**
+
+```python
+table = { '1975': 'Holy Grail', '1979': 'Life of Brian', '1983': 'The Meaning of Life' }
+for year in table:
+    print(year + '\t' + table[year])
+
+# 1979 Life of Brian
+# 1983 The Meaning of Life
+# 1975 Holy Grail
+
+table = { 'Holy Grail': '1975', 'Life of Brian': '1979', 'The Meaning of Life': '1983' }
+list(table.items())
+# [('Holy Grail', '1975'), ('Life of Brian', '1979'), ('The Meaning of Life', '1983')]
+[title for (year, title) in table.items() if year == '1975']
+# ['Holy Grail']
+
+[title for (title, year) in table.items() if year == '1975']
+# ['Holy Grail']
+```
+
+### Using dictionaries to simulate flexible lists
+
+* you can use repetition to preallocate as big a list as you’ll need (L = [0]*100)
+* By using integer keys, dictionaries can emulate lists that seem to grow on offset assignment
+* You can access this structure with offsets much like a list, catching nonexistent keys with get or in tests if required
+    * you don't have to allocate space for all the positions you might ever need to assign values to in the future
+
+```python
+L = []
+L[99] = 'spam'
+# IndexError: list assignment index out of range
+
+D = {}
+D[99] = 'spam'
+D[99] # 'spam'
+```
+
+### Using dictionaries for sparse data structures
+
+* dictionary keys are also commonly leveraged to implement sparse data structures
+    * multidimensional arrays where only a few positions have values stored in them
+* below there's a dictionary to represent a three-dimensional array that is empty except for the two positions (2,3,4) and (7,8,9)
+* There are at least three ways to fill in a default value instead of getting such an error message
+    * test for keys ahead of time in `if` statements
+    * use a `try` statement to catch and recover from the exception explicitly
+    * use the dictionary `get` method to provide a default for keys that do not exist
+
+```python
+Matrix = { }
+Matrix[(2, 3, 4)] = 88
+Matrix[(7, 8, 9)] = 99
+
+if (2, 3, 6) in Matrix:
+    print(Matrix[(2, 3, 6)])
+else:
+    print(0)
+
+try:
+    print(Matrix[(2, 3, 6)])
+except KeyError:
+    print(0)
+
+Matrix.get((2, 3, 4), 0) # 88
+Matrix.get((2, 3, 6), 0) # 0
+```
+
+# Tuples, Files, and Everything Else
+
+## Tuples
+
+* Tuples construct simple groups of objects
+* They work exactly like lists, except that
+    * tuples can't be changed in place (they're immutable) and
+    * are usually written as a series of items in parentheses, not square brackets
+* Tuples are:
+    * **Ordered collections of arbitrary objects**
+    * **Accessed by offset**, and not by key; they support all the offset-based access operations, such as indexing and slicing.
+    * **Of the category "immutable sequence"**, they don't support any of the in-place change operations applied to lists.
+    * **Fixed-length, heterogeneous, and arbitrarily nestable**, you cannot change the size of a tuple without making a copy
+    * **Arrays of object references** tuples store access points to other objects (references)
+
+| Operation | Interpretation |
+|-----------|----------------|
+| () | empty tuple |
+| T = (0,) | A one-item tuple |
+| T = (0, 'Ni', 1.2, 3) | A four-item tuple |
+| T = 0, 'Ni', 1.2, 3 | |
+| T = ('Bob', ('dev', 'mgr')) | Nested tuples |
+| T = tuple('spam') | Tuple of items in an iterable |
+| T[i] | index |
+| T[i][j] | index of index |
+| T[i:j] | slice |
+| len(T) | length |
+| T1 + T2 | concatenate |
+| T * 3 | repeat |
+| for x in T: print(x) | iteration |
+| 'spam' in T | membership |
+| [x ** 2 for x in T] | comprehension |
+| T.index('Ni') | index |
+| T.count('Ni') | count |
+| namedtuple('Emp', ['name', 'jobs']) | Named tuple extension type |
+
+* The immutability of tuples provides some integrity -- you can be sure a tuple won't be changed through another reference elsewhere in a program. 
+    * Tuples and other immutables, therefore, serve a similar role to "constant" declarations in other languages, though the notion of constantness is associated with objects in Python, not variables
+* Tuples can also be used in places that lists cannot -- for example, as dictionary keys
+
+### Named Tuples
+
+* the `namedtuple` utility, available in the standard library's `collections` module, implements an extension type that adds logic to tuples that allows
+    * components to be accessed by both position and attribute name
+    * and can be converted to dictionary-like form for access by key if desired
+
+```python
+from collections import namedtuple
+Rec = namedtuple('Rec', ['name','age','jobs']) # Make a generated class
+bob = Rec('Bob',age=40, jobs=['dev', 'mgr'])
+bob # Rec(name='Bob', age=40, jobs=['dev', 'mgr'])
+
+# Access by position
+bob[0], bob[2] # ('Bob', ['dev', 'mgr'])
+
+# Access by attribute
+bob.name, bob.age # ('Bob', 40)
+
+D = bob._asdict() # Dictionary-like form
+D['name'], D['jobs'] # ('Bob', ['dev', 'mgr'])
+
+D # OrderedDict([('name', 'Bob'), ('age', 40), ('jobs', ['dev', 'mgr'])])
+```
+
+## Files
+
+| Operation | Interpretation |
+|-----------|----------------|
+| output = open(r'C:\spam', 'w') | output file (write) |
+| input = open('data', 'r') | input file (read) |
+| input = open('data') | default read |
+| aString = input.read() | Read entire file into a single string |
+| aString = input.read(N) | Read up to next N characters (or bytes) into a string |
+| aString = input.readline() | Read next line (including `\n` newline) into a string |
+| aList = input.readlines() | Read entire file into list of line strings (with `\n`) |
+| output.write(aString) | Write a string of characters (or bytes) into file |
+| output.writelines(aList) | Write all line strings in a list into file |
+| output.close() | Manual close (done for you when file is collected) |
+| output.flush() | Flush output buffer to disk without closing |
+| anyFile.seek(N) | Change file position to offset N for next operation |
+| for line in open('data'): use line | File iterators read line by line |
+| open('f.txt', encoding='latin-1') | unicode text files |
+| open('f.bin', 'rb') | bytes files |
+
+### Opening files
+
+```python
+afile = open(filename, mode)
+```
+
+* processing mode, is typically the string 'r' to open for text input (the default)
+    * 'w' to create and open for text output
+    * 'a' to open for appending text to the end (for adding to logfiles)
+    * Adding a `b` to the mode string allows for binary data (end-of-line translations and 3.X Unicode encodings are turned off)
+    * Adding a `+` opens the file for both input and output
+* An optional third argument can be used to control output buffering
+    * passing a zero means that output is unbuffered (it is transferred to the external file immediately on a write method call)
+
+### Using files
+
+* **File iterators are best for reading lines** files also have an iterator that automatically reads one line at a time in a for loop, list comprehension, or other iteration context
+* **Content is strings, not objects** Python does not add any formatting and does not convert objects to strings automatically when you write data to a file -- you must send an already formatted string
+* **Files are buffered and seekable** By default, output files are always buffered, which means that text you write may not be transferred from memory to disk immediately
+* **close is often optional: auto-close on collection** When file objects are reclaimed, Python also automatically closes the files if they are still open. You don't always need to manually close your files in standard Python, especially those in simple scripts with short runtimes, and temporary files used by a single line or expression. **this auto-close-on-collection feature of files is not part of the language definition**
+
+### Working with files
+
+* Python file methods tell you that you've reached the end of the file when `readline` call returns an empty string
+    * empty lines in the file come back as strings containing just a newline character, not as empty strings
+    * If you want to display the file's content with end-of-line characters interpreted, read the entire file into a string all at once with the file object's `read` method
+* `write` calls return the number of characters written
+    * `write` methods don't add the end-of-line character, so we must include it to properly terminate our lines
+
+```python
+myfile = open('myfile.txt', 'w')
+myfile.write('hello text file\n')
+myfile.close()
+myfile.closed # True
+
+myfile = open('myfile.txt')
+myfile.readline()
+myfile.readline()
+myfile.readline() # ''
+
+open('myfile.txt').read() # 'hello text file\ngoodbye text file\n'
+print(open('myfile.txt').read()) # User-friendly display
+
+for line in open('myfile.txt'): print(line, end='')
+#hello text file
+#goodbye text file
+#
+```
+
+### Text and Binary Files
+
+* Python has always supported both text and binary files, but in Python 3.X there is a sharper distinction between the two:
+    * Text files represent content as normal `str` strings, perform Unicode encoding and decoding automatically, and perform end-of-line translation by default
+    * Binary files represent content as a special `bytes` string type and allow programs to access file content unaltered
+
+### Storing Python Objects in Files: Conversions
+
+```python
+X, Y, Z = 43, 44, 45
+S = 'Spam'
+D = {'a': 1, 'b': 2}
+L = [1, 2, 3]
+F = open('datafile.txt', 'w')
+# Must be strings to store in file
+F.write(L) # TypeError: write() argument must be str, not list
+F.write(S + '\n')
+F.write(str(L) + '\n')
+F.write('%s,%s,%s\n' % (X, Y, Z))
+F.close()
+
+F = open('datafile.txt')
+line = F.readline()
+line # 'Spam\n'
+line.rstrip() # 'Spam'
+
+line = F.readline()
+line # '1,2,3\n'
+eval(line) # [1,2,3]
+
+line = F.readline()
+line # '43,44,45\n'
+numbers = [int(P) for P in line.split(',')]
+numbers # [43, 44, 45]
+```
+
+* Python never converts strings to numbers (or other types of objects) automatically
+
+### Storing Native Python Objects: pickle
+
+* If you really want to store native Python objects, but you can't trust the source of the data in the file, Python's standard library `pickle` module is ideal
+* The `pickle` module is a more advanced tool that allows us to store almost any Python object in a file directly, **with no to- or from-string conversion requirement on our part**.
+    * It performs what is known as object serialization -- converting objects to and from strings of bytes
+    * binary mode is always required in Python 3.X, because the pickler creates and uses a bytes string object, and these objects imply binary- mode files
+* **shelve is a tool that uses pickle to store Python objects in an access-by-key filesystem**
+
+```python
+import pickle
+D = {'a': 1, 'b': 2}
+F = open('datafile.pkl', 'wb') # Binary
+pickle.dump(D, F)
+F.close()
+
+F = open('datafile.pkl', 'rb')
+E = pickle.load(F)
+E # {'a': 1, 'b': 2}
+```
+
+### Storing Python Objects in JSON Format
+
+* Python standard library's csv module parses and creates CSV (comma-separated value) data in files and strings
+
+```python
+import json
+name = dict(first='Bob', last='Smith')
+rec = dict(name=name, job=['dev', 'mgr'], age=40.5)
+S = json.dumps(rec)
+
+obj = json.loads(S)
+obj == rec # True
+json.dump(rec, fp=open('testjson.txt', 'w'), indent=4)
+print(open('testjson.txt').read())
+"""
+{
+    "age": 40.5,
+    "name": {
+        "last": "Smith",
+        "first": "Bob"
+    },
+    "job": [
+        "dev",
+        "mgr"
+    ]
+}
+"""
+P = json.load(open('testjson.txt'))
+```
+
+### Storing Packed Binary Data: struct
