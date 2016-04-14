@@ -1339,4 +1339,48 @@ print(open('testjson.txt').read())
 P = json.load(open('testjson.txt'))
 ```
 
-### Storing Packed Binary Data: struct
+### File Context Managers
+
+* it allows us to wrap file-processing code in a logic layer that ensures that the file will be closed
+    * and if needed, have its output flushed to disk automatically on exit, instead of relying on the auto-close during garbage collection
+* The `with` context manager scheme ensures release of system resources in all Pythons, and may be more useful for output files to guarantee buffer flushes; unlike the more general try, though, it is also limited to objects that support its protocol
+
+```python
+with open(r'C:\code\data.txt') as myfile:
+    for line in myfile:
+        ...use line here...
+
+myfile = open(r'C:\code\data.txt')
+try:
+    for line in myfile:
+        ...use line here...
+finally:
+    myfile.close()
+```
+
+# Introducing Python Statements
+
+| Statement | Role | Example |
+|-----------|------|---------|
+| Assignment | Creating references | a, b = 'good', 'bad' |
+| Calls and other expressions | Running functions | log.write("spam, ham") |
+| print calls | Printing objects | print('The Killer', joke) |
+| if/elif/else | Selecting actions | if "python" in text:<br>&nbsp;&nbsp;&nbsp;&nbsp;print(text) |
+| for/else | Iteration | for x in mylist:<br>&nbsp;&nbsp;&nbsp;&nbsp;print(x) |
+| while/else | General loops | while X > Y:<br>&nbsp;&nbsp;&nbsp;&nbsp;print('hello') |
+| pass | null operation; nothing happens when it executes | while True:<br>&nbsp;&nbsp;&nbsp;&nbsp;pass |
+| break | Loop exit | while True:<br>&nbsp;&nbsp;&nbsp;&nbsp;if exittest():<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break |
+| continue | Loop continue | while True:<br>&nbsp;&nbsp;&nbsp;&nbsp;if skiptest():<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;continue |
+| def | Functions and methods | def f(a, b, c=1, *d):<br>&nbsp;&nbsp;&nbsp;&nbsp;print(a+b+c+d[0]) |
+| return | Functions results | def f(a, b, c=1, *d):<br>&nbsp;&nbsp;&nbsp;&nbsp;return a+b+c+d[0] |
+| yield | Generator functions | def gen(n):<br>&nbsp;&nbsp;&nbsp;&nbsp;for i in n:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;yield i*2 |
+| global | Namespaces | x = 'old'<br>def function():<br>&nbsp;&nbsp;&nbsp;&nbsp;global x, y; x = 'new' |
+| nonlocal | Namespaces (3.X) | def outer():<br>x = 'old'<br>def function():<br>&nbsp;&nbsp;&nbsp;&nbsp;nonlocal x; x = 'new'
+| import | Module access | import sys |
+| from | Attribute access | from sys import stdin |
+| class | Building objects | class Subclass(Superclass):<br>&nbsp;&nbsp;&nbsp;&nbsp;staticData = []<br>&nbsp;&nbsp;&nbsp;&nbsp;def method(self): <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;pass |
+| try/except/finally | Catching exceptions | try:<br>&nbsp;&nbsp;&nbsp;&nbsp;action()<br>except:<br>&nbsp;&nbsp;&nbsp;&nbsp;print('action error') |
+| raise | Triggering exceptions | raise EndSearch(location) |
+| assert | Debugging checks | assert X > Y, 'X too small' |
+| with/as | Context managers | with open('data') as myfile:<br>&nbsp;&nbsp;&nbsp;&nbsp;process(myfile) |
+| del | Deleting references | del data[k]<br>del data[i:j]<br>del obj.attr<br>del variable |
