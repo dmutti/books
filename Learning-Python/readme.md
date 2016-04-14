@@ -1375,7 +1375,7 @@ finally:
 | return | Functions results | def f(a, b, c=1, *d):<br>&nbsp;&nbsp;&nbsp;&nbsp;return a+b+c+d[0] |
 | yield | Generator functions | def gen(n):<br>&nbsp;&nbsp;&nbsp;&nbsp;for i in n:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;yield i*2 |
 | global | Namespaces | x = 'old'<br>def function():<br>&nbsp;&nbsp;&nbsp;&nbsp;global x, y; x = 'new' |
-| nonlocal | Namespaces (3.X) | def outer():<br>x = 'old'<br>def function():<br>&nbsp;&nbsp;&nbsp;&nbsp;nonlocal x; x = 'new'
+| nonlocal | Namespaces (3.X) | def outer():<br>&nbsp;&nbsp;&nbsp;&nbsp;x = 'old'<br>&nbsp;&nbsp;&nbsp;&nbsp;def function():<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;nonlocal x; x = 'new'
 | import | Module access | import sys |
 | from | Attribute access | from sys import stdin |
 | class | Building objects | class Subclass(Superclass):<br>&nbsp;&nbsp;&nbsp;&nbsp;staticData = []<br>&nbsp;&nbsp;&nbsp;&nbsp;def method(self): <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;pass |
