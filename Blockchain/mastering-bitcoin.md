@@ -106,3 +106,37 @@ curl -v 'https://blockchain.info/unspent?active=1Cdid9KFAaatwczBwBttQcwXYCpvK8h7
 * Without a signature, this transaction is meaningless; we haven't yet proven that we own the address from which the unspent output is sourced.
 * By signing, we remove the encumbrance on the output and prove that we own this output and can spend it. We use the `signrawtransaction` command to sign the transaction.
     * An encrypted wallet must be unlocked before a transaction is signed because signing requires access to the secret keys in the wallet.
+
+## Keys, Addresses, Wallets
+
+* Ownership of bitcoin is established through
+    * digital keys
+    * bitcoin addresses
+    * and digital signatures
+* The digital keys are not actually stored in the network, but are instead created and stored by users in a file, or simple database, called a wallet. Keys enable many of the interesting properties of bitcoin, including decentralized trust and control, ownership attestation, and the cryptographic-proof security model.
+* In the payment portion of a bitcoin transaction, the recipient’s public key is represented by its digital fingerprint, called a **bitcoin address**
+* Not all bitcoin addresses represent public keys; they can also represent other beneficiaries such as scripts
+    * bitcoin addresses abstract the recipient of funds, making transaction destinations flexible, similar to paper checks
+* Bitcoin uses elliptic curve multiplication as the basis for its public key cryptography.
+* When spending bitcoins, the current bitcoin owner presents her public key and a signature (**different each time, but created from the same private key**) in a transaction to spend those bitcoins.
+    * Through the presentation of the public key and signature, everyone in the bitcoin network can verify and accept the transaction as valid, confirming that the person transferring the bitcoins owned them at the time of the transfer.
+* The bitcoin private key is just a number. You can pick your private keys randomly using just a coin, pencil, and paper: toss a coin 256 times and you have the binary digits of a random private key you can use in a bitcoin wallet.
+* Creating a bitcoin key is essentially the same as "Pick a number between 1 and 2^256"
+    * Do not write your own code to create a random number or use a "simple" random number generator offered by your programming language
+    * Use a cryptographically secure pseudo-random number generator (CSPRNG) with a seed from a source of sufficient entropy.
+* The algorithms used to make a bitcoin address from a public key are the Secure Hash Algorithm (SHA) and the RACE Integrity Primitives Evaluation Message Digest (RIPEMD), specifically SHA256 and RIPEMD160.
+    * A bitcoin address is not the same as a public key. Bitcoin addresses are derived from a public key using a one-way function.
+* Bitcoin addresses are almost always presented to users in an encoding called "Base58Check", which uses 58 characters (a Base58 number system) and a checksum to help human readability, avoid ambiguity, and protect against errors in address transcription and entry.
+* Base58 is Base64 without the 0 (number zero), O (capital o), l (lower L), I (capital i), and the symbols "\", "+" and "/".
+    * Base58Check is a Base58 encoding format, frequently used in bitcoin, which has a built-in error-checking code. The checksum is an additional four bytes added to the end of the data that is being encoded.
+    * To convert data (a number) into a Base58Check format, we first add a prefix to the data, called the "version byte", which serves to easily identify the type of data that is encoded.
+    * Next, we compute the "double-SHA" checksum, meaning we apply the SHA256 hash-algorithm twice on the previous result (prefix and data). From the resulting 32-byte hash (hash-of-a-hash), we take only the first four bytes. These four bytes serve as the error-checking code, or checksum. The checksum is concatenated (appended) to the end.
+    * The result is composed of three items: a prefix, the data, and a checksum.
+
+```bash
+# bitcoin's Base58 alphabet
+123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz
+checksum = SHA256(SHA256(prefix+data))
+```
+
+* Wallets
