@@ -168,3 +168,118 @@ checksum = SHA256(SHA256(prefix+data))
 
 ## Transactions
 
+* a transaction needs to be delivered to the bitcoin network so that it can be propa‐ gated and included in the blockchain. In essence, a bitcoin transaction is just 300 to 400 bytes of data and has to reach any one of tens of thousands of bitcoin nodes.
+* The senders do not need to trust the nodes they use to broadcast the transaction, as long as they use more than one to ensure that it propagates.
+    * The nodes don't need to trust the sender or establish the sender's "identity".
+    * **Because the transaction is signed and contains no confidential information, private keys, or credentials, it can be publicly broadcast using any underlying network transport that is convenient.**
+* Bitcoin transactions can be transmitted to the bitcoin network over insecure networks such as WiFi, Bluetooth, NFC, Chirp, barcodes, or by copying and pasting into a web form.
+    * In extreme cases, a bitcoin transaction could be transmitted over packet radio, satellite relay, or shortwave using burst transmission, spread spectrum, or frequency hopping to evade detection and jamming.
+    * A bitcoin transaction could even be encoded as smileys (emoticons) and posted in a public forum or sent as a text message or Skype chat message.
+* Once a bitcoin transaction is sent to any node connected to the bitcoin network, the transaction will be validated by that node.
+    * If valid, that node will propagate it to the other nodes to which it is connected, and a success message will be returned synchronously to the originator.
+    * If the transaction is invalid, the node will reject it and synchronously return a rejection message to the originator.
+* The entire network forms a loosely connected mesh without a fixed topology or any structure, making all nodes equal peers. Messages, including transactions and blocks, are propagated from each node to the peers to which it is connected.
+    * To prevent spamming, denial-of-service attacks, or other nuisance attacks against the bitcoin system, every node independently validates every transaction before propagating it further.
+* A transaction is a data structure that encodes a transfer of value from a source of funds, called an input, to a destination, called an output. 
+    * Transaction inputs and outputs are not related to accounts or identities.
+    * Instead, you should think of them as bitcoin amounts -- chunks of bitcoin -- being locked with a specific secret that only the owner, or person who knows the secret, can unlock
+* Transaction Locktime defines the earliest time that a transaction can be added to the blockchain. It is set to zero in most transactions to indicate immediate execution. If locktime is nonzero the transaction is not included in the blockchain prior to the specified time (Unix Epoch timestamp)
+* **There are no accounts or balances in bitcoin; there are only unspent transaction outputs (UTXO) scattered in the blockchain.** Users cannot cut a UTXO in half any more than they can cut a dollar bill in half and use it as currency.
+    * Sending someone bitcoin is creating an unspent transaction output (UTXO) registered to their address and available for them to spend.
+
+### Transaction Fees
+
+* Most wallets calculate and include transaction fees automatically. However, if you are constructing transactions programmatically, or using a command-line interface, you must manually account for and include these fees.
+* Transaction fees serve as an incentive to include (mine) a transaction into the next block and also as a disincentive against "spam" transactions or any kind of abuse of the system, by imposing a small cost on every transaction.
+    * Transaction fees are collected by the miner who mines the block that records the transaction on the blockchain.
+* **Transaction fees are calculated based on the size of the transaction in kilobytes, not the value of the transaction in bitcoin.**
+* Transaction fees affect the processing priority, meaning that a transaction with sufficient fees **is likely** to be included in the next-most-mined block, whereas a transaction with insufficient or no fees might be delayed, processed on a best-effort basis after a few blocks, or not processed at all.
+    * **Transaction fees are not mandatory, and transactions without fees might be processed eventually; however, including transaction fees encourages priority processing.**
+* The data structure of transactions does not have a field for fees. Instead, fees are implied as the difference between the sum of inputs and the sum of outputs. Any excess amount that remains after all outputs have been deducted from all inputs is the fee that is collected by the miners.
+    * `Fees = Sum(Inputs) - Sum(Outputs)`
+    * **you must account for all inputs, if necessary by creating change, or you will end up giving the miners a very big tip!**
+    * **If you forget to add a change output in a manually constructed transaction, you will be paying the change as a transaction fee**
+
+### Orphan Transactions
+
+* When a chain of transactions is transmitted across the network, they don't always arrive in the same order. Sometimes, the child might arrive before the parent. In that case, the nodes that see a child first can see that it references a parent transaction that is not yet known.
+* Rather than reject the child, they put it in a temporary pool to await the arrival of its parent and propagate it to every other node. The pool of transactions without parents is known as the orphan transaction pool.
+* Transaction chains can be arbitrarily long, with any number of generations transmitted simultaneously.
+* The mechanism of holding orphans in the orphan pool ensures that otherwise valid transactions will not be rejected just because their parent has been delayed and that eventually the chain they belong to is reconstructed in the correct order, regardless of the order of arrival.
+
+### Transaction Scripts
+
+* Bitcoin clients validate transactions by executing a script, written in a Forth-like scripting language
+* Both the locking script (encumbrance) placed on a UTXO and the unlocking script that usually contains a signature are written in this scripting language.
+    * When a transaction is validated, the unlocking script in each input is executed alongside the corresponding locking script to see if it satisfies the spending condition.
+* Today, most transactions processed through the bitcoin network have the form "X pays Y" and are based on the same script called a "Pay-to-Public-Key-Hash" script
+* Bitcoin's transaction validation engine relies on two types of scripts to validate transactions: a locking script and an unlocking script.
+* A locking script is an encumbrance placed on an output, and it specifies the conditions that must be met to spend the output in the future
+* First, the unlocking script is executed, using the stack execution engine. If the unlocking script executed without errors, the main stack (not the alternate stack) is copied and the locking script is executed. If the result of executing the locking script with the stack data copied from the unlocking script is "TRUE", the unlocking script has succeeded in resolving the conditions imposed by the locking script and, therefore, the input is a valid authorization to spend the UTXO
+    * Only a valid transaction that correctly satisfies the conditions of the UTXO results in the UTXO being marked as "spent" and removed from the set of available (unspent) UTXO.
+
+### Scripting Language
+
+* The bitcoin transaction script language, called *Script*, is a Forth-like reverse-polish no‐tation stack-based execution language
+* Bitcoin's scripting language is called a stack-based language because it uses a data structure called a stack
+    * A stack allows two operations: push and pop. Push adds an item on top of the stack. Pop removes the top item from the stack.
+* The scripting language executes the script by processing each item from left to right. Numbers (data constants) are pushed onto the stack. 
+    * Operators push or pop one or more parameters from the stack, act on them, and might push a result onto the stack.
+* Example
+    * Use part of the arithmetic example script as the locking script: `3 OP_ADD 5 OP_EQUAL`
+    * which can be satisfied by a transaction containing an input with the unlocking script: `2`
+    * The validation software combines the locking and unlocking scripts and the resulting script is: `2 3 OP_ADD 5 OP_EQUAL`
+* The bitcoin transaction script language contains many operators, but is deliberately limited in one important way -- there are no loops or complex flow control capabilities other than conditional flow control.
+    * This ensures that the language is not Turing Complete, meaning that scripts have limited complexity and predictable execution times
+* These limitations ensure that the language cannot be used to create an infinite loop or other form of "logic bomb" that could be embedded in a transaction in a way that causes a denial-of-service attack against the bitcoin network.
+    * **every transaction is validated by every full node on the bitcoin network. A limited language prevents the transaction validation mechanism from being used as a vulnerability.**
+* The bitcoin transaction script language is stateless, in that there is no state prior to execution of the script, or state saved after execution of the script. Therefore, all the information needed to execute a script is contained within the script.
+* The five standard types of transaction scripts are
+    * pay-to-public-key-hash (P2PKH)
+    * public-key
+    * multi-signature (limited to 15 keys)
+    * pay-to-script-hash (P2SH)
+    * data output (OP_RETURN)
+* **Data Output (OP_RETURN)**
+    * OP_RETURN allows developers to add 40 bytes of non‐payment data to a transaction output.
+    * This operator creates an explicitly provably unspendable output, which does not need to be stored in the UTXO set
+    * OP_RETURN scripts look like this: `OP_RETURN <data>`
+    * The data portion is limited to 40 bytes and most often represents a hash, such as the output from the SHA256 algorithm (32 bytes). Many applications put a prefix in front of the data to help identify the application
+    * A standard transaction can have only one `OP_RETURN` output. However, a single `OP_RETURN` output can be combined in a transaction with outputs of any other type.
+
+## The Bitcoin Network
+
+* Decentralization of control is a core design principle and that can only be achieved and maintained by a flat, decentralized P2P consensus network.
+* A bitcoin node is a collection of functions
+    * routing
+    * the blockchain database
+    * mining
+    * wallet services
+* All nodes
+    * include the routing function to participate in the network
+    * validate and propagate transactions and blocks
+    * discover and maintain connections to peers
+* full nodes maintain a complete and up-to-date copy of the blockchain. Full nodes can autonomously and authoritatively verify any transaction without external reference
+* large companies interface with the bitcoin network by running full-node clients based on the Bitcoin Core client, with full copies of the blockchain and a network node, but without mining or wallet functions. These nodes act as network edge routers, allowing various other services (exchanges, wallets, block explorers, merchant payment processing) to be built on top.
+* Types of Nodes
+    * **Reference Client (Bitcoin Core)** -- Wallet, miner, full blockchain database, Network routing
+    * **Full Blockchain Node** -- full blockchain database, Network routing
+    * **Solo Miner** -- Mining function with a full copy of the blockchain and Network routing
+    * **Lightweight wallet** -- Wallet and Network routing, without a blockchain
+* How does a new node find peers?
+    * Although there are no special nodes in bitcoin, there are some long-running stable nodes that are listed in the client as seed nodes.
+    * Although a new node does not have to connect with the seed nodes, it can use them to quickly discover other nodes in the network
+    * Alternatively, a bootstrapping node that knows nothing of the network must be given the IP address of at least one bitcoin node, after which it can establish connections through further introductions
+* A node must connect to a few different peers in order to establish diverse paths into the bitcoin network.
+    * Paths are not reliable -- nodes come and go—and so the node must continue to discover new nodes as it loses old connections as well as assist other nodes when they bootstrap
+* Full blockchain nodes maintain a complete and up-to-date copy of the bitcoin blockchain with all the transactions, which they independently build and verify, starting with the very first block (genesis block) and building up to the latest known block in the network
+* **A full blockchain node can independently and authoritatively verify any transaction without recourse or reliance on any other node or source of information.**
+* A full node is like a tourist in a strange city, equipped with a detailed map of every street and every address. By comparison, a Simplified Payment Verification (SPV) node is like a tourist in a strange city asking random strangers for turn-by-turn directions while knowing only one main avenue.
+    * Although both tourists can verify the existence of a street by visiting it, the tourist without a map doesn't know what lies down any of the side streets and doesn't know what other streets exist.
+    * The mapless tourist’s best chance is to ask enough people and hope some of them are not trying to mug him.
+* An SPV node can definitely prove that a transaction exists but cannot verify that a transaction, such as a double-spend of the same UTXO, doesn’t exist because it doesn’t have a record of all transactions
+    * For most practical purposes, well-connected SPV nodes are secure enough, striking the right balance between resource needs, practicality, and security. For infallible security, however, nothing beats running a full blockchain node.
+* Unlike full blockchain nodes, which collect all transactions within each block, the SPV node's requests for specific data can inadvertently reveal the addresses in their wallet.
+    * Bloom filters allow SPV nodes to receive a subset of the transactions without revealing precisely which addresses they are interested in, through a filtering mechanism that uses probabilities rather than fixed patterns.
+
+## The Blockchain
