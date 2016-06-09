@@ -60,7 +60,6 @@ message=Purchase%20at%20Bob%27s%20Cafe
     * The payment amount: "0.015"
     * A label for the recipient address: "Bob's Cafe"
     * A description for the payment: "Purchase at Bob's Cafe"
-
 * Transactions are like lines in a double-entry bookkeeping ledger.
     * In simple terms, each transaction contains one or more "inputs", which are debits against a bitcoin account
     * On the other side of the transaction, there are one or more "outputs", which are credits added to a bitcoin account
