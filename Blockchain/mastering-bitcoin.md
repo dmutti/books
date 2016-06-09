@@ -270,7 +270,7 @@ checksum = SHA256(SHA256(prefix+data))
     * Although a new node does not have to connect with the seed nodes, it can use them to quickly discover other nodes in the network
     * Alternatively, a bootstrapping node that knows nothing of the network must be given the IP address of at least one bitcoin node, after which it can establish connections through further introductions
 * A node must connect to a few different peers in order to establish diverse paths into the bitcoin network.
-    * Paths are not reliable -- nodes come and go—and so the node must continue to discover new nodes as it loses old connections as well as assist other nodes when they bootstrap
+    * Paths are not reliable -- nodes come and go -- and so the node must continue to discover new nodes as it loses old connections as well as assist other nodes when they bootstrap
 * Full blockchain nodes maintain a complete and up-to-date copy of the bitcoin blockchain with all the transactions, which they independently build and verify, starting with the very first block (genesis block) and building up to the latest known block in the network
 * **A full blockchain node can independently and authoritatively verify any transaction without recourse or reliance on any other node or source of information.**
 * A full node is like a tourist in a strange city, equipped with a detailed map of every street and every address. By comparison, a Simplified Payment Verification (SPV) node is like a tourist in a strange city asking random strangers for turn-by-turn directions while knowing only one main avenue.
