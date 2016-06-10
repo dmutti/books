@@ -21,11 +21,7 @@
     * In these cases [storing and digitally transfering money], the counterfeiting and double-spend issues are handled by clearing all electronic transactions through central authorities that have a global view of the currency in circulation
     * For digital money, which cannot take advantage of esoteric inks or holographic strips, cryptography provides the basis for trusting the legitimacy of a user's claim to value
 * To be robust against intervention by antagonists, whether legitimate governments or criminal elements, a decentralized digital currency was needed to avoid a single point of attack.
-* Bitcoin consists of:
-    * A decentralized peer-to-peer network (the bitcoin protocol)
-    * A public transaction ledger (the blockchain)
-    * A decentralized mathematical and deterministic currency issuance (distributed mining)
-    * A decentralized transaction verification system (transaction script)
+* Bitcoin consists of:    * A decentralized peer-to-peer network (the bitcoin protocol)    * A public transaction ledger (the blockchain)    * A decentralized mathematical and deterministic currency issuance (distributed mining)    * A decentralized transaction verification system (transaction script)
 * **The key innovation was to use a distributed computation system (called a "proof-of-work" algorithm) to conduct a global "election" every 10 minutes, allowing the decentralized network to arrive at consensus about the state of transactions. **
 * The three main forms of bitcoin clients are:
     * A full client, or "full node", is a client that stores the entire history of bitcoin transactions (every transaction by every user, ever), manages the users' wallets, and can initiate transactions directly on the bitcoin network -> "standalone email server"
@@ -49,17 +45,10 @@
 * The payment request QR code encodes the following URL, defined in BIP0021:
 
 ```txt
-bitcoin:1GdK9UzpHBzqzX2A9JFP3Di4weBwqgmoQA?
-amount=0.015&
-label=Bob%27s%20Cafe&
-message=Purchase%20at%20Bob%27s%20Cafe
+bitcoin:1GdK9UzpHBzqzX2A9JFP3Di4weBwqgmoQA?amount=0.015&label=Bob%27s%20Cafe&message=Purchase%20at%20Bob%27s%20Cafe
 ```
 
-* Components of the URL
-    * A bitcoin address: "1GdK9UzpHBzqzX2A9JFP3Di4weBwqgmoQA"
-    * The payment amount: "0.015"
-    * A label for the recipient address: "Bob's Cafe"
-    * A description for the payment: "Purchase at Bob's Cafe"
+* Components of the URL    * A bitcoin address: "1GdK9UzpHBzqzX2A9JFP3Di4weBwqgmoQA"    * The payment amount: "0.015"    * A label for the recipient address: "Bob's Cafe"    * A description for the payment: "Purchase at Bob's Cafe"
 * Transactions are like lines in a double-entry bookkeeping ledger.
     * In simple terms, each transaction contains one or more "inputs", which are debits against a bitcoin account
     * On the other side of the transaction, there are one or more "outputs", which are credits added to a bitcoin account
@@ -79,9 +68,7 @@ message=Purchase%20at%20Bob%27s%20Cafe
 * Most wallet applications keep a small database of "unspent transaction outputs" that are locked (encumbered) with the wallet's own keys. Because a full-index client takes up a lot of disk space, most user wallets run "lightweight" clients that track only the user's own unspent outputs.
 
 ```bash
-# Look up all the unspent outputs for Alice’s bitcoin address
-
-curl -v 'https://blockchain.info/unspent?active=1Cdid9KFAaatwczBwBttQcwXYCpvK8h7FK'
+# Look up all the unspent outputs for Alice’s bitcoin addresscurl -v 'https://blockchain.info/unspent?active=1Cdid9KFAaatwczBwBttQcwXYCpvK8h7FK'
 ```
 
 * A transaction output is created in the form of a script that creates an encumbrance on the value and can only be redeemed by the introduction of a solution to the script.
