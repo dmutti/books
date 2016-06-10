@@ -282,3 +282,29 @@ checksum = SHA256(SHA256(prefix+data))
     * Bloom filters allow SPV nodes to receive a subset of the transactions without revealing precisely which addresses they are interested in, through a filtering mechanism that uses probabilities rather than fixed patterns.
 
 ## The Blockchain
+
+* The blockchain data structure is an ordered, back-linked list of blocks of transactions, which can be stored as a flat file, or in a simple database
+* Blocks are linked "back", each referring to the previous block in the chain. The blockchain is often visualized as a vertical stack, with blocks layered on top of each other and the first block serving as the foundation of the stack.
+* Each block within the blockchain is identified by a hash, generated using the SHA256 cryptographic hash algorithm on the header of the block
+    * Each block contains the hash of its parent inside its own header. The sequence of hashes linking each block to its parent creates a chain going back all the way to the first block ever created, known as the genesis block.
+* The "previous block hash" field is inside the block header and thereby affects the current block's hash. The child's own identity changes if the parent's identity changes.
+* When the parent is modified in any way, the parent's hash changes. The parent's changed hash necessitates a change in the "previous block hash" pointer of the child. This in turn causes the child's hash to change, which requires a change in the pointer of the grandchild, which in turn changes the grandchild, and so on.
+    * This cascade effect ensures that once a block has many generations following it, it cannot be changed without forcing a recalculation of all subsequent blocks.
+    * **Because such a recalculation would require enormous computation, the existence of a long chain of blocks makes the blockchain's deep history immutable**
+    * After 100 blocks back there is so much stability that the coinbase transaction -- the transaction containing newly mined bitcoins -- can be spent.
+    * A few thousand blocks back (a month) and the blockchain is settled history. It will never change.
+* the average block contains more than 500 transactions
+* Unlike the block hash, the block height is not a unique identifier. Although a single block will always have a specific and invariant block height, the reverse is not true -- the block height does not always identify a single block.
+    * Two or more blocks might have the same block height, competing for the same position in the blockchain
+* The genesis block: https://blockchain.info/block/000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f
+
+### Merkle Trees
+
+* Each block in the bitcoin blockchain contains a summary of all the transactions in the block, using a merkle tree.
+* A merkle tree, also known as a binary hash tree, is a data structure used for efficiently summarizing and verifying the integrity of large sets of data.
+    * Merkle trees are binary trees containing cryptographic hashes.
+* Merkle trees are used in bitcoin to summarize all the transactions in a block, producing an overall digital fingerprint of the entire set of transactions, providing a very efficient process to verify whether a transaction is included in a block.
+    * The tree is constructed by recursively hashing pairs of nodes until there is only one hash, called the root, or merkle root
+    * When **N** data elements are hashed and summarized in a merkle tree, you can check to see if any one data element is included in the tree with at most 2*log2(N) calculations, making this a very efficient data structure.
+
+![](./merkel-tree.png)
