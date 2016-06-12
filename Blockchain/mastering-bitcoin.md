@@ -522,3 +522,28 @@ checksum = SHA256(SHA256(prefix+data))
     * Ethereum's blockchain records contracts, which are expressed in a low-level, byte code–like, Turing-complete language
         * a contract is a program that runs on every node in the Ethereum system.
     * **Ethereum contracts can store data, send and receive ether payments, store ether, and execute an infinite range (hence Turing-complete) of computable actions, acting as decentralized autonomous software agents.**
+
+## Bitcoin Security
+
+* Bitcoin is dramatically different.
+* A bitcoin transaction authorizes only a specific value to a specific recipient and cannot be forged or modified.
+* It does not reveal any private information, such as the identities of the parties, and cannot be used to authorize additional payments. 
+* Therefore, a bitcoin payment network does not need to be encrypted or protected from eavesdropping.
+    * In fact, you can broadcast bitcoin transactions over an open public channel, such as unsecured WiFi or Bluetooth, with no loss of security.
+* Bitcoin's decentralized security model puts a lot of power in the hands of the users. With that power comes responsibility for maintaining the secrecy of the keys
+* Although bitcoin's decentralized model prevents the type of mass compromise seen with credit cards, many users are not able to adequately secure their keys and get hacked, one by one.
+* Bitcoin's security relies on decentralized control over keys and on independent transaction validation by miners.
+    * If you want to leverage Bitcoin's security, you need to ensure that you remain within the Bitcoin security model.
+    * In simple terms: **don't take control of keys away from users and don't take transactions off the blockchain.**
+
+### Security Mistakes
+
+* Many early bitcoin exchanges concentrated all user funds in a single "hot" wallet with keys stored on a single server.
+    * Such a design removes control from users and centralizes control over keys in a single system.
+    * Many such systems have been hacked, with disastrous consequences for their customers.
+* Another common mistake is to take transactions "off blockchain" in a misguided effort to reduce transaction fees or accelerate transaction processing.
+    * An "off blockchain" system will record transactions on an internal, centralized ledger and only occasionally synchronize them to the bitcoin blockchain.
+    * This practice substitutes decentralized bitcoin security with a proprietary and centralized approach.
+    * When transactions are off blockchain, improperly secured centralized ledgers can be falsified, diverting funds and depleting reserves, unnoticed.
+* Unless you are prepared to invest heavily in operational security, multiple layers of access control, and audits (as the traditional banks do) you should think very carefully before taking funds outside of Bitcoin's decentralized security context.
+* **To take advantage of Bitcoin's unique decentralized security model, you have to avoid the temptation of centralized architectures that might feel familiar but ultimately subvert Bitcoin's security.**
