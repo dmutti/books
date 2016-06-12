@@ -387,4 +387,68 @@ checksum = SHA256(SHA256(prefix+data))
 * Note that the target difficulty is independent of the number of transactions or the value of transactions. This means that the amount of hashing power and therefore electricity expended to secure bitcoin is also entirely independent of the number of transactions.
     * The increase in hashing power represents market forces as new miners enter the market to compete for the reward
 
-### Successfully Mining the Block
+### Validating a New Block
+
+* The third step in bitcoin's consensus mechanism is independent validation of each new block by every node on the network.
+* As the newly solved block moves across the network, each node performs a series of tests to validate it before propagating it to its peers. This ensures that only valid blocks are propagated on the network.
+* The independent validation also ensures that miners who act honestly get their blocks incorporated in the blockchain, thus earning the reward. 
+    * Miners who act dishonestly have their blocks rejected and not only lose the reward, but also waste the effort expended to find a proof-of-work solution, thus incurring the cost of electricity without compensation
+* The miners have to construct a perfect block, based on the shared rules that all nodes follow, and mine it with a correct solution to the proof of work. To do so, they expend a lot of electricity in mining, and if they cheat, all the electricity and effort is wasted.
+    * This is why independent validation is a key component of decentralized consensus.
+
+### Assembling and Selecting Chains of Blocks
+
+* The final step in bitcoin's decentralized consensus mechanism is the assembly of blocks into chains and the selection of the chain with the most proof of work. Once a node has validated a new block, it will then attempt to assemble a chain by connecting the block to the existing blockchain.
+* Nodes maintain three sets of blocks:
+    * those connected to the main blockchain
+    * those that form branches off the main blockchain (secondary chains)
+    * blocks that do not have a known parent in the known chains (orphans)
+* The "main chain" at any time is whichever chain of blocks has the most cumulative difficulty associated with it.
+    * Under most circumstances this is also the chain with the most blocks in it
+    * unless there are two equal-length chains and one has more proof of work.
+* The main chain will also have branches with blocks that are "siblings" to the blocks on the main chain
+    * These blocks are valid but not part of the main chain. They are kept for future reference, in case one of those chains is extended to exceed the main chain in difficulty
+* **Sometimes the new block extends a chain that is not the main chain.**
+    * In that case, the node will attach the new block to the secondary chain it extends and then compare the difficulty of the secondary chain to the main chain.
+    * **If the secondary chain has more cumulative difficulty than the main chain, the node will reconverge on the secondary chain**, meaning it will select the secondary chain as its new main chain, making the old main chain a secondary chain.
+    * If the node is a miner, it will now construct a block extending this new, longer, chain.
+* By selecting the greatest-difficulty chain, all nodes eventually achieve network-wide consensus.
+* Temporary discrepancies between chains are resolved eventually as more proof of work is added, extending one of the possible chains.
+* Mining nodes "vote" with their mining power by choosing which chain to extend by mining the next block. When they mine a new block and extend the chain, the new block itself represents their vote.
+
+### Blockchain Forks
+
+* Because the blockchain is a decentralized data structure, different copies of it are not always consistent.
+* To resolve this, each node always selects and attempts to extend the chain of blocks that represents the most proof of work, also known as the longest chain or greatest cumulative difficulty chain
+* As long as all nodes select the longest cumulative difficulty chain, the global bitcoin network eventually converges to a consistent state. 
+* Forks occur as temporary inconsistencies between versions of the blockchain, which are resolved by eventual reconvergence as more blocks are added to one of the forks.
+* **Bitcoin's block interval of 10 minutes is a design compromise between fast confirmation times (settlement of transactions) and the probability of a fork. A faster block time would make transactions clear faster but lead to more frequent blockchain forks, whereas a slower block time would decrease the number of forks but make settlement slower.**
+
+### Mining and the Hashing Race
+
+* It's no longer about how much mining can be done with one chip, but how many chips can be squeezed into a building, while still dissipating the heat and providing adequate power.
+
+### Consensus Attacks
+
+* the consensus mechanism depends on having a majority of the miners acting honestly out of self-interest.
+    * if a miner or group of miners can achieve a significant share of the mining power, they can attack the consensus mechanism so as to disrupt the security and availability of the bitcoin network.
+* **consensus attacks can only affect future consensus, or at best the most recent past (tens of blocks)**
+    * Bitcoin's ledger becomes more and more immutable as time passes.
+    * in theory, a fork can be achieved at any depth, in practice, the computing power needed to force a very deep fork is immense, making old blocks practically immutable
+* Consensus attacks also do not affect the security of the private keys and signing algorithm (ECDSA)
+    * A consensus attack cannot steal bitcoins, spend bitcoins without signatures, redirect bitcoins, or otherwise change past transactions or ownership records
+    * Consensus attacks can only affect the most recent blocks and cause denial-of-service disruptions on the creation of future blocks.
+* One attack scenario against the consensus mechanism is called the "51% attack". In this scenario a group of miners, controlling a majority (51%) of the total network's hashing power, collude to attack bitcoin.
+    * the attacking miners can cause deliberate "forks" in the blockchain and double-spend transactions or execute denial-of-service attacks against specific transactions or addresses
+    * A fork/double-spend attack is one where the attacker causes previously confirmed blocks to be invalidated by forking below them and re-converging on an alternate chain.
+* With sufficient power, an attacker can invalidate six or more blocks in a row, causing transactions that were considered immutable (six confirmations) to be invalidated.
+    * a double-spend can only be done on the attacker's own transactions, for which the attacker can produce a valid signature
+* **To protect against this kind of attack, a merchant selling large-value items must wait at least six confirmations before giving the product to the buyer.**
+    * Alternatively, the merchant should use an escrow multi-signature account, again waiting for several confirmations after the escrow account is funded. The more confirmations elapse, the harder it becomes to invalidate a transaction with a 51% attack.
+    * **For high-value items, payment by bitcoin will still be convenient and efficient even if the buyer has to wait 24 hours for delivery, which would ensure 144 confirmations.**
+* The other scenario for a consensus attack is to deny service to specific bitcoin participants (specific bitcoin addresses).
+    * An attacker with a majority of the mining power can simply ignore specific transactions. If they are included in a block mined by another miner, the attacker can deliberately fork and re-mine that block, again excluding the specific transactions.
+    * This type of attack can result in a sustained denial of service against a specific address or set of addresses for as long as the attacker controls the majority of the mining power.
+* Security research groups have used statistical modeling to claim that various types of consensus attacks are possible with as little as 30% of the hashing power.
+
+## Alternative Chains, Currencies, and Applications
