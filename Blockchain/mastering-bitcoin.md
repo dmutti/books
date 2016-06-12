@@ -358,3 +358,33 @@ checksum = SHA256(SHA256(prefix+data))
 * The node then fills in the difficulty target, which defines the required proof-of-work difficulty to make this a valid block. The difficulty is stored in the block as a "difficulty bits" metric, which is a mantissa-exponent encoding of the target. The encoding has a 1-byte exponent, followed by a 3-byte mantissa (coefficient)
 * The final field is the nonce, which is initialized to zero.
 * With all the other fields filled, the block header is now complete and the process of mining can begin. The goal is now to find a value for the nonce that results in a block header hash that is less than the difficulty target. The mining node will need to test billions or trillions of nonce values before a nonce is found that satisfies the requirement.
+* In the simplest terms, mining is the process of hashing the block header repeatedly, changing one parameter, until the resulting hash matches a specific target.
+    * The hash function's result cannot be determined in advance, nor can a pattern be created that will produce a specific hash value.
+    * This feature of hash functions means that the only way to produce a hash result matching a specific target is to try again and again, randomly modifying the input until the desired hash result appears by chance.
+    * The key characteristic of a cryptographic hash algorithm is that it is virtually impossible to find two different inputs that produce the same fingerprint.
+    * As a corollary, it is also virtually impossible to select an input in such a way as to produce a desired fingerprint, other than trying random inputs.
+* The number used as a variable in such a scenario is called a nonce. The nonce is used to vary the output of a cryptographic function, in this case to vary the SHA256 fingerprint of the phrase.
+    * At the current difficulty in the bitcoin network, miners have to try quadrillions of times before finding a nonce that results in a low enough block header hash.
+* In terms of probabilities, if the output of the hash function is evenly distributed we would expect to find a result with a `0` as the hexadecimal prefix once every 16 hashes (one out of 16 hexadecimal digits `0` through `F`).
+* In numerical terms, that means finding a hash value that is less than `0x1000000000000000000000000000000000000000000000000000000000000000`.
+    * We call this threshold the target and the goal is to find a hash that is numerically less than the target.
+    * If we decrease the target, the task of finding a hash that is less than the target becomes more and more difficult.
+* To give a simple analogy, imagine a game where players throw a pair of dice repeatedly, trying to throw less than a specified target.
+    * In the first round, the target is 12. Unless you throw double-six, you win. In the next round the target is 11. Players must throw 10 or less to win, again an easy task.
+    * Let's say a few rounds later the target is down to 5. Now, more than half the dice throws will add up to more than 5 and therefore be invalid. It takes exponentially more dice throws to win, the lower the target gets.
+    * Eventually, when the target is 2 (the minimum possible), only one throw out of every 36, or 2% of them, will produce a winning result.
+
+### Difficulty Target and Retargeting
+
+* **Why is the difficulty adjustable, who adjusts it, and how?**
+* To keep the block generation time at 10 minutes, the difficulty of mining must be adjusted to account for these changes [it is expected that computer power will continue to increase, the number of participants in mining and the computers they use will also constantly change].
+* In fact, difficulty is a dynamic parameter that will be periodically adjusted to meet a 10-minute block target. In simple terms, the difficulty target is set to whatever mining power will result in a 10-minute block interval.
+* **How, then, is such an adjustment made in a completely decentralized network?**
+* Difficulty retargeting occurs automatically and on every full node independently. Every 2,016 blocks, all nodes retarget the proof-of-work difficulty.
+* The equation for retargeting difficulty measures the time it took to find the last 2,016 blocks and compares that to the expected time of 20,160 minutes (two weeks based upon a desired 10-minute block time).
+* The ratio between the actual timespan and desired timespan is calculated and a corresponding adjustment (up or down) is made to the difficulty.
+* If the network is finding blocks faster than every 10 minutes, the difficulty increases. If block discovery is slower than expected, the difficulty decreases.
+* Note that the target difficulty is independent of the number of transactions or the value of transactions. This means that the amount of hashing power and therefore electricity expended to secure bitcoin is also entirely independent of the number of transactions.
+    * The increase in hashing power represents market forces as new miners enter the market to compete for the reward
+
+### Successfully Mining the Block
