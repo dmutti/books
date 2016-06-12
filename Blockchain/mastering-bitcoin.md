@@ -21,7 +21,11 @@
     * In these cases [storing and digitally transfering money], the counterfeiting and double-spend issues are handled by clearing all electronic transactions through central authorities that have a global view of the currency in circulation
     * For digital money, which cannot take advantage of esoteric inks or holographic strips, cryptography provides the basis for trusting the legitimacy of a user's claim to value
 * To be robust against intervention by antagonists, whether legitimate governments or criminal elements, a decentralized digital currency was needed to avoid a single point of attack.
-* Bitcoin consists of:    * A decentralized peer-to-peer network (the bitcoin protocol)    * A public transaction ledger (the blockchain)    * A decentralized mathematical and deterministic currency issuance (distributed mining)    * A decentralized transaction verification system (transaction script)
+* Bitcoin consists of:
+    * A decentralized peer-to-peer network (the bitcoin protocol)
+    * A public transaction ledger (the blockchain)
+    * A decentralized mathematical and deterministic currency issuance (distributed mining)
+    * A decentralized transaction verification system (transaction script)
 * **The key innovation was to use a distributed computation system (called a "proof-of-work" algorithm) to conduct a global "election" every 10 minutes, allowing the decentralized network to arrive at consensus about the state of transactions. **
 * The three main forms of bitcoin clients are:
     * A full client, or "full node", is a client that stores the entire history of bitcoin transactions (every transaction by every user, ever), manages the users' wallets, and can initiate transactions directly on the bitcoin network -> "standalone email server"
@@ -45,10 +49,17 @@
 * The payment request QR code encodes the following URL, defined in BIP0021:
 
 ```txt
-bitcoin:1GdK9UzpHBzqzX2A9JFP3Di4weBwqgmoQA?amount=0.015&label=Bob%27s%20Cafe&message=Purchase%20at%20Bob%27s%20Cafe
+bitcoin:1GdK9UzpHBzqzX2A9JFP3Di4weBwqgmoQA?
+amount=0.015&
+label=Bob%27s%20Cafe&
+message=Purchase%20at%20Bob%27s%20Cafe
 ```
 
-* Components of the URL    * A bitcoin address: "1GdK9UzpHBzqzX2A9JFP3Di4weBwqgmoQA"    * The payment amount: "0.015"    * A label for the recipient address: "Bob's Cafe"    * A description for the payment: "Purchase at Bob's Cafe"
+* Components of the URL
+    * A bitcoin address: "1GdK9UzpHBzqzX2A9JFP3Di4weBwqgmoQA"
+    * The payment amount: "0.015"
+    * A label for the recipient address: "Bob's Cafe"
+    * A description for the payment: "Purchase at Bob's Cafe"
 * Transactions are like lines in a double-entry bookkeeping ledger.
     * In simple terms, each transaction contains one or more "inputs", which are debits against a bitcoin account
     * On the other side of the transaction, there are one or more "outputs", which are credits added to a bitcoin account
@@ -68,7 +79,9 @@ bitcoin:1GdK9UzpHBzqzX2A9JFP3Di4weBwqgmoQA?amount=0.015&label=Bob%27s%20Cafe&
 * Most wallet applications keep a small database of "unspent transaction outputs" that are locked (encumbered) with the wallet's own keys. Because a full-index client takes up a lot of disk space, most user wallets run "lightweight" clients that track only the user's own unspent outputs.
 
 ```bash
-# Look up all the unspent outputs for Alice’s bitcoin addresscurl -v 'https://blockchain.info/unspent?active=1Cdid9KFAaatwczBwBttQcwXYCpvK8h7FK'
+# Look up all the unspent outputs for Alice’s bitcoin address
+
+curl -v 'https://blockchain.info/unspent?active=1Cdid9KFAaatwczBwBttQcwXYCpvK8h7FK'
 ```
 
 * A transaction output is created in the form of a script that creates an encumbrance on the value and can only be redeemed by the introduction of a solution to the script.
@@ -287,6 +300,8 @@ checksum = SHA256(SHA256(prefix+data))
 
 ### Merkle Trees
 
+![](./merkel-tree.png)
+
 * Each block in the bitcoin blockchain contains a summary of all the transactions in the block, using a merkle tree.
 * A merkle tree, also known as a binary hash tree, is a data structure used for efficiently summarizing and verifying the integrity of large sets of data.
     * Merkle trees are binary trees containing cryptographic hashes.
@@ -294,4 +309,52 @@ checksum = SHA256(SHA256(prefix+data))
     * The tree is constructed by recursively hashing pairs of nodes until there is only one hash, called the root, or merkle root
     * When **N** data elements are hashed and summarized in a merkle tree, you can check to see if any one data element is included in the tree with at most 2*log2(N) calculations, making this a very efficient data structure.
 
-![](./merkel-tree.png)
+## Mining and Consensus
+
+* Mining is the process by which new bitcoin is added to the money supply.
+* Mining also serves to secure the bitcoin system against fraudulent transactions or transactions spending the same amount of bitcoin more than once, known as a double-spend.
+* Miners provide processing power to the bitcoin network in exchange for the opportunity to be rewarded bitcoin.
+* Miners receive two types of rewards for mining: new coins created with each new block, and transaction fees from all the transactions included in the block
+    * miners compete to solve a mathematical problem based on a cryptographic hash algorithm
+    * The solution to the problem, called the proof of work, is included in the new block and acts as proof that the miner expended significant computing effort.
+* The amount of newly created bitcoin a miner can add to a block decreases approximately every four years (or precisely every 210,000 blocks)
+    * Bitcoin mining rewards decrease exponentially until approximately the year 2140, when all bitcoin (20.99999998 million) will have been issued. After 2140, no new bitcoins will be issued
+* Although mining is incentivized by this reward, **the primary purpose of mining is not the reward or the generation of new coins.**
+    * **Mining is the main process of the decentralized clearinghouse, by which transactions are validated and cleared.**
+    * **Mining secures the bitcoin system and enables the emergence of network-wide consensus without a central authority.**
+* The reward of newly minted coins and transaction fees is an incentive scheme that aligns the actions of miners with the security of the network, while simultaneously implementing the monetary supply.
+* **The finite and diminishing issuance creates a fixed monetary supply that resists inflation. Unlike a fiat currency, which can be printed in infinite numbers by a central bank, bitcoin can never be inflated by printing.**
+* All traditional payment systems depend on a trust model that has a central authority providing a clearinghouse service, basically verifying and clearing all transactions.
+* The blockchain is not created by a central authority, but is assembled independently by every node in the network. Somehow, every node in the network, acting on information transmitted across insecure network connections, can arrive at the same conclusion and assemble a copy of the same public ledger as everyone else.
+
+### Decentralized Consensus
+
+* consensus is an emergent artifact of the asynchronous interaction of thousands of independent nodes, all following simple rules.
+* Bitcoin's decentralized consensus emerges from the interplay of four processes that occur independently on nodes across the network
+    * Independent verification of each transaction, by every full node, based on a comprehensive list of criteria
+    * Independent aggregation of those transactions into new blocks by mining nodes, coupled with demonstrated computation through a proof-of-work algorithm
+    * Independent verification of the new blocks by every node and assembly into a chain
+    * Independent selection, by every node, of the chain with the most cumulative computation demonstrated through proof-of-work
+
+### Mining Nodes
+
+* The arrival of a new block has special significance for a mining node.
+* The competition among miners effectively ends with the propagation of a new block that acts as an announcement of a winner.
+* To miners, receiving a new block means someone else won the competition and they lost. However, the end of one round of a competition is also the beginning of the next round. 
+* The new block is not just a checkered flag, marking the end of the race; it is also the starting pistol in the race for the next block.
+
+### Aggregating Transactions into Blocks
+
+* As Jing's node is mining, it receives block 277,315 through the bitcoin network. The arrival of this block signifies the end of the competition for block 277,315 and the beginning of the competition to create block 277,316.
+* Jing's node immediately constructs a new empty block, a candidate for block 277,316. This block is called a candidate block because it is not yet a valid block, as it does not contain a valid proof of work. The block becomes valid only if the miner succeeds in finding a solution to the proof-of-work algorithm.
+* To construct the candidate block, Jing's bitcoin node selects transactions from the memory pool by applying a priority metric to each transaction and adding the highest priority transactions first
+* Jing's mining node then fills the rest of the block up to the maximum block size (MAX_BLOCK_SIZE in the code), with transactions that carry at least the minimum fee, prioritizing those with the highest fee per kilobyte of transaction.
+* If there is any space remaining in the block, Jing's mining node might choose to fill it with no-fee transactions.
+    * Some miners choose to mine transactions without fees on a best-effort basis.
+    * Other miners may choose to ignore transactions without fees.
+* The first transaction added to the block is a special transaction, called a generation transaction or coinbase transaction. This transaction is constructed by Jing's node and is his reward for the mining effort.
+* Next, the mining node needs to add the "Previous Block Hash". That is the hash of the block header of block 277,315, the previous block received from the network, which Jing's node has accepted and selected as the parent of the candidate block 277,316.
+* The next step is to summarize all the transactions with a merkle tree, in order to add the merkle root to the block header. The generation transaction is listed as the first transaction in the block.
+* The node then fills in the difficulty target, which defines the required proof-of-work difficulty to make this a valid block. The difficulty is stored in the block as a "difficulty bits" metric, which is a mantissa-exponent encoding of the target. The encoding has a 1-byte exponent, followed by a 3-byte mantissa (coefficient)
+* The final field is the nonce, which is initialized to zero.
+* With all the other fields filled, the block header is now complete and the process of mining can begin. The goal is now to find a value for the nonce that results in a block header hash that is less than the difficulty target. The mining node will need to test billions or trillions of nonce values before a nonce is found that satisfies the requirement.
