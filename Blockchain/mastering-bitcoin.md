@@ -452,3 +452,73 @@ checksum = SHA256(SHA256(prefix+data))
 * Security research groups have used statistical modeling to claim that various types of consensus attacks are possible with as little as 30% of the hashing power.
 
 ## Alternative Chains, Currencies, and Applications
+
+* There are a number of protocol layers implemented on top of bitcoin’s blockchain. These meta coins, meta chains, or blockchain apps use the blockchain as an application platform or extend the bitcoin protocol by adding protocol layers. Examples include Colored Coins, Mastercoin, and Counterparty.
+* In addition to the alt coins, there are also a number of alternative blockchain implementations that are not really coins, which I call `alt chains`. These alt chains implement a consensus algorithm and distributed ledger as a platform for contracts, name registration, or other applications.
+* Alt chains use the same basic building blocks and sometimes also use a currency or token as a payment mechanism, but their primary purpose is not currency.
+* In addition to the proof-of-work consensus mechanism used in bitcoin, alternatives include experimental protocols based on proof of resource and proof of publishing.
+* Finally, there are a number of bitcoin contenders that offer digital currency or digital payment networks, but without using a decentralized ledger or consensus mechanism based on proof of work, such as Ripple and others
+* **Bitcoin is often mistakenly characterized as "anonymous" currency. In fact, it is relatively easy to connect identities to bitcoin addresses and, using big-data analytics, connect addresses to each other to form a comprehensive picture of someone's bitcoin spending habits.**
+
+### Meta Coin Platforms
+
+* Meta coins and meta chains are software layers implemented on top of bitcoin, either implementing a currency-inside-a-currency, or a platform/protocol overlay inside the bitcoin system.
+* **Colored Coins**
+    * Colored coins work by converting a specific, very small amount of bitcoin into a traded certificate that represents another asset.
+        * The term "color" refers to the idea of giving special meaning through the addition of an attribute such as a color -- it is a metaphor, not an actual color association. There are no colors in colored coins.
+    * Colored coins are managed by specialized wallets that record and interpret the metadata attached to the colored bitcoins. Using such a wallet, the user will convert an amount of bitcoins from uncolored currency into colored coins by adding a label that has a special meaning.
+        * a label could represent stock certificates, coupons, real property, commodities, or collectible tokens
+    * To color the coins, the user defines the associated metadata, such as the type of issuance, whether it can be subdivided into smaller units, a symbol and description, and other related information.
+        * Once colored, these coins can be bought and sold, subdivided, and aggregated, and receive dividend payments. 
+* **Mastercoin**
+    * is a protocol layer on top of bitcoin that supports a platform for various applications extending the bitcoin system
+    * it is a platform for building other things, such as user currencies, smart property tokens, de-centralized asset exchanges, and contracts
+    * it is like HTTP running on top of TCP.
+* **Counterparty** enables user currencies, tradable tokens, financial instruments, decentralized asset exchanges, and other features
+
+### Alt Coins
+
+* Creating an alt coin is easy, which is why there are now more than 500 of them. Most of the alt coins differ very slightly from bitcoin and do not offer anything worth studying. Many are in fact just attempts to enrich their creators.
+* In 2013, we saw the invention of an alternative to proof of work, called proof of stake, which forms the basis of many modern alt coins.
+* Proof of stake is a system by which existing owners of a currency can "stake" currency as interest-bearing collateral. Somewhat like a certificate of deposit (CD), participants can reserve a portion of their currency holdings, while earning an investment return in the form of new currency (issued as interest payments) and transaction fees.
+* **NXT**
+    * NXT (pronounced "Next") is a "pure" proof-of-stake alt coin, in that it does not use proof-of-work mining.
+    * NXT is a from-scratch implementation of a cryptocurrency, not a fork of bitcoin or any other alt coins.
+    * NXT implements many advanced features, including
+        * a name registry (similar to Namecoin)
+        * a decentralized asset exchange (similar to Colored Coins)
+        * integrated decentralized and secure messaging (similar to Bitmessage)
+        * and stake delegation (to delegate proof-of-stake to others).
+    * NXT adherents call it a "next-generation" or 2.0 cryptocurrency.
+* **Primecoin**
+    * Its proof-of-work algorithm searches for prime numbers, computing Cunningham and bi-twin prime chains
+    * The Primecoin blockchain contains the discovered prime numbers, thereby producing a public record of scientific discovery in parallel to the public ledger of transactions.
+* **Curecoin**
+    * It combines a SHA256 proof-of-work algorithm with protein-folding research through the Folding@Home project.
+    * Protein folding is a computationally intensive simulation of biochemical interactions of proteins, used to discover new drug targets for curing diseases
+
+### Noncurrency Alt Chains
+
+* Alt chains are alternative implementations of the blockchain design pattern, which are not primarily used as currency.
+    * Many include a currency, but the currency is used as a token for allocating something else, such as a resource or a contract.
+    * The currency, in other words, is not the main point of the platform; it is a secondary feature.
+* **Namecoin**
+    * a decentralized key-value registration and transfer platform using a blockchain.
+    * It supports a global domain-name registry similar to the domain-name registration system on the Internet
+    * currently used as an alternative domain name service (DNS) for the root-level domain `.bit`
+    * Namecoin also can be used to register names and key-value pairs in other namespaces; for storing things like email addresses, encryption keys, SSL certificates, file signatures, voting systems, stock certificates; and a myriad of other applications.
+    * Some of the popular namespaces are:
+        * `d/` is the domain-name namespace for `.bit` domains
+        * `id/` is the namespace for storing person identifiers such as email addresses, PGP keys, and so on
+        * `u/` is an additional, more structured specification to store identities (based on openspecs)
+* **Bitmessage**
+    * **a bitcoin alt chain that implements a decentralized secure messaging service, essentially a server-less encrypted email system**
+    * The messages operate in much the same way as a bitcoin transaction, but they are transient -- they do not persist beyond two days and if not delivered to the destination node in that time, they are lost.
+    * Senders and recipients are pseudonymous -- they have no identifiers other than a bitmessage address -- but are strongly authenticated, meaning that messages cannot be "spoofed".
+* **Ethereum**
+    * Ethereum is a Turing-complete contract processing and execution platform based on a blockchain ledger.
+    * It is not a clone of Bitcoin, but a completely independent design and implementation.
+    * Ethereum has a built-in currency, called `ether`, which is required in order to pay for contract execution.
+    * Ethereum's blockchain records contracts, which are expressed in a low-level, byte code–like, Turing-complete language
+        * a contract is a program that runs on every node in the Ethereum system.
+    * **Ethereum contracts can store data, send and receive ether payments, store ether, and execute an infinite range (hence Turing-complete) of computable actions, acting as decentralized autonomous software agents.**
