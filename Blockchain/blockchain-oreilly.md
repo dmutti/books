@@ -215,4 +215,7 @@
 
 ## Blockchain 3.0: Justice Applications Beyond Currency, Economics, and Markets
 
-### Blockchain Technology Is a New and Highly Effective Model for Organizing Activity
+* Decentralization is "where water goes", where water flows naturally, along the way of least resistance and least effort.
+* The blockchain could be an Occam's razor, the most efficient, direct, and natural means of coordinating all human and machine activity; it is a natural efficiency process.
+
+### Blockchain Layer Could Facilitate Big Data’s Predictive Task Automation
