@@ -198,3 +198,21 @@
 | Swarm | https://www.swarm.co/ | Cryptocurrency crowdfunding platforms | Kickstarter, Indiegogo venture capital funding |
 | Koinify | https://koinify.com/ | | |
 | bitFlyer | http://fund yer.bit yer.jp/ | | |
+
+* A DAO (decentralized autonomous organization) is a more complex form of a decentralized application
+* To become an organization, a Dapp might
+    * adopt more complicated functionality such as a constitution, which would outline its governance publicly on the blockchain
+    * and a mechanism for financing its operations such as issuing equity in a crowdfunding
+* DAOs/DACs (decentralized autonomous organizations/corporations) are a concept derived from artificial intelligence.
+    * Here, a decentralized network of autonomous agents perform tasks, which can be conceived in the model of a corporation running without any human involvement under the control of a set of business rules
+
+* Eventually there could be DASs (decentralized autonomous societies) -- essentially fleets of smart contracts, or entire ecosystems of Dapps, DAOs, and DACs operating autonomously
+* An automatic market is the idea that unitized, packetized, quantized resources (initially like electricity, gas, bandwidth, and in the deeply speculative future, units of synaptic potentiation in brains) are automatically transacted based on dynamically evolving conditions and preprogrammed user profiles, permissions, and bidding functions.
+    * Algorithmic stock market trading and real-time bidding (RTB) advertising networks are the closest existing examples of automatic markets.
+* Truly smart grids (e.g., energy, highway, and traffic grids) could have automatic bidding functions on both the cost and revenue side of their operations -- for both inputs (resources) and outputs (customers) and participation in automatic clearing mechanisms.
+    * A related concept is trade‐nets: in the future there could be self-operating, self-owned assets like a self-driving, self-owning car
+* **Tradenets could even have embedded, automatically executing smart contracts to trigger the building of new transportation pods based on signals of population growth, demand, and business plan validity.**
+
+## Blockchain 3.0: Justice Applications Beyond Currency, Economics, and Markets
+
+### Blockchain Technology Is a New and Highly Effective Model for Organizing Activity
