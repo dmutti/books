@@ -188,6 +188,7 @@
 * Our working definition of a Dapp is an application that runs on a network in a distributed fashion with participant information securely protected and operation execution decentralized across network nodes.
 
 | Project | URL | Activity | Equivalent |
+|---------|-----|----------|------------|
 | OpenBazaar | https://openbazaar.org/ | Buy/sell items in local physical world | Craigslist |
 | LaZooz | http://lazooz.org/ | Ridesharing, including Zooz, a proof-of-movement coin | Uber |
 | Twister | http://twister.net.co/ | Social networking, peer-to-peer microblogging | Twitter/Facebook |
