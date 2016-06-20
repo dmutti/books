@@ -218,4 +218,57 @@
 * Decentralization is "where water goes", where water flows naturally, along the way of least resistance and least effort.
 * The blockchain could be an Occam's razor, the most efficient, direct, and natural means of coordinating all human and machine activity; it is a natural efficiency process.
 
-### Blockchain Layer Could Facilitate Big Data’s Predictive Task Automation
+### Blockchain Layer Could Facilitate Big Data's Predictive Task Automation
+
+* Big data's predictive analysis could dovetail perfectly with the automatic execution of smart contracts
+* We could accomplish this specifically by adding blockchain technology as the embedded economic payments layer and the tool for the administration of quanta, implemented through automated smart contracts, Dapps, DAOs, and DACs.
+
+### Namecoin: Decentralized Domain Name System
+
+* an altcoin that can be used to verify Domain Name System (DNS) registrations
+* an alternative DNS that is transnational and cannot be controlled by any government or corporation
+* The idea is that URLs permanently embedded in the blockchain would be resistant to the government seizing of domains.
+* a decentralized DNS means that top-level domains can exist that are not controlled by anyone, and they have DNS lookup tables shared on a peer-to-peer network
+* As long as there are volunteers running the decentralized DNS server software, alternative domains registered in this system can be accessed. Authorities cannot impose rules to affect the operation of a well-designed and executed global peer-to-peer top-level domain.
+* Technical issues were found with the Namecoin implementation that left .bit domains vulnerable to takeover
+
+### Freedom of Speech/Anti-Censorship Applications: Alexandria and Ostel
+
+* Alexandria aims to create an unalterable historical record by encoding Twitter feeds to a blockchain. This method captures tweets that might be censored out later by takedown requests.
+* Ostel's (https://ostel.co/) free encrypted Voice over IP (VoIP) telephony service
+    * because the United States National Security Agency (NSA) can listen in on other services like Skype
+
+### Decentralized DNS Functionality Beyond Free Speech: Digital Identity
+
+* One challenge related to Bitcoin, the Internet, and network communications more generally is Zooko's Triangle.
+* This is the problem encountered in any system that gives names to participants in a network protocol: how to make identifiers such as a URL or a person's handle (ex: DeMirage99) simultaneously secure, decentralized, and human-usable (i.e., not in the form of a 32-character alphanumeric string)    
+* Namecoin is used to store URLs, but it can store any information. The core functionality of Namecoin is that it is a name/value store system. Therefore, just as Bitcoin has uses beyond currency, Namecoin has uses beyond DNS for storing information more generally.
+* Using the nondomain namespaces of Namecoin, we can store information that would otherwise be hard to securely or conveniently exchange
+
+### Digital Identity Verification
+
+* Decentralized digital verification services take advantage of the fact that all Bitcoin users have a personal wallet, and therefore a wallet address.
+    * This could speed access to all aspects of websites, simultaneously improving user experience, anonymity, and security.
+    * It can also facilitate ecommerce because customers using Bitcoin-address login are already enabled for purchase.
+* With OneName, users can set up a more practical name (like a social media handle) to use for Bitcoin transactions. 
+* OneName is an open source protocol built on the Namecoin protocol that puts users in charge of their digital identity verification, rather than allowing centralized social media sites like Facebook, LinkedIn, and Twitter to be the de facto identity verification platform, given that many websites have opted to authenticate users with social media APIs
+* A similar project is BitID, which allows users to log in to websites with their Bitcoin address.
+    * "Instead of Login with Facebook", you can "Connect with Bitcoin" (your Bitcoin address).
+    * BitID is a decentralized authentication protocol that takes advantage of Bitcoin wallets as a form of identification and QR codes for service or platform access points.
+    * It enables users to access an online account by verifying themselves with their wallet address and uses a mobile device as the private-key authenticator
+* **Bithandle offers short-handle registration, verification, and ecommerce service. Users can register an easy-to-use handle -- for instance, "Coinmaster" -- that is linked to a wallet address via a public or private real-life identity check and a Bitcoin blockchain transaction**
+    * The service offers ongoing real-time digital identity verification and one-click auto-enabled ecommerce per "Login with Bitcoin" website access
+    * Bithandle gives users the ability to link a short handle to a Bitcoin address, which is confirmed initially with real-life identity and looked up in the blockchain on demand at any future moment.
+    * Real-time digital identity verification services could be quite crucial; already the worldwide market size for identity authentication and verification is $11 billion annually
+* **How it works**
+    * participants register a Bitcoin username, an easy-to-use handle that can then be used to "Login with Bitcoin" to websites
+    * it automatically connects to a user's Bitcoin address for proof of identity
+    * When a user sets up a Bithandle, his real-life identity is confirmed with Facebook, Twitter, LinkedIn, or other services, and this can be posted publically (like OneName) or not (as OneName does not allow), with the user's Bithandle.
+    * "Logging in with Bitcoin" means that a Bithandle is already connected to a Bitcoin address, which securely facilitates ecommerce without the user having to register an account and provide personal identity and financial details
+    * the Bithandle service can provide real-time blockchain lookups to confirm user digital identity at any future time on demand -- for example, to reauthorize a user for subsequent purchases.
+
+### Blockchain Neutrality
+
+* a mobile cryptowallet app, Saldo.mx (http://saldo.mx/), which uses the Ripple open source protocol for clearing, and links people living in the United States and Latin America for the remote payment of bills, insurance, airtime, credit, and products.
+
+### Digital Art: Blockchain Attestation Services (Notary, Intellectual Property Protection)
