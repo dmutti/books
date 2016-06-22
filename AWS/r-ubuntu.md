@@ -2,6 +2,8 @@
 
 ## R Core and RStudio
 
+* Run on terminal
+
 ```bash
 sudo apt-get update
 sudo apt-get upgrade
@@ -9,6 +11,7 @@ sudo nano /etc/apt/sources.list
 ```
 
 * Add to the end of the file `deb http://cran.rstudio.com/bin/linux/ubuntu trusty/`
+* Run on terminal
 
 ```bash
 sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 51716619E084DAB9
@@ -21,13 +24,19 @@ sudo gdebi rstudio-0.99.902-amd64.deb
 
 ## R Packages
 
+* Start R on terminal
+
 ```bash
 sudo R
 ```
 
+* Install packages
+
 ```r
 install.packages(c('knitr','markdown'))
 ```
+
+* Run on terminal
 
 ```bash
 Rscript -e "library(knitr); library(markdown); knit('file.Rmd'); markdownToHTML('file.md', 'gnip-saopaulo-bb.html');"
@@ -35,6 +44,7 @@ Rscript -e "library(knitr); library(markdown); knit('file.Rmd'); markdownToHTML(
 
 ## Bonus wkhtmltopdf
 
+* On terminal
 ```bash
 sudo add-apt-repository ppa:ecometrica/servers
 sudo apt-get update
