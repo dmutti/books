@@ -50,4 +50,15 @@ sudo add-apt-repository ppa:ecometrica/servers
 sudo apt-get update
 sudo apt-get install wkhtmltopdf
 sudo shutdown -r now
+sudo cp /usr/bin/wkhtmltopdf /usr/local/bin
+sudo chmod a+x /usr/local/bin/wkhtmltopdf
+sudo apt-get install xvfb
+sudo nano /usr/local/bin/wkhtmltopdf.sh
+```
+
+* Add to the end of the file `xvfb-run -a -s "-screen 0 1024x768x16" wkhtmltopdf "$@"`
+ 
+* On terminal
+```bash
+sudo chmod a+x /usr/local/bin/wkhtmltopdf.sh
 ```
