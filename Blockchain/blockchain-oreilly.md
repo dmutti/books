@@ -272,3 +272,192 @@
 * a mobile cryptowallet app, Saldo.mx (http://saldo.mx/), which uses the Ripple open source protocol for clearing, and links people living in the United States and Latin America for the remote payment of bills, insurance, airtime, credit, and products.
 
 ### Digital Art: Blockchain Attestation Services (Notary, Intellectual Property Protection)
+
+* Whereas digital identity relies on users having a Bitcoin wallet address, digital asset proof in the context of attestation services relies on the blockchain functionality of hashing and timestamping.
+* Attestation services (declaring something to be true, such as asset ownership) are referred to as digital art.
+    * The main use of the term digital art in the blockchain industry is to refer to using the blockchain to register any form of IP (entirely digital or representing something in the physical world) or conduct attestation services more generally, such as contract notarization
+* For attestation services, blockchain technology brings together two key functions: hashing and secure timestamping.
+    * The hash is short enough to be included as text in a blockchain transaction, which thus provides the secure timestamping function of when a specific attestation transaction occurred.
+    * Via the hash, the original file content has essentially been encoded into the blockchain. **The blockchain can serve as a document registry.**
+* There are several blockchain-based attestation services in different stages of development or proof of concept, such as Proof of Existence, Virtual Notary, Bitnotar, Chronobit, and Pavilion.io.
+* **Proof of Existence** demonstrates document ownership without revealing the information it contains, and it provides proof that a document was authored at a particular time.
+    * **With this tool, the blockchain can be used to prove the existence and exact contents of a document or other digital asset at a certain time**
+    * Providing timestamped data in an unalterable state while maintaining confidentiality is perfect for a wide range of legal and civic applications.
+    * The proof-of-existence function works in this way: first, you present your document (or any file) to the service website;
+    * Algorithms create a digest, or a cryptographic string that is representative of a piece of data; the digest created by a hash function is based on the characteristics of a document. No two digests are the same, unless the data used to compute the digests is the same.
+    * The cryptographic hash of the document is inserted into a transaction, and when the transaction is mined into a block, the block timestamp becomes the document's timestamp, and via the hash the document's content has essentially been encoded into the blockchain.
+    * blockchain transaction confirmations are not immediate; the time the document was added to the blockchain is recorded, not when the document was submitted; and the precise time of digital asset creation can be important in IP registration services.
+    * **timestamping does not prove ownership**
+
+### Virtual Notary, Bitnotar, and Chronobit
+
+* http://virtual-notary.org/ -- provides a certificate that attests to the file's contents at the moment of submission
+    * the aim is to provide a digital, neutral, dispassionate witness for recording online facts and conveying them to third parties in a trustworthy manner
+    * https://github.com/bitcoinaustria/bitnotar
+    * https://github.com/goblin/chronobit
+* https://blocksign.com/
+* http://btcluck.blogspot.com.br/2014/10/using-bitcoin-based-blockchain-as.html?m=1
+
+### Monegraph: Online Graphics Protection
+
+* individuals can facilitate the monetization of their online graphics-digital media they have already created and posted on the Web-by registering their assets
+* Monegraph verifies property ownership
+* First, to stake the claim, the user goes to http://www.monegraph.com/, gives it permission to sign in to her Twitter account, and supplies the URL of the graphic, upon which Monegraph automatically tweets a link to that image in the correct format.
+* Second, to record the title, after Monegraph tweets the link to the image, it provides a block of code for the user to copy and paste into the Namecoin client.
+* The user initiates a new transaction in the Namecoin wallet and adds the block of code as the key and value in the Namecoin transaction (you can see the transaction here: http://bit.ly/monegraph_verification).
+* Only one copy of a digital image can ever have a valid Monegraph signature.
+* Monegraph images are just ordinary image files, so they can be duplicated and distributed like any other images, but only the original file will pass validation against the Monegraph system.
+
+### Digital Asset Proof as an Automated Feature
+
+* For certain classes of assets or websites, digital asset protection could be invoked at the moment of publication of any digital content.
+* Some examples could include GitHub commits, blog posts, tweets, Instagram/Twitpic photos, and forum participations
+* **Cryptocurrency now as the embedded economic layer of the Web provides microcontent with functionality for micropayment and microIPprotection**
+
+### Batched Notary Chains as a Class of Blockchain Infrastructure
+
+* Notary blocks could be composed of the hashes of many digitally notarized assets;
+    * the blocks themselves could then be hashed so that the notary block is the unit that is inscribed into the blockchain, making more efficient use of the system rather than every single digital artifact that has been notarized.
+    * Because hashes are a one-way function, the existence of the block-level hash in the Bitcoin blockchain constitutes proof of the existence of the subhashes.
+* Factom (http://factom.org/) is a project developing the idea of batched transaction upload in blocks to the blockchain, using the blockchain attestation/notary hash functionality to batch transactions as a means of avoiding blockchain bloat.
+
+### Decentralized Governance Services
+
+* One project that provides the code for a blockchain-based passport system is the World Citizen project.
+* The project aims to create world citizenship through affordable decentralized passport services by using available cryptographic tools
+* https://github.com/MrChrisJ/World-Citizenship
+* **A universal blockchain-based property registry could bring much-needed ownership documentation, transferability, transactability, value capture, and opportunity and mobilization to emerging markets where these structures do not exist or are nascent**
+
+## Blockchain 3.0: Eficiency and Coordination Applications Beyond Currency, Economics, and Markets
+
+### Blockchain Science
+
+* A more fundamental use of the blockchain for science could be addressing the wastefulness of the mining network, which consumes massive amounts of electricity.
+* Instead of being used to crunch arbitrary numbers, perhaps the extensive processing power could be applied to the more practical task of solving existing science problems.
+* a mining algorithm must meet very specific conditions, like generating code strings or hashes that are easily verifiable in one direction but not in reverse, which is not the structure of traditional scientific computing problems
+* http://primecoin.io/
+    * miners are required to find long chains of prime numbers (Cunningham chains and bi-twin chains) instead of SHA256 hashes
+* The media presents estimates of power consumption such as
+    * "the Eiffel Tower could stay lit for 260 years with the energy used to mine Bitcoins since 2009"
+    * in 2013 Bitcoin mining was consuming about 982 megawatt hours a day (enough to power 31,000 homes in the United States, or half a Large Hadron Collider), at a cost of $15 million a day
+* **Community Supercomputing** -- In a model like Kickstarter, individuals could list projects requiring supercomputing time and find other project collaborators and funders, soliciting and rewarding activities with appcoin or sitecoin.
+
+### Blockchain Health
+
+* There could be blockchain-enabled services where genomic data is sequenced and made available to individuals by private key outside the jurisdiction of local governments
+* Blockchain technology, in the form of a universal model for record keeping and data storage and access -- a secure, decentralized, pseudonymous file structure for data stored and accessed in the cloud
+* Blockchain health is the idea of using blockchain technology for health-related applications.
+* The key benefit behind blockchain health is that the blockchain provides a structure for storing health data on the blockchain such that it can be analyzed but remain private, with an embedded economic layer to compensate data contribution and use
+* Price transparency -- and a universal price list -- could result, such that every time a certain health service is performed, it costs 5 Healthcoin, for example, instead of the current system where each consumer might pay a different amount that is a complex calculation of the multipayor system connecting different insurers and plans.
+* Personal health records could be stored and administered via blockchain like a vast electronic electronic medical record (EMR) system.
+    * personal health records could be encoded as digital assets and put on the blockchain just like digital currency.
+    * Individuals could grant doctors, pharmacies, insurance companies, and other parties access to their health records as needed via their private key.
+    * The blockchain could provide a universal exchangeable format and storage repository for EMRs at a population-wide scale.
+* The blockchain could provide a standardized secure mechanism for digitizing health data into health data commons, which could be made privately available to researchers
+* The hypothesis is that integrating big health data streams (genomics, lifestyle, medical history, etc.) and running machine learning and other algorithms over them might yield correlations and data relationships that could be helpful for wellness maintenance and preventive medicine.
+* The blockchain could be the digital instantiation of physical -- world storage centers like the Svalbard Global Seed Vault (a secure seedbank containing duplicate samples of worldwide plant seeds), and World Health Organization -- designated repositories like the CDC for pathogen storage such as the smallpox virus
+
+### Blockchain Learning
+
+* The concept is like Kiva, Grameen microlending, or Heifer International 2.0, which could include peer-to-peer financial aid, but more importantly allows the configuration of peer-to-peer aid that is not currency-based but personal development-based.
+* Learners would receive Bitcoin, Learncoin, or the local token directly into their digital wallets from worldwide peer donors, and use this to fund their education expenses at school or separately on their own
+    * A key part of the value chain is having a reporting mechanism (enabled and automated by Ethereum smart contracts, for example) to attest to learner progress.
+    * Satisfying the learning contract could then automatically trigger the disbursement of subsequent funds for the next learning modules. 
+    * Blockchain learning contracts can be coordinated completely on a peer-to-peer basis between the learner and the learning sponsor; and really directly with the automated software contract.
+    * **the idea is like Kiva or Heifer International (i.e., peer-to-peer direct) for blockchain literacy for individualized learning contracts**
+
+### Blockchain Academic Publishing
+
+* Journalcoin could be issued as the token system of the publishing microeconomy to reward contributors, reviewers, editors, commentators, forum participants, advisors, staff, consultants, and indirect service providers involved in scientific publishing.
+* This could help improve the quality and responsiveness of peer reviews, as reviews are published publicly, and reviewers are rewarded for their contribution.
+* With Journalcoin, reviewers can receive reputational and remunerative rewards, and more transparency and exchange is created between authors, reviewers, and the scientific community and public.
+
+### The Blockchain Is Not for Every Situation
+
+* one of the most important skills in the developing industry is to see where it is and is not appropriate to use cryptocurrency and blockchain models
+* **Not all processes need an economy or a payments system, or peer-to-peer exchange, or decentralization, or robust public record keeping**
+* Further, the scale of operations is a relevant factor, because it might not make sense to have every tiny microtransaction recorded on a public blockchain
+* Maybe there could be daily purchase blockchains for the grocery store and coffee shop purchases, and others for large-ticket items like real estate and automobiles.
+
+## Advanced Concepts
+
+* Blockchain technology at the immediate, specified level is a decentralized public ledger for the recording of cryptocurrency transactions
+* Blockchain technology at the higher, more generalized conceptual level is a new class of thing like the Internet, a society's public records repository, a high-resolution tracking system for acknowledging human activity, a revolutionary organizing paradigm for human collaboration, an anticensorship mechanism, a liberty and equality enhancement tool, and a new organizing model for the discovery, transfer, and coordination of all quanta or discrete units of anything.
+
+### Currencies
+
+* There is currency multiplicity in the sense of monetary currency in that there are many different fiat currencies (USD, CNY, EUR, GBP, etc.).
+* There are many other nonfiat, non-blockchain-based currencies like loyalty points and airline miles;
+    * one estimate is that there are 4,000 such altcurrencies.
+* Now there is also a multiplicity of blockchain-based cryptocurrencies like Bitcoin, Litecoin, and Dogecoin.
+* Beyond monetary currencies, there is currency multiplicity in nonmonetary currencies too (as just discussed), such as reputation, intention, and attention.
+    * **blockchain technology could make these nonmonetary social currencies more trackable, transmissible, transactable, and monetizable**
+    * Social networks could become social economic networks
+
+## Limitations
+
+* Some think that the de facto standard will be the Bitcoin blockchain, as it is the incumbent, with the most widely deployed infrastructure and such network effects that it cannot help but be the standardized base.
+    * Others are building different new and separate blockchains (like Ethereum) or technology that does not use a blockchain (like Ripple).
+
+### Technical Challenges
+
+* **Throughput**
+    * The Bitcoin network has a potential issue with throughput in that it is processing only one transaction per second (tps), with a theoretical current maximum of 7 tps.
+    * One way that Bitcoin could handle higher throughput is if each block were bigger, though right now that leads to other issues with regard to size and blockchain bloat.
+    * Comparison metrics in other transaction processing networks are
+        * VISA -- 2,000 tps typical; 10,000 tps peak
+        * Twitter -- 5,000 tps typical; 15,000 tps peak
+        * advertising networks -- >100,000 tps typical
+* **Latency**
+    * Right now, each Bitcoin transaction block takes 10 minutes to process, meaning that it can take at least 10 minutes for your transaction to be confirmed.
+    * For sufficient security, you should wait more time -- about an hour -- and for larger transfer amounts it needs to be even longer, because it must outweigh the cost of a double-spend attack (in which Bitcoins are double-spent in a separate transaction before the merchant can confirm their reception in what appears to be the intended transaction)
+    * Again, as the comparison metric, VISA takes seconds at most.
+* **Size and bandwidth**
+    * The blockchain is 25 GB
+    * If throughput were to increase by a factor of 2,000 to VISA standards, for example, that would be 1.42 PB/year or 3.9 GB/day. At 150,000 tps, the blockchain would grow by 214 PB/year
+    * To really scale to mainstream use, the blockchain would need to be big, just more efficiently accessed
+        * This motivates centralization, because it takes resources to run the full node, and only about 7,000 servers worldwide do in fact run full Bitcoind nodes
+    * One innovation to address blockchain bloat and make the data more accessible is APIs, like those from Chain and other vendors, that facilitate automated calls to the full Bitcoin blockchain
+    * **https://chain.com/**
+* **Security**
+    * The most worrisome is the possibility of a 51-percent attack, in which one mining entity could grab control of the blockchain and double-spend previously transacted coins into his own account
+    * Double-spending might also still be possible in other ways -- for example, spoofing users to resend transactions, allowing malicious coders to double-spend coins.
+* **Wasted resources**
+    * Mining draws an enormous amount of energy, all of it wasted
+    * On one hand, it is the very wastefulness of mining that makes it trustable -- that rational agents compete in an otherwise useless proof-of-work effort in hopes of the possibility of reward
+    * on the other hand, these spent resources have no benefit other than mining
+
+### Possible Solutions
+
+* **Alternatives to proof of work for Byzantine consensus**
+    * There are many other consensus models proposed -- such as proof of stake, hybrids, and variants -- that have lower latency, require less computational power, waste fewer resources, and improve security for smaller chains
+    * Consensus without mining is another area being explored, such as in Tendermint's modified version of DLS (the solution to the Byzantine Generals' Problem by Dwork, Lynch, and Stockmeyer), with bonded coins belonging to byzantine participants.
+    * Another idea for consensus without mining or proof of work is through a consensus algorithm such as Hyperledger's, which is based on the Practical Byzantine Fault Tolerance algorithm.
+    * **https://www.hyperledger.org/**
+* **Only focus on the most recent or unspent outputs**
+    * A related proposal is Cryptonite, which has a "mini-blockchain" abbreviated data scheme.
+    * **http://cryptonite.info/**
+* **Blockchain interoperability**
+    * To coordinate transactions between blockchains, there are several side chains projects proposed, such as those by Blockstream.
+    * **http://www.blockstream.com/**
+
+### Business Model Challenges
+
+* Education and mainstream user-friendly tools are obvious low-hanging fruit (for example, being targeted by Coinbase, Circle Internet Financial, and Xapo), as is improving the efficiency of the entire worldwide existing banking and finance infrastructure like Ripple -- another almost "no brainer" project, when blockchain principles are understood
+* **One possible job of the future could be smart contract auditor, to confirm that AI smart contracts running on the blockchain are indeed doing as instructed, and determining and measuring how the smart contracts have self-rewritten to maximize the issuing agent's utility.**
+
+### Privacy Challenges for Personal Records
+
+* The potential privacy nightmare is that if all your data is online and the secret key is stolen or exposed, you have little recourse. In the current cryptocurrency architecture, there are many scenarios in which this might happen
+
+## Conclusion
+
+### Blockchain Consensus Increases the Information Resolution of the Universe
+
+* Blockchain technology helps call out that there are at least three different levels of information.
+* Level one is dumb, unenhanced, unmodulated data.
+* Level two could be posed as socially recom‐mended data, data elements enriched by social network peer recommendation, which has been made possible by networked Internet models.
+    * The quality of the information is denser because it has been recommended by social peers.
+* Now there is level three: blockchain consensus-validated data, data's highest yet recommendation level based on group consensus-supported accuracy and quality.
+    * Not just peer recommendations, but a formal structure of intelligent agent experts has formed a consensus about the quality and accuracy of this data.
+* "What can a society do with this kind of widespread mechanism for confirming data quality?"
