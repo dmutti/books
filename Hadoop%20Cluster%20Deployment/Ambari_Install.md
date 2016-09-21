@@ -157,64 +157,6 @@ cat ~/.ssh/id_rsa
 ```
 Admin Name : admin
 
-Cluster Name : datalab
-
-Total Hosts : 4 (4 new)
-
-Repositories:
-
-redhat6 (HDP-2.5): 
-http://public-repo-1.hortonworks.com/HDP/centos6/2.x/updates/2.5.0.0/
-redhat6 (HDP-UTILS-1.1.0.21): 
-http://public-repo-1.hortonworks.com/HDP-UTILS-1.1.0.21/repos/centos6
-Services:
-
-HDFS
-DataNode : 2 hosts
-NameNode : ip-10-52-149-209
-NFSGateway : 0 host
-SNameNode : ip-10-52-149-220
-YARN + MapReduce2
-App Timeline Server : ip-10-52-149-209
-NodeManager : 2 hosts
-ResourceManager : ip-10-52-149-220
-Tez
-Clients : 2 hosts
-Hive
-Metastore : ip-10-52-149-209
-HiveServer2 : ip-10-52-149-220
-WebHCat Server : ip-10-52-149-220
-Database : New MySQL Database
-Pig
-Clients : 2 hosts
-ZooKeeper
-Server : 2 hosts
-Ambari Infra
-Infra Solr Instance : ip-10-52-149-209
-Ambari Metrics
-Metrics Collector : ip-10-52-149-209
-Grafana : ip-10-52-149-220
-SmartSense
-Activity Analyzer : ip-10-52-149-220
-Activity Explorer : ip-10-52-149-220
-HST Server : ip-10-52-149-209
-Spark
-Livy Server : 0 host
-History Server : ip-10-52-149-209
-Thrift Server : 0 host
-Spark2
-History Server : ip-10-52-149-220
-Thrift Server : 0 host
-Slider
-Clients : 2 hosts
-
-
-
-------------------------------------------------------
-
-
-Admin Name : admin
-
 Cluster Name : dataset
 
 Total Hosts : 4 (4 new)
