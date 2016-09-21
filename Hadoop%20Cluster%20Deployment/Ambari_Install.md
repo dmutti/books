@@ -152,6 +152,135 @@ cat ~/.ssh/id_rsa
     * http://docs.hortonworks.com/HDPDocuments/HDP2/HDP-2.5.0/bk_solr-search-installation/content/index.html
 * * Choose Next
 
-### Troubleshooting
+### Summary
+
+```
+Admin Name : admin
+
+Cluster Name : datalab
+
+Total Hosts : 4 (4 new)
+
+Repositories:
+
+redhat6 (HDP-2.5): 
+http://public-repo-1.hortonworks.com/HDP/centos6/2.x/updates/2.5.0.0/
+redhat6 (HDP-UTILS-1.1.0.21): 
+http://public-repo-1.hortonworks.com/HDP-UTILS-1.1.0.21/repos/centos6
+Services:
+
+HDFS
+DataNode : 2 hosts
+NameNode : ip-10-52-149-209
+NFSGateway : 0 host
+SNameNode : ip-10-52-149-220
+YARN + MapReduce2
+App Timeline Server : ip-10-52-149-209
+NodeManager : 2 hosts
+ResourceManager : ip-10-52-149-220
+Tez
+Clients : 2 hosts
+Hive
+Metastore : ip-10-52-149-209
+HiveServer2 : ip-10-52-149-220
+WebHCat Server : ip-10-52-149-220
+Database : New MySQL Database
+Pig
+Clients : 2 hosts
+ZooKeeper
+Server : 2 hosts
+Ambari Infra
+Infra Solr Instance : ip-10-52-149-209
+Ambari Metrics
+Metrics Collector : ip-10-52-149-209
+Grafana : ip-10-52-149-220
+SmartSense
+Activity Analyzer : ip-10-52-149-220
+Activity Explorer : ip-10-52-149-220
+HST Server : ip-10-52-149-209
+Spark
+Livy Server : 0 host
+History Server : ip-10-52-149-209
+Thrift Server : 0 host
+Spark2
+History Server : ip-10-52-149-220
+Thrift Server : 0 host
+Slider
+Clients : 2 hosts
+
+
+
+------------------------------------------------------
+
+
+Admin Name : admin
+
+Cluster Name : dataset
+
+Total Hosts : 4 (4 new)
+
+Repositories:
+
+redhat6 (HDP-2.5): 
+http://public-repo-1.hortonworks.com/HDP/centos6/2.x/updates/2.5.0.0/
+redhat6 (HDP-UTILS-1.1.0.21): 
+http://public-repo-1.hortonworks.com/HDP-UTILS-1.1.0.21/repos/centos6
+Services:
+
+HDFS
+DataNode : 2 hosts
+NameNode : ip-10-52-149-209
+NFSGateway : 0 host
+SNameNode : ip-10-52-149-220
+YARN + MapReduce2
+App Timeline Server : ip-10-52-149-220
+NodeManager : 2 hosts
+ResourceManager : ip-10-52-149-209
+Tez
+Clients : 2 hosts
+Hive
+Metastore : ip-10-52-149-220
+HiveServer2 : ip-10-52-149-220
+WebHCat Server : ip-10-52-149-220
+Database : New MySQL Database
+Pig
+Clients : 2 hosts
+ZooKeeper
+Server : 2 hosts
+Ambari Infra
+Infra Solr Instance : ip-10-52-149-220
+Ambari Metrics
+Metrics Collector : ip-10-52-149-209
+Grafana : ip-10-52-149-209
+SmartSense
+Activity Analyzer : ip-10-52-149-220
+Activity Explorer : ip-10-52-149-220
+HST Server : ip-10-52-149-220
+Spark
+Livy Server : 0 host
+History Server : ip-10-52-149-209
+Thrift Server : 0 host
+Slider
+Clients : 2 hosts
+```
+
+## Troubleshooting
 
 * https://docs.hortonworks.com/HDPDocuments/Ambari-2.2.2.0/bk_ambari_reference_guide/content/ch_amb_ref_using_non_default_databases.html
+* **Spark / NodeManager Issue**
+   * https://community.hortonworks.com/questions/31361/express-upgrade-to-hdp-234-failed-on-restarting-ya.html
+   * http://docs.hortonworks.com/HDPDocuments/HDP2/HDP-2.4.0/bk_spark-guide/content/config-dra-manual.html
+   * Just copy the spark-<version>-yarn-shuffle.jar into /usr/hdp/current/hadoop-yarn-nodemanager/lib/
+   * Modify `yarn.nodemanager.aux-services`
+      * From: `mapreduce_shuffle,spark_shuffle,spark2_shuffle`
+      * To: `mapreduce_shuffle,spark_shuffle`
+
+```bash
+cd /usr/hdp/2.5.0.0-1245/spark/lib
+sudo cp ../aux/spark-1.6.2.2.5.0.0-1245-yarn-shuffle.jar .
+```
+   * Ambari Reset Install
+      * https://community.hortonworks.com/questions/1110/how-to-completely-remove-uninstall-ambari-and-hdp.html
+      * `sudo ambari-server reset`
+      * `sudo python /usr/lib/python2.6/site-packages/ambari_agent/HostCleanup.py --silent`
+      * `sudo rm /var/lib/rpm/__db*`
