@@ -163,9 +163,9 @@ Total Hosts : 4 (4 new)
 
 Repositories:
 
-redhat6 (HDP-2.5): 
+redhat6 (HDP-2.5):
 http://public-repo-1.hortonworks.com/HDP/centos6/2.x/updates/2.5.0.0/
-redhat6 (HDP-UTILS-1.1.0.21): 
+redhat6 (HDP-UTILS-1.1.0.21):
 http://public-repo-1.hortonworks.com/HDP-UTILS-1.1.0.21/repos/centos6
 Services:
 
@@ -209,20 +209,108 @@ Clients : 2 hosts
 ## Troubleshooting
 
 * https://docs.hortonworks.com/HDPDocuments/Ambari-2.2.2.0/bk_ambari_reference_guide/content/ch_amb_ref_using_non_default_databases.html
-* **Spark / NodeManager Issue**
-   * https://community.hortonworks.com/questions/31361/express-upgrade-to-hdp-234-failed-on-restarting-ya.html
-   * http://docs.hortonworks.com/HDPDocuments/HDP2/HDP-2.4.0/bk_spark-guide/content/config-dra-manual.html
-   * Just copy the spark-<version>-yarn-shuffle.jar into /usr/hdp/current/hadoop-yarn-nodemanager/lib/
-   * Modify `yarn.nodemanager.aux-services`
-      * From: `mapreduce_shuffle,spark_shuffle,spark2_shuffle`
-      * To: `mapreduce_shuffle,spark_shuffle`
+
+### Spark / NodeManager Issue
+
+* https://community.hortonworks.com/questions/31361/express-upgrade-to-hdp-234-failed-on-restarting-ya.html
+* http://docs.hortonworks.com/HDPDocuments/HDP2/HDP-2.4.0/bk_spark-guide/content/config-dra-manual.html
+* Just copy the spark-<version>-yarn-shuffle.jar into /usr/hdp/current/hadoop-yarn-nodemanager/lib/
+* Modify `yarn.nodemanager.aux-services`
+    * From: `mapreduce_shuffle,spark_shuffle,spark2_shuffle`
+    * To: `mapreduce_shuffle,spark_shuffle`
 
 ```bash
 cd /usr/hdp/2.5.0.0-1245/spark/lib
 sudo cp ../aux/spark-1.6.2.2.5.0.0-1245-yarn-shuffle.jar .
 ```
-   * Ambari Reset Install
-      * https://community.hortonworks.com/questions/1110/how-to-completely-remove-uninstall-ambari-and-hdp.html
-      * `sudo ambari-server reset`
-      * `sudo python /usr/lib/python2.6/site-packages/ambari_agent/HostCleanup.py --silent`
-      * `sudo rm /var/lib/rpm/__db*`
+
+### Ambari Reset Install
+
+* https://community.hortonworks.com/questions/1110/how-to-completely-remove-uninstall-ambari-and-hdp.html
+* `sudo ambari-server reset`
+* `sudo python /usr/lib/python2.6/site-packages/ambari_agent/HostCleanup.py --silent`
+* `sudo rm /var/lib/rpm/__db*`
+
+# Installing Hue
+
+* http://docs.hortonworks.com/HDPDocuments/HDP2/HDP-2.5.0/bk_command-line-installation/content/installing_hue.html
+
+## Before You Begin
+
+* http://docs.hortonworks.com/HDPDocuments/HDP2/HDP-2.5.0/bk_command-line-installation/content/before_you_begin.html
+
+```bash
+yum list hue hue-*
+```
+
+## Install Oozie
+
+* https://developer.ibm.com/hadoop/2015/10/29/using-postgresql-for-oozie-and-hive/
+* https://community.hortonworks.com/questions/31673/psqlexception-fatal-no-pg-hbaconf-entry-for-host-1.html
+
+```bash
+# @Ambari Server
+sudo nano /var/lib/pgsql9/data/pg_hba.conf
+# add host oozie oozie 0.0.0.0/0 md5
+
+sudo ambari-server setup --jdbc-db=postgres --jdbc-driver=/usr/share/java/postgresql-jdbc.jar
+sudo -u postgres psql
+echo "CREATE DATABASE oozie;" | psql -U postgres
+echo "CREATE USER oozie WITH PASSWORD 'oozie';" | psql -U postgres
+echo "GRANT ALL PRIVILEGES ON DATABASE oozie TO oozie;" | psql -U postgres
+
+sudo ambari-server stop
+sudo service postgresql restart
+sudo ambari-server start
+```
+
+* Services / Add Oozie / Existing Postgresql Database
+
+## Configure HDP to Support Hue
+
+* http://docs.hortonworks.com/HDPDocuments/HDP2/HDP-2.5.0/bk_command-line-installation/content/configure_hdp_support_hue.html
+* Use the admin account, login to the Ambari Web UI at http://\<your.ambari.server\>:8080
+* Stop the namenode
+    * Select Hosts on the Navigation Header
+    * Select the NameNode server
+    * Scroll down to NameNode and click on Started to reveal the drop down menu. Select Stop from the drop down menu to stop the Namenode
+    * Click OK to confirm
+* Modify hdfs-site settings
+    * Click on HDFS from the Services menu on the left side of the screen
+    * Click the Configs tab.
+    * Click Advanced
+    * Scroll down to the General settings. Ensure that the WebHDFS enabled checkbox is checked
+* Modify the core-site settings
+    * Scroll down to Custom core-site settings
+    * Ensure the hadoop.proxyuser.hue.groups and hadoop.proxyuser.hue.hosts properties and their respective values are set
+    * Add property
+        * `hadoop.proxyuser.hue.groups=*`
+        * `hadoop.proxyuser.hue.hosts=*`
+* Modify oozie-site settings
+    * From the Services menu, click Oozie
+    * Click Configs
+    * Scroll down to Custom oozie-site
+    * Add property
+        * `oozie.service.ProxyUserService.proxyuser.hue.groups=*`
+        * `oozie.service.ProxyUserService.proxyuser.hue.hosts=*`
+* Modify hive-site settings
+    * From the Services menu click on Hive
+    * Click the Configs tab
+    * Click Advanced
+    * Scroll down to Custom hive-site
+    * Add property
+        * `hive.server2.enable.impersonation=true`
+
+## Install the Hue Packages
+
+* http://docs.hortonworks.com/HDPDocuments/HDP2/HDP-2.5.0/bk_command-line-installation/content/install_hue_package.html
+
+```bash
+# @ Hue Servers
+sudo yum-complete-transaction
+sudo yum install hue
+```
+
+## Configure Hue to Communicate with the Hadoop Components
+
+* http://docs.hortonworks.com/HDPDocuments/HDP2/HDP-2.5.0/bk_command-line-installation/content/configure_hue_hadoop_components.html
