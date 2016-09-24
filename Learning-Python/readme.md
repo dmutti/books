@@ -211,7 +211,7 @@ for key in sorted(D):
     print(key, '=>', D[key])
 ```
 
-* When written as literals, dictionaries are coded in curly braces and consist of a series of “key: value” pairs
+* When written as literals, dictionaries are coded in curly braces and consist of a series of "key: value" pairs
 * **The exact order of dictionary keys may vary per Python**
 
 ## Iteration and Optimization
@@ -1384,3 +1384,388 @@ finally:
 | assert | Debugging checks | assert X > Y, 'X too small' |
 | with/as | Context managers | with open('data') as myfile:<br>&nbsp;&nbsp;&nbsp;&nbsp;process(myfile) |
 | del | Deleting references | del data[k]<br>del data[i:j]<br>del obj.attr<br>del variable |
+
+
+* All Python compound statements follow the same general pattern of a header line terminated in a colon (:), followed by a nested block of code usually indented underneath the header line
+* `if (x < y)` -> `if x < y`
+    * The "Python way" is to simply omit the parentheses in these kinds of statements altogether
+* You don't need to terminate statements with semicolons in Python the way you do in C-like languages
+* The syntax rule is that for a given single nested block, all of its statements must be indented the same distance to the right.
+    * If this is not the case, you will get a syntax error, and your code will not run until you repair its indentation to be consistent
+* Although statements normally appear one per line, it is possible to squeeze more than one statement onto a single line in Python by separating them with semicolons
+    * `a = 1; b = 2; print(a + b)`
+    *  you can chain together only simple statements, like assignments, prints, and function calls. Compound statements like if tests and while loops must still appear on lines of their own
+* you can make a single statement span across multiple lines. 
+    * you simply have to enclose part of your statement in a bracketed pair
+        * parentheses (())
+        * square brackets ([])
+        * or curly braces ({})
+    * Any code enclosed in these constructs can cross multiple lines: your statement doesn't end until Python reaches the line containing the closing part of the pair
+
+```python
+mylist = [1111,
+          2222,
+          3333]
+X = (A + B +
+     C + D)
+```
+
+## A Quick Example: Interactive Loops
+
+```python
+import sys
+if sys.version[0] == '2': input = raw_input
+
+while True:
+    reply = input('Enter text: ')
+    if reply == 'stop': break
+    print(reply.upper())
+```
+
+```python
+# Doing Math on User Inputs
+while True:
+    number = input('number to square: ')
+    if number == 'stop':
+        break
+    elif not number.isdigit(): 
+        continue
+    print (int(number) ** 2)
+print ('bye')
+```
+
+* Python first runs the try part, then runs either the except part (if an exception occurs) or the else part (if no exception occurs).
+
+```python
+# Handling Errors with try Statements
+while True:
+    number = input('number to square: ')
+    if number == 'stop':
+        break
+    try:
+        number = int(number)
+    except:
+        continue
+    else:
+        print(number ** 2)
+print ('bye')
+```
+
+# Assignments, Expressions, and Prints
+
+## Assignment Statements
+
+* Assignments create object references
+    * Python assignments store references to objects in names or data structure components.
+    * They always create references to objects instead of copying the objects.
+    * Python variables are more like pointers than data storage areas.
+* Names are created when first assigned
+    * Python creates a variable name the first time you assign it a value so there’s no need to predeclare names ahead of time.
+    * Some (but not all) data structure slots are created when assigned, too (e.g., dictionary entries, some object attributes).
+    * Once assigned, a name is replaced with the value it references whenever it appears in an expression
+* Names must be assigned before being referenced
+    * It’s an error to use a name to which you haven’t yet assigned a value.
+    * Python raises an exception if you try, rather than returning some sort of ambiguous default value.
+* Some operations perform assignments implicitly
+
+| Operation | Interpretation |
+|-----------|----------------|
+| spam = 'Spam' | Basic form |
+| spam, ham = 'yum', 'YUM' | Tuple assignment (positional) |
+| [spam, ham] = ['yum', 'YUM'] | List assignment (positional) |
+| a, b, c, d = 'spam' | Sequence assignment, generalized |
+| a, *b = 'spam' | Extended sequence unpacking |
+| spam = ham = 'lunch' | Multiple-target assignment |
+| spams += 42 | Augmented assignment (equivalent to spams = spams + 42) |
+
+### Sequence Assignments
+
+```python
+nudge = 1
+wink = 2
+A, B = nudge, wink #Tuple assignment
+A, B #(1, 2)
+[C, D] = [nudge, wink]
+C, D #(1, 2) 
+```
+
+* Python pairs the values in the tuple on the right side of the assignment operator with the variables in the tuple on the left side and assigns the values one at a time.
+* Because Python creates a temporary tuple that saves the original values of the variables on the right while the statement runs, unpacking assignments are also a way to swap two variables’ values without creating a temporary variable of your own -- the tuple on the right remembers the prior values of the variables automatically
+* **the original tuple and list assignment forms in Python have been generalized to accept any type of iterable on the right as long as it is of the same length as the sequence on the left.**
+* Python assigns items in the sequence on the right to variables in the sequence on the left by position, from left to right
+* `for (a, b, c) in [(1, 2, 3), (4, 5, 6)]: ...`
+
+```python
+nudge = 1
+wink = 2
+nudge, wink #(1, 2)
+nudge, wink = wink, nudge
+nudge, wink #(2, 1)
+
+[a, b, c] = (1, 2, 3)
+a, c #(1, 3)
+
+(a, b, c) = "ABC"
+a, c #('A', 'C')
+
+(a, b) = "ABC" #ValueError: too many values to unpack (expected 2)
+
+((a, b), c) = ('SP', 'AM')
+a, b, c #('S', 'P', 'AM')
+
+red, green, blue = range(3)
+```
+
+### Extended Sequence Unpacking in Python 3.X
+
+* a single starred name, *X, can be used in the assignment target in order to specify a more general matching against the sequence -- the starred name is assigned a list, which collects all items in the sequence not assigned to other names.
+* When a starred name is used, the number of items in the target on the left need not match the length of the subject sequence. In fact, the starred name can appear anywhere in the target
+* When the starred name appears in the middle, it collects everything between the other names listed.
+* **A sequence unpacking assignment always returns a list for multiple matched items, whereas slicing returns a sequence of the same type as the object sliced**
+* **Boundary cases**
+    * the starred name may match just a single item, but is always assigned a list
+    * if there is nothing left to match the starred name, it is assigned an empty list, regardless of where it appears
+
+```python
+(a, *b) = "ABC"
+a, b #('A', ['B', 'C'])
+
+(*a, b) = "ABC"
+a, b  #(['A', 'B'], 'C')
+
+(a, *b, c) = "ABCD"
+a, b, c ##('A', ['B', 'C'], 'D')
+
+(a, *b, c) = "ABC"
+a, b, c #('A', ['B'], 'C')
+
+a, b, c, d, *e = [1, 2, 3, 4]
+a, b, c, d, e #(1, 2, 3, 4, [])
+```
+
+### Multiple-Target Assignments
+
+* Keep in mind that there is just one object here, shared by all three variables (they all wind up pointing to the same object in memory).
+* This behavior is fine for immutable types -- for example, when initializing a set of counters to zero
+    * variables must be assigned before they can be used in Python, so you must initialize counters to zero before you can start adding to them
+
+```python
+a = b = c = 'spam'
+a, b, c #('spam', 'spam', 'spam')
+
+c += '-opa'
+a, b, c #('spam', 'spam', 'spam-opa')
+
+a = b = c = []
+b.append(10)
+a, b, c #([10], [10], [10])
+
+a, b, c = [], [], []
+b.append(10)
+a, b, c #([], [10], [])
+```
+
+### Augmented Assignments
+
+* although Python now supports statements like `X += Y`, it still does not have C's auto-increment/decrement operators (e.g., `X++`, `−−X`). These don't quite map to the Python object model because Python has no notion of in-place changes to immutable objects like numbers.
+* concatenation is less prone to the side effects of shared object references but will generally run slower than the in-place equivalent.
+* Concatenation operations must create a new object, copy in the list on the left, and then copy in the list on the right. By contrast, in-place method calls simply add items at the end of the current object
+* When we use augmented assignment to extend a list, we can largely forget these details -- Python automatically calls the quicker extend method instead of using the slower concatenation operation implied by `+`
+
+```python
+L = [1, 2]
+L = L + [3] #Concatenate: slower
+
+L.append(4) #Faster, but in place
+
+L = L.append(4) #***append returns None, not L***
+print(L) #None #We lost our list!
+
+L = L + [5, 6] #Concatenate: slower
+L.extend([7, 8]) #Faster, but in place
+
+L += [9, 10] #Mapped to L.extend([9, 10])
+
+L = []
+L += 'spam'
+L #['s', 'p', 'a', 'm']
+
+L = L + 'spam' #Error!
+
+L = [1, 2]
+M = L
+L = L + [3, 4] #+ ALWAYS makes a new object
+L, M #([1, 2, 3, 4], [1, 2])
+
+L = [1, 2]
+M = L
+L += [3, 4]
+L, M #([1, 2, 3, 4], [1, 2, 3, 4])
+```
+
+### Naming conventions
+
+* https://www.python.org/dev/peps/pep-0008/
+* avoid names with two leading and trailing underscores (e.g., `__name__`), because they generally have special meaning to the Python interpreter
+* **Names that begin with a single underscore (`_X`) are not imported by a `from module import *` statement**
+* Names that have two leading and trailing underscores (`__X__`) are system-defined names that have special meaning to the interpreter.
+* Names that begin with two underscores and do not end with two more (`__X`) are localized ("mangled") to enclosing classes
+* The name that is just a single underscore (`_`) retains the result of the last expression when you are working interactively
+
+## The Python 3.X print Function
+
+* Unlike with `file` methods, there is no need to convert objects to strings when using `print` operations
+* The print built-in function is normally called on a line of its own and it returns `None`
+* Call format: `print([object, ...][, sep=' '][, end='\n'][, file=sys.stdout][, flush=False])`
+    * The sep, end, file, and flush parts, if present, must be given as keyword arguments -- that is, you must use "name=value" syntax to pass the arguments by name instead of position
+    * **file** specifies the file, standard stream, or other file-like object to which the text will be sent;
+        * it defaults to the `sys.stdout` standard output stream if not passed.
+        * Any object with a file-like write(string) method may be passed, but real files should be already opened for output.
+* The textual representation of each object to be printed is obtained by passing the object to the `str` built-in call
+
+```python
+x = 'spam'
+y = 99
+z = ['eggs']
+
+print(x, y, z, sep='...', file=open('data.txt', 'w')) #Print to a file
+print(open('data.txt').read()) #Display file text
+
+text = '%s: %-.4f, %05d' % ('Result', 3.14159, 42)
+print(text) #Result: 3.1416, 00042
+```
+
+### Print Stream Redirection
+
+```python
+x, y, z = 1, 2, 3
+print('hello world')
+
+# Printing the hard way
+import sys
+sys.stdout.write('hello world\n')
+
+# Manual stream redirection
+import sys
+temp = sys.stdout # save it for later
+sys.stdout = open('~/temp/log.txt', 'a') #Redirects prints to a file
+print(x, y, z) #Shows up in log.txt
+
+# Restore the original output stream
+
+sys.stdout = sys.__stdout__ # the original sys.stdout value
+print(x, y, z)
+
+# Temporary redirection
+log = open('~/temp/log.txt', 'a')
+print(x, y, z, file=log)
+
+print(open('~/temp/log.txt').read())
+
+sys.stderr.write(('Bad!' * 8) + '\n')
+print('Bad!' * 8, file=sys.stderr)
+```
+
+* **Temporary redirection**
+    * If you use these forms, however, be sure to give them a file object (or an object that has the same write method as a file object), not a file's name string
+* Because the print statement just sends text to the `sys.stdout.write` method, you can capture printed text in your programs by assigning `sys.stdout` to an object whose `write` method processes the text in arbitrary ways.
+
+# if Tests and Syntax Rules
+
+## if Statements
+
+* there is no switch or case statement in Python that selects an action based on a variable's value. Instead, you usually code multiway branching as a series of if/elif tests,
+
+```python
+choice = 'ham'
+if choice == 'spam':
+    print(1.25)
+elif choice == 'ham':
+    print(1.99)
+elif choice == 'eggs':
+    print(0.99)
+elif choice == 'bacon':
+    print(1.10)
+else:
+    print('Bad choice')
+
+# A dictionary-based 'switch'
+print({'spam': 1.25,
+       'ham': 1.99,
+       'eggs': 0.99,
+       'bacon': 1.10}[choice])
+
+# Handling switch defaults
+branch = { 'spam' : 1.25,
+           'ham': 1.99,
+           'eggs': 0.99 }
+print(branch.get('spam', 'Bad choice'))
+print(branch.get('bacon', 'Bad choice'))
+
+# Default Alternative
+
+choice = 'bacon'
+if choice in branch:
+    print(branch[choice])
+else:
+    print('Bad choice')
+```
+
+## Block Delimiters: Indentation Rules
+
+* In general, top-level (unnested) code must start in column 1
+* indentation may consist of any number of spaces and tabs, as long as it's the same for all the statements in a given single block. 
+* Python doesn't care how you indent your code; it only cares that it's done consistently.
+* Four spaces or one tab per indentation level are common conventions, but there is no absolute standard in the Python world.
+* indentation is really part of Python syntax, not just a stylistic suggestion: all the statements within any given single block must be indented to the same level, or Python reports a syntax error
+
+### A Few Special Cases
+
+* Delimited constructs, such as lists in square brackets, can span across any number of lines
+* This also works for anything in parentheses (expressions, function arguments, function headers, tuples, and generator expressions), as well as anything in curly braces (dictionaries and, in 3.X and 2.7, set literals and set and dictionary comprehensions)
+
+```python
+# 
+L = [ 1,
+      2,
+      3 ]
+```
+
+* If you like using backslashes to continue lines, you can, but it’s not common practice in Python
+* Because any expression can be enclosed in parentheses, you can usually use the open pairs technique instead if you need your code to span multiple lines - simply wrap a part of your statement in parentheses
+
+```python
+if a == b and c == d and \
+   d == e and f == g:
+   print('olde')
+
+if (a == b and c == d and
+    d == e and e == f):
+    print('new')
+```
+
+* Python allows you to write more than one noncompound statement (i.e., statements without nested statements) on the same line, separated by semicolons.
+    * `x = 1; y = 2; print(x)`
+* triple-quoted string literals span lines too.
+    * if two string literals appear next to each other, they are concatenated as if a `+` had been added between them
+    * when used in conjunction with the open pairs rule, wrapping in parentheses allows this form to span multiple lines.
+
+```python
+S = """
+    aaaa  #comment
+    bbbb"""
+print(S)
+#    aaaa  #comment
+#    bbbb
+
+S = ('aaaa'
+     'bbbb' #ignored
+     'cccc')
+print(S)
+# aaaabbbbcccc
+```
+
+* Python lets you move a compound statement's body up to the header line, provided the body contains just simple (noncompound) statements
+    * `if 1: print('hello')`
+
+## Truth Values and Boolean Tests
